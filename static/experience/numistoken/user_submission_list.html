@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numistoken - Submission History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'source-serif': ['Source Serif Pro', 'serif'],
+                        'jakarta': ['Plus Jakarta Sans', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'blue-50': '#eff6ff',
+                        'blue-600': '#2563eb',
+                        'gray-100': '#f3f4f6',
+                        'gray-300': '#d1d5db',
+                        'gray-400': '#9ca3af',
+                        'gray-500': '#6b7280',
+                        'gray-600': '#4b5563',
+                        'gray-800': '#1f2937',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-white">
+    <!-- Navbar -->
+    <nav class="w-full h-20 bg-black flex items-center justify-center px-6 md:px-24">
+        <div class="w-full max-w-7xl flex items-center justify-between">
+            <!-- Logo Section -->
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-5">
+                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5f0428e1feb0fdec75f0277a08a232fdfd1ec49?width=64" 
+                         alt="Numistoken Logo" 
+                         class="w-8 h-8">
+                </div>
+                <h1 class="text-white font-source-serif text-2xl font-bold">
+                    Numistoken
+                </h1>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="#" class="text-white/50 font-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Home Page
+                </a>
+                <a href="#" class="text-white/50 font-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Marketplace
+                </a>
+                <a href="#" class="text-white/50 font-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Our Mission
+                </a>
+            </div>
+
+            <!-- Right Section -->
+            <div class="flex items-center gap-8">
+                <!-- Auth Buttons Placeholder -->
+                <div class="hidden md:flex items-center gap-4"></div>
+                
+                <!-- Profile Avatar Placeholder -->
+                <div class="w-14 h-14 rounded-full border-2 border-gray-500 overflow-hidden"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="bg-white">
+        <!-- Profile Header -->
+        <div class="w-full max-w-5xl mx-auto px-4 py-10">
+            <!-- Cover Photo Section -->
+            <div class="relative w-full h-36 bg-gray-100 rounded-lg flex items-center justify-center mb-20">
+                <!-- Camera Icon -->
+                <svg width="44" height="44" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
+                    <path d="M41.2083 34.0417C41.2083 34.992 40.8308 35.9035 40.1588 36.5755C39.4867 37.2475 38.5753 37.625 37.625 37.625H5.37496C4.4246 37.625 3.51317 37.2475 2.84116 36.5755C2.16915 35.9035 1.79163 34.992 1.79163 34.0417V14.3333C1.79163 13.383 2.16915 12.4715 2.84116 11.7995C3.51317 11.1275 4.4246 10.75 5.37496 10.75H12.5416L16.125 5.375H26.875L30.4583 10.75H37.625C38.5753 10.75 39.4867 11.1275 40.1588 11.7995C40.8308 12.4715 41.2083 13.383 41.2083 14.3333V34.0417Z" stroke="white" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21.5 30.4583C25.458 30.4583 28.6666 27.2497 28.6666 23.2917C28.6666 19.3336 25.458 16.125 21.5 16.125C17.5419 16.125 14.3333 19.3336 14.3333 23.2917C14.3333 27.2497 17.5419 30.4583 21.5 30.4583Z" stroke="white" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                
+                <!-- Profile Avatar - positioned to overlap -->
+                <div class="absolute -bottom-12 left-6 md:left-24">
+                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/6bc974d0e09480630342ab8109097bab3d85e667?width=200" 
+                         alt="John Doe" 
+                         class="w-24 h-24 rounded-full border-2 border-gray-400">
+                </div>
+            </div>
+
+            <!-- Profile Info Section -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-6 ml-6 md:ml-36">
+                    <h2 class="text-black font-inter text-lg font-bold">John Doe</h2>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button class="flex items-center gap-3 px-4 py-2.5 bg-white border-2 border-gray-100 rounded-md hover:bg-gray-50 transition-colors">
+                        <!-- Edit Icon -->
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-800">
+                            <g clip-path="url(#clip0_1458_362)">
+                                <path d="M15.5834 2.75011C15.8241 2.50936 16.11 2.31838 16.4245 2.18808C16.7391 2.05779 17.0762 1.99072 17.4167 1.99072C17.7572 1.99072 18.0943 2.05779 18.4089 2.18808C18.7235 2.31838 19.0093 2.50936 19.25 2.75011C19.4908 2.99087 19.6818 3.27669 19.8121 3.59125C19.9424 3.90582 20.0094 4.24297 20.0094 4.58345C20.0094 4.92393 19.9424 5.26108 19.8121 5.57564C19.6818 5.8902 19.4908 6.17602 19.25 6.41678L6.87504 18.7918L1.83337 20.1668L3.20837 15.1251L15.5834 2.75011Z" stroke="#181D27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_1458_362">
+                                    <rect width="22" height="22" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        <span class="text-black font-jakarta text-base font-semibold">Edit profile</span>
+                    </button>
+                    
+                    <button class="flex items-center justify-center w-11 h-11 bg-white border-2 border-gray-100 rounded-md hover:bg-gray-50 transition-colors">
+                        <!-- Share Icon -->
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-800">
+                            <path d="M7.87417 12.3841L14.135 16.0324M14.1258 5.96742L7.87417 9.61575M19.25 4.58325C19.25 6.10203 18.0188 7.33325 16.5 7.33325C14.9812 7.33325 13.75 6.10203 13.75 4.58325C13.75 3.06447 14.9812 1.83325 16.5 1.83325C18.0188 1.83325 19.25 3.06447 19.25 4.58325ZM8.25 10.9999C8.25 12.5187 7.01878 13.7499 5.5 13.7499C3.98122 13.7499 2.75 12.5187 2.75 10.9999C2.75 9.48114 3.98122 8.24992 5.5 8.24992C7.01878 8.24992 8.25 9.48114 8.25 10.9999ZM19.25 17.4166C19.25 18.9354 18.0188 20.1666 16.5 20.1666C14.9812 20.1666 13.75 18.9354 13.75 17.4166C13.75 15.8978 14.9812 14.6666 16.5 14.6666C18.0188 14.6666 19.25 15.8978 19.25 17.4166Z" stroke="#181D27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="w-full max-w-5xl mx-auto px-4">
+            <div class="flex flex-col gap-4">
+                <!-- Tab Headers -->
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-18">
+                    <button class="text-left font-inter text-base sm:text-lg font-medium transition-colors text-gray-400 hover:text-gray-600">
+                        Wallet & Address Info
+                    </button>
+                    <button class="text-left font-inter text-base sm:text-lg font-medium transition-colors text-black font-bold">
+                        Submission History
+                    </button>
+                    <button class="text-left font-inter text-base sm:text-lg font-medium transition-colors text-gray-400 hover:text-gray-600">
+                        Redemption History
+                    </button>
+                </div>
+                
+                <!-- Divider -->
+                <div class="w-full h-px bg-gray-300"></div>
+            </div>
+        </div>
+
+        <!-- Submissions Section -->
+        <div class="w-full max-w-5xl mx-auto px-4 py-20">
+            <div class="flex flex-col gap-12">
+                <!-- Section Title -->
+                <h2 class="text-black font-inter text-3xl font-bold">My Submissions</h2>
+                
+                <!-- Submission Card -->
+                <div class="border border-gray-300 rounded-lg p-8">
+                    <!-- Submission ID -->
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-gray-400 font-inter text-base">Submission ID</span>
+                        <span class="text-gray-600 font-inter text-base font-medium">#9528</span>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        <!-- Left Section - Coin Info -->
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <img src="https://api.builder.io/api/v1/image/assets/TEMP/0ebfc7c40d8ad49714a6f9ad53d00bad5bcb7fb1?width=120" 
+                                     alt="1969 Apollo 11 Commemorative Coin" 
+                                     class="w-16 h-16 rounded-sm">
+                                <!-- Quantity Badge -->
+                                <div class="absolute -top-1 -right-1 bg-gray-400/20 backdrop-blur-sm border border-white/30 rounded-full px-2 py-0.5">
+                                    <span class="text-white font-jakarta text-xs font-semibold">x3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="text-black font-inter text-base font-medium max-w-xs">
+                                1969 Apollo 11 Commemorative Coin
+                            </div>
+                        </div>
+                        
+                        <!-- Right Section - Date and Status -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 lg:gap-18">
+                            <!-- Submission Date -->
+                            <div class="flex flex-col">
+                                <span class="text-gray-400 font-inter text-base">Submission date</span>
+                                <span class="text-gray-600 font-inter text-base font-medium">May 27, 2025</span>
+                            </div>
+                            
+                            <!-- Status Badge -->
+                            <div class="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+                                <div class="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>
+                                <span class="text-blue-600 font-inter text-base font-medium">Received</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Never commit or publish: repo dumps, design notes, unused + restricted (unpublished CBU) figures
+_private/
+
+# Generated: rebuilt by `python build.py` (and by the GitHub Pages workflow)
+site/
+
+__pycache__/
+*.pyc
+desktop.ini
+Thumbs.db
+.DS_Store

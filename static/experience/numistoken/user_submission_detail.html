@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numistoken - My Submissions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'numis-navy': 'hsl(217, 32%, 17%)',
+                        'numis-text-primary': 'hsl(0, 0%, 0%)',
+                        'numis-text-secondary': 'hsl(0, 0%, 67%)',
+                        'numis-text-tertiary': 'hsl(0, 0%, 27%)',
+                        'numis-border': 'hsl(0, 0%, 84%)',
+                        'numis-warning-bg': 'hsl(43, 96%, 78%)',
+                        'numis-warning-text': 'hsl(32, 95%, 30%)',
+                        'numis-warning-border': 'hsl(32, 95%, 30%)',
+                        'numis-gray-light': 'hsl(0, 0%, 97%)',
+                        'numis-pending': 'hsl(32, 95%, 50%)',
+                    },
+                    fontFamily: {
+                        'source-serif': ['Source Serif Pro', 'serif'],
+                        'plus-jakarta': ['Plus Jakarta Sans', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="bg-numis-navy h-20 px-6 md:px-24 flex items-center justify-center">
+        <div class="w-full max-w-[1440px] flex justify-between items-center">
+            <!-- Logo and brand -->
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-5">
+                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5f0428e1feb0fdec75f0277a08a232fdfd1ec49?width=64" 
+                         alt="Numistoken logo" 
+                         class="w-8 h-8">
+                </div>
+                <div class="text-white font-source-serif text-2xl font-bold">
+                    Numistoken
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden lg:flex items-center gap-8">
+                <a href="/" class="text-white/50 font-plus-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Home Page
+                </a>
+                <a href="/marketplace" class="text-white/50 font-plus-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Marketplace
+                </a>
+                <a href="/mission" class="text-white/50 font-plus-jakarta text-base font-semibold hover:text-white transition-colors">
+                    Our Mission
+                </a>
+            </nav>
+
+            <!-- Empty auth section -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-4">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="bg-white min-h-screen">
+        <div class="max-w-[1090px] mx-auto px-4 md:px-8 py-14 md:py-28">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 mb-8">
+                <span class="text-numis-text-secondary font-inter text-lg">Your account</span>
+                <svg class="w-5 h-5 text-numis-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span class="text-numis-text-secondary font-inter text-lg">Your submissions</span>
+                <svg class="w-5 h-5 text-numis-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span class="text-numis-text-primary font-inter text-lg">Submission details</span>
+            </div>
+
+            <!-- Page Title -->
+            <h1 class="text-3xl font-bold text-numis-text-primary font-inter mb-12">
+                My Submissions
+            </h1>
+
+            <!-- Submission Card -->
+            <div class="border border-numis-border rounded-lg p-6 md:p-8 mb-12">
+                <!-- Submission Info -->
+                <div class="flex flex-col md:flex-row gap-6 md:gap-18 mb-6">
+                    <div class="flex flex-col">
+                        <span class="text-numis-text-secondary font-inter text-base mb-1">Submission ID</span>
+                        <span class="text-numis-text-tertiary font-inter text-base font-medium">#9528</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-numis-text-secondary font-inter text-base mb-1">Submission date</span>
+                        <span class="text-numis-text-tertiary font-inter text-base font-medium">May 27, 2025</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-numis-border my-6"></div>
+
+                <!-- Submission Status -->
+                <h2 class="text-lg font-bold text-numis-text-primary font-inter mb-8">
+                    Submission Status
+                </h2>
+
+                <!-- Progress Bar -->
+                <div class="relative mb-12">
+                    <!-- Background bar -->
+                    <div class="w-full h-2.5 bg-gray-200 rounded-full mb-8"></div>
+                    <!-- Progress bar -->
+                    <div class="absolute top-0 w-2/3 h-2.5 bg-numis-text-tertiary rounded-full"></div>
+
+                    <!-- Status steps -->
+                    <div class="flex justify-between items-start -mt-2">
+                        <!-- Submitted -->
+                        <div class="flex flex-col items-center gap-3 w-1/4">
+                            <div class="w-12 h-12 bg-numis-text-tertiary rounded-full flex items-center justify-center border-2 border-white">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-numis-text-tertiary font-inter text-base font-medium">Submitted</div>
+                                <div class="text-numis-text-secondary font-inter text-sm">May 27, 2025</div>
+                            </div>
+                        </div>
+
+                        <!-- Received -->
+                        <div class="flex flex-col items-center gap-3 w-1/4">
+                            <div class="w-12 h-12 bg-numis-text-tertiary rounded-full flex items-center justify-center border-2 border-white">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-numis-text-tertiary font-inter text-base font-medium">Received</div>
+                                <div class="text-numis-text-secondary font-inter text-sm">May 27, 2025</div>
+                            </div>
+                        </div>
+
+                        <!-- Missing Documents -->
+                        <div class="flex flex-col items-center gap-3 w-1/4">
+                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-numis-text-tertiary">
+                                <svg class="w-5 h-5 text-numis-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-numis-text-tertiary font-inter text-base font-medium">Missing Documents</div>
+                                <div class="flex items-center gap-1 justify-center">
+                                    <div class="w-1.5 h-1.5 bg-numis-pending rounded-full"></div>
+                                    <span class="text-numis-pending font-inter text-sm font-medium">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Minted -->
+                        <div class="flex flex-col items-center gap-3 w-1/4">
+                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-gray-300">
+                                <svg class="w-5 h-5 text-numis-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="8" cy="8" r="6"></circle>
+                                    <path d="m13 13 5 5"></path>
+                                    <path d="m21 21-5-5"></path>
+                                    <path d="M10.5 5A2.5 2.5 0 0 1 8 2.5"></path>
+                                    <path d="M10.5 11A2.5 2.5 0 0 1 8 13.5"></path>
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-numis-text-tertiary font-inter text-base font-medium">Minted</div>
+                                <div class="text-numis-text-secondary font-inter text-sm">May 27, 2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Needed Alert -->
+            <div class="bg-numis-warning-bg border border-numis-warning-border rounded-lg p-6 md:p-8 mb-12">
+                <div class="flex items-start gap-4 mb-4">
+                    <svg class="w-5 h-5 text-numis-warning-text flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <h3 class="text-base font-bold text-numis-warning-text font-inter">
+                        Action Needed: Submission Incomplete
+                    </h3>
+                </div>
+                
+                <p class="text-numis-text-tertiary font-inter text-base leading-6 mb-6">
+                    To proceed with minting your coin, we need a few missing details from your submission. 
+                    Your coin has been received, but we cannot begin the minting process until we confirm the following:
+                </p>
+
+                <div class="flex items-start gap-6 mb-8">
+                    <div class="w-px h-12 bg-numis-warning-border"></div>
+                    <div class="flex-1">
+                        <div class="text-numis-text-primary font-inter text-base font-medium mb-1">
+                            Missing: Coin Authentication Document
+                        </div>
+                        <div class="text-numis-text-tertiary font-inter text-base leading-6">
+                            This document is required to verify the authenticity and origin of your coin.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <button class="flex-1 bg-numis-warning-text text-white font-inter text-base font-medium px-5 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-opacity-90 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        I've uploaded my document
+                    </button>
+                    <button class="flex-1 bg-white text-numis-text-primary font-inter text-base font-medium px-5 py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        How to upload?
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coin Information -->
+            <div class="border border-numis-border rounded-lg p-6 md:p-8 mb-8">
+                <h2 class="text-lg font-bold text-numis-text-primary font-inter mb-6">
+                    Coin Information
+                </h2>
+
+                <!-- Table Header -->
+                <div class="bg-numis-gray-light rounded-lg p-5 mb-5 hidden md:block">
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="text-numis-text-secondary font-inter text-lg font-semibold">Coin Name</div>
+                        <div class="text-numis-text-secondary font-inter text-lg font-semibold">County of Origin</div>
+                        <div class="text-numis-text-secondary font-inter text-lg font-semibold">Declared Value</div>
+                    </div>
+                </div>
+
+                <!-- Coin Entries -->
+                <div class="space-y-5">
+                    <!-- Coin 1 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 px-0 md:px-5">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Coin Name:</span>
+                            <span class="text-numis-text-primary font-inter text-base font-medium">
+                                1909-S VDB Lincoln Cent
+                            </span>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Country:</span>
+                            <div class="flex items-center gap-4">
+                                <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">US</span>
+                                </div>
+                                <span class="text-[#414651] font-inter text-base font-medium">United States</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Value:</span>
+                            <span class="text-numis-text-tertiary font-inter text-base font-bold">$2000.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Coin 2 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 px-0 md:px-5">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Coin Name:</span>
+                            <span class="text-numis-text-primary font-inter text-base font-medium">
+                                1933 George V Sovereign Gold Coin
+                            </span>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Country:</span>
+                            <div class="flex items-center gap-4">
+                                <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">GB</span>
+                                </div>
+                                <span class="text-[#414651] font-inter text-base font-medium">United Kingdom</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Value:</span>
+                            <span class="text-numis-text-tertiary font-inter text-base font-bold">$8500.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Coin 3 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 px-0 md:px-5">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Coin Name:</span>
+                            <span class="text-numis-text-primary font-inter text-base font-medium">
+                                1780 Maria Theresa Silver Thaler
+                            </span>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Country:</span>
+                            <div class="flex items-center gap-4">
+                                <div class="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">AT</span>
+                                </div>
+                                <span class="text-[#414651] font-inter text-base font-medium">Austria</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            <span class="text-sm font-medium text-numis-text-secondary md:hidden">Value:</span>
+                            <span class="text-numis-text-tertiary font-inter text-base font-bold">$1200.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Return Address -->
+            <div class="border border-numis-border rounded-lg p-6 md:p-8">
+                <h2 class="text-lg font-bold text-numis-text-primary font-inter mb-4">
+                    Return Address
+                </h2>
+                <div class="text-numis-text-tertiary font-inter text-lg leading-relaxed">
+                    Reck Bummer<br>
+                    1269 Synergy Street, APT 912<br>
+                    San Francisco, California, US 100023
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
