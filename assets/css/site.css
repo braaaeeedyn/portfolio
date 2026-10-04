@@ -675,6 +675,9 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
   100% { transform: translateY(0) scale(1, 1); }
 }
 .avatar { transform-origin: 50% 100%; }
+/* masthead mascot wears the Cal cap; the wrap moves as one piece on hover */
+.avatar-wrap { position: relative; display: block; transform-origin: 50% 100%; }
+.avatar-wrap .tip-acc.hat { width: 46px; top: -19px; }
 .bubble a { color: var(--chrome-indigo); text-decoration: none; font-weight: 400; }
 .bubble a:hover { color: var(--carbon); text-decoration: underline; }
 
@@ -815,9 +818,9 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
 .tip-hand-wrap.explorer.up { --dir: 0deg; margin-bottom: 14px; }
 .tip-compass .needle { transform-box: view-box; transform-origin: 20px 20px; transform: rotate(var(--dir)); }
 /* wizard: wand angled at the target */
-.tip-hand-wrap.wizard { width: 86px; height: 19px; }
-.tip-hand-wrap.wizard.down { transform: rotate(40deg); transform-origin: 0 50%; margin: 0 -30px 44px -4px; }
-.tip-hand-wrap.wizard.up { transform: rotate(-46deg); transform-origin: 0 50%; margin: 0 -24px 4px -2px; }
+.tip-hand-wrap.wizard { width: 90px; height: 26px; }
+.tip-hand-wrap.wizard.down { transform: rotate(38deg); transform-origin: 0 50%; margin: 0 -34px 46px -4px; }
+.tip-hand-wrap.wizard.up { transform: rotate(-44deg); transform-origin: 0 50%; margin: 0 -28px 4px -2px; }
 /* arcade: LOOK sign on a post */
 .tip-hand-wrap.arcade { width: 50px; height: 52px; }
 .tip-hand-wrap.arcade.down { margin-bottom: -6px; }
@@ -839,12 +842,38 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
 .tip-prop { display: block; width: 100%; height: auto; overflow: visible;
   filter: drop-shadow(2px 2px 0 rgba(61,79,151,.45)); }
 
+/* fairy: butterfly flits toward the target (no rotation; --fy flips it for "up") */
+.tip-hand-wrap.fairy { width: 46px; height: 39px; --fy: 1; }
+.tip-hand-wrap.fairy.down { margin: 0 0 -6px 0; }
+.tip-hand-wrap.fairy.up { --fy: -1; margin-bottom: 24px; }
+/* dj: record + sound waves */
+.tip-hand-wrap.dj { width: 66px; height: 37px; }
+.tip-hand-wrap.dj.down { transform: rotate(90deg); margin: 0 -12px -16px -12px; }
+.tip-hand-wrap.dj.up { transform: rotate(-90deg); margin: 0 -12px 28px -12px; }
+/* referee: striped sleeve pointing, with a pop-up check */
+.tip-hand-wrap.referee { width: 66px; height: 30px; }
+.tip-hand-wrap.referee.down { transform: rotate(90deg); margin: 0 -16px -18px -18px; }
+.tip-hand-wrap.referee.up { transform: rotate(-90deg); margin: 0 -16px 32px -16px; }
+/* soldier: binoculars */
+.tip-hand-wrap.soldier { width: 50px; height: 26px; }
+.tip-hand-wrap.soldier.down { transform: rotate(62deg); transform-origin: 0 50%; margin: 0 -22px 34px -4px; }
+.tip-hand-wrap.soldier.up { transform: rotate(-62deg); transform-origin: 0 50%; margin: 0 -20px 0 -2px; }
+/* gamer: controller (per-direction artwork, no rotation) */
+.tip-hand-wrap.gamer { width: 66px; height: 58px; }
+.tip-hand-wrap.gamer.down { margin-bottom: -20px; }
+.tip-hand-wrap.gamer.up { margin-bottom: 10px; }
+/* gardener: watering can tipping toward the target (above only) */
+.tip-hand-wrap.gardener { width: 72px; height: 53px; transform: rotate(22deg); transform-origin: 20% 60%; margin: 0 -8px -10px 0; }
+
 /* accessories worn on the mascot tile */
 .tip-mascot { position: relative; }
-.tip-acc { position: absolute; pointer-events: none; height: auto; filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25)); }
+.tip-acc { position: absolute; pointer-events: none; height: auto; max-width: none; filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25)); }
 .tip-acc.hat { left: 50%; top: -14px; width: 36px; transform: translateX(-50%) rotate(-8deg); }
 .tip-acc.hat.tall { top: -26px; width: 34px; }
-.tip-acc.phones { left: -12px; top: -13px; width: 68px; }
+/* headphones span the tile: the cups sit centred on its left and right edges */
+.tip-acc.phones { left: -7px; top: -11px; width: 58px; }
+.tip-acc.wings { left: -20px; top: -8px; width: 84px; filter: drop-shadow(1px 1px 0 rgba(61,79,151,.35)); }
+.tip-acc.crown-flowers { top: -9px; width: 34px; transform: translateX(-50%) rotate(-4deg); }
 .tip.above:has(.tip-acc) { margin-top: 30px; }
 .tip.above:has(.tip-acc.tall) { margin-top: 40px; }
 
@@ -893,6 +922,8 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
   .tip-wand .sparkle { transform-box: fill-box; transform-origin: center; animation: twinkle 1.2s ease-in-out infinite; }
   .tip-wand .s2 { animation-delay: .4s; }
   .tip-wand .s3 { animation-delay: .8s; }
+  @keyframes wand-glow { 0%, 100% { opacity: .55; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.1); } }
+  .tip-wand .glow, .tip-wand .tipstar { transform-box: fill-box; transform-origin: center; animation: wand-glow 1.8s ease-in-out infinite; }
   /* arcade: the sign sways on its post */
   @keyframes sign-sway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
   .tip-sign { transform-origin: 50% 100%; animation: sign-sway 2.2s ease-in-out infinite; }
@@ -916,6 +947,43 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
   /* berkeley: the pennant flutters */
   @keyframes flutter { 0%, 100% { transform: skewY(0) scaleX(1); } 25% { transform: skewY(6deg) scaleX(.96); } 75% { transform: skewY(-6deg) scaleX(.98); } }
   .tip-pennant .flag { transform-box: fill-box; transform-origin: 0 50%; animation: flutter 1.6s ease-in-out infinite; }
+
+  /* fairy: wings flap; the butterfly flits toward the target and back */
+  @keyframes wing-flap { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.35); } }
+  @keyframes flit {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    25% { transform: translate(5px, calc(var(--fy) * 8px)) rotate(8deg); }
+    50% { transform: translate(-2px, calc(var(--fy) * 15px)) rotate(-6deg); }
+    75% { transform: translate(-5px, calc(var(--fy) * 6px)) rotate(4deg); } }
+  .tip-butterfly { animation: flit 3.4s ease-in-out infinite; }
+  .tip-butterfly .wl { transform-box: view-box; transform-origin: 20px 18px; animation: wing-flap .32s ease-in-out infinite; }
+  .tip-butterfly .wr { transform-box: view-box; transform-origin: 20px 18px; animation: wing-flap .32s ease-in-out infinite; }
+  /* dj: the record spins, sound waves pulse outward */
+  @keyframes record-spin { to { transform: rotate(360deg); } }
+  @keyframes wave-pulse { 0%, 100% { opacity: .15; } 40% { opacity: 1; } }
+  .tip-vinyl .disc { transform-box: view-box; transform-origin: 17px 17px; animation: record-spin 2.2s linear infinite; }
+  .tip-vinyl .w1, .tip-vinyl .w2, .tip-vinyl .w3 { animation: wave-pulse 1.2s ease-in-out infinite; }
+  .tip-vinyl .w2 { animation-delay: .2s; }
+  .tip-vinyl .w3 { animation-delay: .4s; }
+  /* referee: points, and a check pops up now and then */
+  @keyframes check-pop { 0%, 55%, 100% { transform: scale(0); } 65% { transform: scale(1.25); } 75%, 92% { transform: scale(1); } }
+  .tip-refarm { animation: hand-point 1.6s ease-in-out infinite; }
+  .tip-refarm .check { transform-box: fill-box; transform-origin: center; animation: check-pop 3.6s ease-in-out infinite; }
+  /* soldier: binoculars scan, the lens glints */
+  @keyframes binos-scan { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+  .tip-binos { transform-origin: 0 50%; animation: binos-scan 3.2s ease-in-out infinite; }
+  .tip-binos .glint { animation: glint 3.2s ease-in-out infinite; }
+  /* gamer: the lit D-pad arrow and the beam blink */
+  @keyframes pad-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+  @keyframes beam-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+  .tip-pad .lit { animation: pad-blink 1s steps(2, jump-none) infinite; }
+  .tip-pad .beam { animation: pad-blink 1s steps(2, jump-none) infinite; }
+  .tip-hand-wrap.gamer.down .tip-pad { animation: beam-bob 1.4s ease-in-out infinite; }
+  /* gardener: drops fall from the spout */
+  @keyframes drip-fall { 0% { transform: translateY(-4px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+  .tip-can .drip { animation: drip-fall 1.2s ease-in infinite; }
+  .tip-can .d2 { animation-delay: .4s; }
+  .tip-can .d3 { animation-delay: .8s; }
 
   /* pointer tricks: site.js plays one at random every few seconds on each .tip-spin */
   @keyframes t-spin { to { transform: rotate(360deg); } }
@@ -947,7 +1015,10 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
   @keyframes m-peek { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(12px) scaleY(.6); } 60% { transform: translateY(-10px) scaleY(1.1); } }
   @keyframes m-tilt-wave { 0%, 100% { transform: rotate(0); } 20%, 60% { transform: rotate(-12deg) translateX(-3px); } 40%, 80% { transform: rotate(12deg) translateX(3px); } }
   @keyframes m-jelly { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(.85, 1.15); } 50% { transform: scale(1.15, .85); } 75% { transform: scale(.95, 1.05); } }
-  .tip-mascot, .avatar { transform-origin: 50% 100%; }
+  .tip-mascot, .avatar, .avatar-wrap { transform-origin: 50% 100%; }
+/* masthead mascot wears the Cal cap; the wrap moves as one piece on hover */
+.avatar-wrap { position: relative; display: block; transform-origin: 50% 100%; }
+.avatar-wrap .tip-acc.hat { width: 46px; top: -19px; }
   .move-hop-flip { animation: m-hop-flip 1.1s cubic-bezier(.3, .7, .4, 1); }
   .move-bounce { animation: m-bounce 1.2s cubic-bezier(.3, .7, .4, 1); }
   .move-shake { animation: m-shake .8s ease-in-out; }
@@ -970,7 +1041,8 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
   .tip-hand-wrap.hand { width: 34px; height: 26px; }
   .tip-hand-wrap.scholar, .tip-hand-wrap.explorer { width: 32px; height: 32px; }
   .tip-acc.hat { width: 30px; top: -12px; }
-  .tip-acc.phones { width: 52px; left: -8px; top: -8px; }
+  .tip-acc.phones { width: 48px; left: -6px; top: -9px; }
+  .tip-acc.wings { width: 62px; left: -13px; top: -5px; }
   .tip.side .tip-bubble { max-width: 190px; font-size: 11.5px; }
   .tip.side.right { right: -6px; }
   .tip.side.left { left: -6px; }
@@ -1008,4 +1080,51 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
 @media (prefers-reduced-motion: no-preference) {
   .step { transition: transform .25s ease, box-shadow .25s ease; }
   .step:hover { transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 5px 0 var(--chrome-indigo); }
+}
+
+/* ==========================================================================
+   Mascot conversations: characters trade short messages, revealed one by one (site.js)
+   ========================================================================== */
+.chat {
+  position: relative; display: flex; flex-direction: column; gap: 14px;
+  margin: 22px 0 18px; padding: 24px 16px 14px;
+  background: #f1f3f9; border: 1px dashed var(--muted-indigo); border-radius: var(--r-md);
+}
+.msg { display: flex; align-items: flex-end; gap: 12px; max-width: min(100%, 680px); }
+.msg.right { flex-direction: row-reverse; align-self: flex-end; }
+.msg .tip-mascot { margin-top: 18px; }
+.msg-bubble {
+  position: relative; margin: 0 0 6px !important; min-width: 0;
+  background: var(--surface); color: var(--carbon);
+  border: 2px solid var(--carbon); border-radius: var(--r-lg);
+  padding: 8px 12px; font-size: 13px; font-weight: 700; line-height: 1.4;
+  box-shadow: 2px 2px 0 rgba(61,79,151,.35);
+}
+.msg-bubble::before, .msg-bubble::after { content: ""; position: absolute; bottom: 8px; border: 7px solid transparent; }
+.msg.left .msg-bubble::before { left: -12px; border-right: 10px solid var(--carbon); border-left: 0; }
+.msg.left .msg-bubble::after { left: -8px; bottom: 9px; border-width: 6px 9px 6px 0; border-right-color: var(--surface); }
+.msg.right .msg-bubble { background: #e9eefb; }
+.msg.right .msg-bubble::before { right: -12px; border-left: 10px solid var(--carbon); border-right: 0; }
+.msg.right .msg-bubble::after { right: -8px; bottom: 9px; border-width: 6px 0 6px 9px; border-left-color: #e9eefb; }
+.chat-replay {
+  position: absolute; top: 6px; right: 8px; border: 0; background: none; cursor: pointer;
+  font-family: var(--f-pixel); font-size: 10px; color: var(--muted-indigo); padding: 4px 6px; border-radius: var(--r-xs);
+}
+.chat-replay:hover { color: var(--carbon); background: rgba(61,79,151,.1); }
+.typing { display: inline-flex; gap: 4px; padding: 2px 0; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-indigo); display: block; }
+
+/* messages start hidden only when the script is running; without JS everything shows */
+.js .chat.armed .msg { opacity: 0; transform: translateY(8px); }
+.js .chat.armed .msg.shown { opacity: 1; transform: none; transition: opacity .35s ease, transform .35s cubic-bezier(.3, 1.4, .5, 1); }
+.chat:not(.armed) .chat-replay { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes typing-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .typing i { animation: typing-dot 1s ease-in-out infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; }
+  .typing i:nth-child(3) { animation-delay: .3s; }
+}
+@media (max-width: 640px) {
+  .chat { padding: 22px 10px 12px; }
+  .msg-bubble { font-size: 12px; }
 }

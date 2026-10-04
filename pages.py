@@ -99,7 +99,51 @@ HATS = {
                  "<circle cx='12' cy='2.3' r='1' fill='#fdb515'/>"
                  "<text x='11.6' y='9.4' text-anchor='middle' font-family='Georgia, serif' font-weight='700' font-style='italic' "
                  "font-size='7' fill='#fdb515'>C</text></svg>"),
+    "fairy": ("<svg class='tip-acc wings' viewBox='0 0 74 30' aria-hidden='true'>"
+              "<g fill='rgba(201,160,255,.92)' stroke='#5a3a9a' stroke-width='1.1'>"
+              "<path d='M13 18 Q0 4 4 1 Q12 0 15 14 Z'/><path d='M13 19 Q2 26 5 29 Q12 30 15 20 Z'/>"
+              "<path d='M61 18 Q74 4 70 1 Q62 0 59 14 Z'/><path d='M61 19 Q72 26 69 29 Q62 30 59 20 Z'/></g>"
+              + _star(6, 10, 1.4, fill="#fff") + _star(68, 10, 1.4, fill="#fff") + "</svg>"
+              "<svg class='tip-acc hat crown-flowers' viewBox='0 0 30 12' aria-hidden='true'>"
+              "<path d='M2 9 Q15 4 28 9' fill='none' stroke='#5a9a5a' stroke-width='1.6'/>"
+              "<g stroke='#7a3a6a' stroke-width='.5'><circle cx='7' cy='7.2' r='2.6' fill='#ff9fd0'/>"
+              "<circle cx='15' cy='5.4' r='3' fill='#d7b8ff'/><circle cx='23' cy='7.2' r='2.6' fill='#ff9fd0'/></g>"
+              "<g fill='#ffe066'><circle cx='7' cy='7.2' r='.9'/><circle cx='15' cy='5.4' r='1'/><circle cx='23' cy='7.2' r='.9'/></g></svg>"),
+    "dj": ("<svg class='tip-acc hat' viewBox='0 0 30 15' aria-hidden='true'>"
+           "<path d='M1 11.6 Q5 10.4 8 11.4 L8 13 Q4 13.4 1 13 Z' fill='#21242e' stroke='#000' stroke-width='.7'/>"
+           "<path d='M6 12 Q6 2.4 16 2.4 Q26 2.4 26 12 Z' fill='#3d4f97' stroke='#1f2a5c' stroke-width='.9'/>"
+           "<path d='M8.6 8.2 Q10.4 9.4 12.2 8.2' fill='none' stroke='#9fbee7' stroke-width='.9'/>"
+           "<path d='M16 2.4 V12' stroke='#2c3a78' stroke-width='.6'/><circle cx='16' cy='2.5' r='1' fill='#9fbee7'/>"
+           "<path d='M26 9 Q29.5 10 28.6 13.6' fill='none' stroke='#21242e' stroke-width='1.1'/>"
+           "<circle cx='28.4' cy='13.8' r='1.3' fill='#21242e'/></svg>"),
+    "referee": ("<svg class='tip-acc hat' viewBox='0 0 28 14' aria-hidden='true'>"
+                "<path d='M15 11.6 L27 11.8 Q26.6 13.6 22 13.4 L15 12.8 Z' fill='#21242e'/>"
+                "<path d='M3 12 Q3 2 13 2 Q22 2 22 11.8 Z' fill='#f4f6fb' stroke='#21242e' stroke-width='.9'/>"
+                "<path d='M6.2 11.8 V5.6 M10 11.8 V3 M14 11.8 V2.6 M18 11.8 V4.2' stroke='#21242e' stroke-width='1.8'/>"
+                "<circle cx='12.5' cy='2.2' r='1' fill='#21242e'/></svg>"),
+    "soldier": ("<svg class='tip-acc hat' viewBox='0 0 30 16' aria-hidden='true'>"
+                "<path d='M2 12.4 Q2 2 15 2 Q28 2 28 12.4 Q22 14.2 15 14.2 Q8 14.2 2 12.4 Z' fill='#5b6b3a' stroke='#2c3418' stroke-width='.9'/>"
+                "<g fill='#3f4a28'><ellipse cx='9' cy='7' rx='2.6' ry='1.5'/><ellipse cx='19' cy='5' rx='2.2' ry='1.2'/>"
+                "<ellipse cx='22' cy='10' rx='2.4' ry='1.3'/><ellipse cx='13' cy='11' rx='1.8' ry='1'/></g>"
+                "<g fill='#8a9a5a'><ellipse cx='15' cy='7.6' rx='1.8' ry='1'/><ellipse cx='6' cy='10.6' rx='1.5' ry='.9'/></g>"
+                "<path d='M3.4 9.6 Q15 6.6 26.6 9.6' fill='none' stroke='#2c3418' stroke-width='.5' stroke-dasharray='1.2 1'/></svg>"),
+    "gamer": ("<svg class='tip-acc hat' viewBox='0 0 24 12' aria-hidden='true' shape-rendering='crispEdges'>"
+              "<path d='M2 4h2v2h2v-2h2v2h2v-4h4v4h2v-2h2v2h2v-2h2v8h-20z' fill='#ecab37' stroke='#7a5a10' stroke-width='.6'/>"
+              "<rect x='10.5' y='6.5' width='3' height='3' fill='#e60012'/><rect x='5' y='7.5' width='2' height='2' fill='#9fbee7'/>"
+              "<rect x='17' y='7.5' width='2' height='2' fill='#9fbee7'/><rect x='2' y='10' width='20' height='1.2' fill='#c98b20'/></svg>"),
+    "gardener": ("<svg class='tip-acc hat' viewBox='0 0 34 15' aria-hidden='true'>"
+                 "<ellipse cx='17' cy='11.6' rx='16' ry='3.2' fill='#e8cf8a' stroke='#8a6a2a' stroke-width='.8'/>"
+                 "<path d='M8 11.2 Q8 2.4 17 2.4 Q26 2.4 26 11.2 Z' fill='#f0dca0' stroke='#8a6a2a' stroke-width='.8'/>"
+                 "<path d='M8.4 9 Q17 11 25.6 9 L25.8 10.8 Q17 12.8 8.2 10.8 Z' fill='#4f9a5f'/>"
+                 "<path d='M10 4.6 L24 4.6 M9 7 L25 7' stroke='#d8bd72' stroke-width='.5'/>"
+                 "<g stroke='#7a3a6a' stroke-width='.4'><circle cx='24.6' cy='8.4' r='1.4' fill='#ff9fd0'/>"
+                 "<circle cx='26.4' cy='9.6' r='1.4' fill='#ff9fd0'/><circle cx='24.2' cy='10.4' r='1.4' fill='#ff9fd0'/></g>"
+                 "<circle cx='25' cy='9.5' r='.8' fill='#ffe066'/></svg>"),
 }
+
+WHISTLE = ("<path d='M9.8 7.8 Q11.6 6.4 11.4 4.4' fill='none' stroke='#60619c' stroke-width='.3'/>"
+           "<rect x='8.6' y='7.6' width='2.6' height='1.5' rx='.6' fill='#cfd6e6' stroke='#21242e' stroke-width='.3'/>"
+           "<circle cx='9.2' cy='8.35' r='.35' fill='#21242e'/>")
 
 EYEPATCH = ("<path d='M1 2.6 L11 5.4' stroke='#21242e' stroke-width='.45'/>"
             "<ellipse cx='4.3' cy='3.9' rx='1.7' ry='1.5' fill='#21242e'/>")
@@ -132,12 +176,20 @@ COMPASS = ("<svg class='tip-prop tip-compass' viewBox='0 0 40 40' aria-hidden='t
            "<circle cx='20' cy='20' r='2' fill='#21242e'/><circle cx='20' cy='1.6' r='1.8' fill='#c9a24a' stroke='#21242e' stroke-width='1'/>"
            "</svg>")
 
-WAND = ("<svg class='tip-prop tip-wand' viewBox='0 0 74 16' aria-hidden='true'>"
-        "<path d='M2 6.2 L54 7 V9 L2 9.8 Q0.6 8 2 6.2 Z' fill='#21242e'/>"
-        "<path d='M8 6.4 V9.6 M12 6.5 V9.5' stroke='#ecab37' stroke-width='1.1'/>"
-        "<path d='M54 6.6 H61 V9.4 H54 Z' fill='#fff' stroke='#21242e' stroke-width='.8'/>"
-        + _star(66, 4, 3, "sparkle s1") + _star(70.5, 10.5, 2.3, "sparkle s2") + _star(64.5, 13, 1.7, "sparkle s3") +
-        "</svg>")
+WAND = (  # carved wooden wand: ringed handle, tapering shaft, glowing star tip, trailing sparkles
+    "<svg class='tip-prop tip-wand' viewBox='0 0 96 28' aria-hidden='true'>"
+    "<defs><radialGradient id='wandglow'><stop offset='0' stop-color='#fff8c8' stop-opacity='.95'/>"
+    "<stop offset='1' stop-color='#ffe680' stop-opacity='0'/></radialGradient></defs>"
+    "<circle class='glow' cx='80' cy='14' r='12' fill='url(#wandglow)'/>"
+    "<path d='M3 10.6 Q1 14 3 17.4 L24 16.6 L24 11.4 Z' fill='#4a2a12' stroke='#21140a' stroke-width='1'/>"
+    "<path d='M7 10.9 V17.1 M12 11 V17 M17 11.1 V16.9' stroke='#c9a24a' stroke-width='1.4'/>"
+    "<circle cx='3.6' cy='14' r='2.2' fill='#c9a24a' stroke='#5c4420' stroke-width='.8'/>"
+    "<path d='M24 11.4 Q46 12.2 72 13.2 L72 14.8 Q46 15.8 24 16.6 Q26 14 24 11.4 Z' fill='#8a5a2b' stroke='#3b2410' stroke-width='.9' stroke-linejoin='round'/>"
+    "<path d='M27 13 Q48 13.4 70 13.9' fill='none' stroke='#c08a52' stroke-width='.8'/>"
+    "<circle cx='40' cy='14.4' r='1.1' fill='#5c3a18'/><circle cx='55' cy='13.6' r='.9' fill='#5c3a18'/>"
+    + _star(80, 14, 6.5, "tipstar", "#fff3a6") +
+    _star(90, 5, 2.6, "sparkle s1") + _star(92, 22, 2.1, "sparkle s2") + _star(86.5, 25.5, 1.6, "sparkle s3") +
+    "</svg>")
 
 
 def _sign(direction):
@@ -186,6 +238,86 @@ PENNANT = ("<svg class='tip-prop tip-pennant' viewBox='0 0 58 34' aria-hidden='t
            "font-size='10.5' fill='#fdb515'>Cal</text></g>"
            "</svg>")
 
+BUTTERFLY = (  # fairy's butterfly: wings flap while it flits toward the target
+    "<svg class='tip-prop tip-butterfly' viewBox='0 0 40 34' aria-hidden='true'>"
+    "<g class='wl'><path d='M20 16 Q6 0 2 6 Q0 14 19 18 Z' fill='#c9a0ff' stroke='#5a3a9a' stroke-width='1'/>"
+    "<path d='M19 18 Q4 22 7 30 Q12 34 20 20 Z' fill='#ff9fd0' stroke='#5a3a9a' stroke-width='1'/>"
+    "<circle cx='8' cy='8' r='2' fill='#fff' opacity='.85'/></g>"
+    "<g class='wr'><path d='M20 16 Q34 0 38 6 Q40 14 21 18 Z' fill='#c9a0ff' stroke='#5a3a9a' stroke-width='1'/>"
+    "<path d='M21 18 Q36 22 33 30 Q28 34 20 20 Z' fill='#ff9fd0' stroke='#5a3a9a' stroke-width='1'/>"
+    "<circle cx='32' cy='8' r='2' fill='#fff' opacity='.85'/></g>"
+    "<ellipse cx='20' cy='18' rx='2' ry='8' fill='#3b2a5a'/>"
+    "<path d='M19.4 10.6 Q16 4 14 3.4 M20.6 10.6 Q24 4 26 3.4' fill='none' stroke='#3b2a5a' stroke-width='.9' stroke-linecap='round'/>"
+    "<circle cx='14' cy='3.4' r='1' fill='#3b2a5a'/><circle cx='26' cy='3.4' r='1' fill='#3b2a5a'/></svg>")
+
+VINYL = (  # DJ: spinning record with sound waves pulsing toward the target (points right)
+    "<svg class='tip-prop tip-vinyl' viewBox='0 0 60 34' aria-hidden='true'>"
+    "<g class='disc'><circle cx='17' cy='17' r='15.5' fill='#21242e' stroke='#000' stroke-width='1'/>"
+    "<circle cx='17' cy='17' r='12' fill='none' stroke='#3a3f50' stroke-width='.8'/>"
+    "<circle cx='17' cy='17' r='9' fill='none' stroke='#3a3f50' stroke-width='.8'/>"
+    "<circle cx='17' cy='17' r='5.4' fill='#e60012'/><path d='M17 12.6 A4.4 4.4 0 0 1 21.4 17' fill='none' stroke='#ffb3b8' stroke-width='1'/>"
+    "<circle cx='17' cy='17' r='1.2' fill='#fff'/>"
+    "<path d='M8 9 A12 12 0 0 1 14 5.4' fill='none' stroke='#6b7290' stroke-width='1.2' stroke-linecap='round'/></g>"
+    "<g fill='none' stroke='#3d4f97' stroke-width='2.2' stroke-linecap='round'>"
+    "<path class='w1' d='M37 10 Q41 17 37 24'/><path class='w2' d='M44 6.5 Q50 17 44 27.5'/><path class='w3' d='M51 3 Q59 17 51 31'/></g>"
+    "</svg>")
+
+REF_ARM = (  # referee: striped sleeve + glove pointing, with a pop-up check
+    "<svg class='tip-prop tip-refarm' viewBox='0 0 74 34' aria-hidden='true'>"
+    "<rect x='1' y='10' width='26' height='15' rx='2' fill='#f4f6fb' stroke='#21242e' stroke-width='1.4'/>"
+    "<path d='M7 10 V25 M13 10 V25 M19 10 V25' stroke='#21242e' stroke-width='3'/>"
+    "<g transform='translate(26 3)' fill='#fff' stroke='#21242e' stroke-width='2' stroke-linejoin='round'>"
+    "<rect x='0' y='8' width='6' height='16' rx='2' fill='#dfe4f2'/><rect x='5' y='6' width='16' height='20' rx='6'/>"
+    "<rect x='15' y='7' width='22' height='7' rx='3.5'/><rect x='15' y='13' width='9' height='5' rx='2.5'/>"
+    "<rect x='15' y='17' width='8' height='5' rx='2.5'/><rect x='14' y='21' width='7' height='4.5' rx='2.2'/></g>"
+    "<g class='check'><circle cx='66' cy='5.5' r='5' fill='#2e9e5b' stroke='#14532d' stroke-width='1'/>"
+    "<path d='M63.6 5.6 L65.4 7.4 L68.6 3.8' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></g>"
+    "</svg>")
+
+BINOCULARS = (  # soldier: binoculars aimed at the target (points right)
+    "<svg class='tip-prop tip-binos' viewBox='0 0 50 26' aria-hidden='true'>"
+    "<rect x='2' y='2.5' width='8' height='8' rx='2' fill='#21242e'/><rect x='2' y='15.5' width='8' height='8' rx='2' fill='#21242e'/>"
+    "<rect x='9' y='1' width='26' height='11' rx='2.5' fill='#5b6b3a' stroke='#2c3418' stroke-width='1.2'/>"
+    "<rect x='9' y='14' width='26' height='11' rx='2.5' fill='#5b6b3a' stroke='#2c3418' stroke-width='1.2'/>"
+    "<rect x='16' y='11' width='8' height='4' fill='#3f4a28' stroke='#2c3418' stroke-width='.8'/>"
+    "<rect x='34' y='0' width='10' height='13' rx='2' fill='#3f4a28' stroke='#2c3418' stroke-width='1.2'/>"
+    "<rect x='34' y='13' width='10' height='13' rx='2' fill='#3f4a28' stroke='#2c3418' stroke-width='1.2'/>"
+    "<rect x='43' y='1.6' width='3' height='9.8' rx='1' fill='#9fbee7' stroke='#21242e' stroke-width='.8'/>"
+    "<rect x='43' y='14.6' width='3' height='9.8' rx='1' fill='#9fbee7' stroke='#21242e' stroke-width='.8'/>"
+    "<circle class='glint' cx='44.6' cy='4' r='1' fill='#fff'/></svg>")
+
+
+def _gamepad(direction):
+    """gamer: controller whose D-pad lights the arrow toward the target, with a pixel arrow beaming out."""
+    down = direction == "down"
+    lit = ("<rect class='lit' x='12.5' y='20' width='5' height='6' fill='#9fbee7'/>" if down else
+           "<rect class='lit' x='12.5' y='8' width='5' height='6' fill='#9fbee7'/>")
+    arrow = ("<path class='beam' d='M24 40 H32 V44 H36 L28 50 L20 44 H24 Z' fill='#9fbee7' stroke='#3d4f97' stroke-width='1'/>" if down else
+             "<path class='beam' d='M24 10 H32 V6 H36 L28 0 L20 6 H24 Z' fill='#9fbee7' stroke='#3d4f97' stroke-width='1'/>")
+    y0 = 0 if down else 10
+    body = (f"<g transform='translate(0 {y0})'>"
+            "<path d='M8 6 H48 Q56 6 56 16 Q57 30 50 32 Q45 33 40 26 H16 Q11 33 6 32 Q-1 30 0 16 Q0 6 8 6 Z' "
+            "fill='#21242e' stroke='#000' stroke-width='1.2'/>"
+            "<path d='M12.5 8 H17.5 V14.5 H24 V19.5 H17.5 V26 H12.5 V19.5 H6 V14.5 H12.5 Z' fill='#60619c' stroke='#000' stroke-width='.6'/>"
+            f"{lit}"
+            "<circle cx='42' cy='12.5' r='2.4' fill='#3d4f97'/><circle cx='47' cy='17' r='2.4' fill='#e60012'/>"
+            "<circle cx='37' cy='17' r='2.4' fill='#9fbee7'/><circle cx='42' cy='21.5' r='2.4' fill='#60619c'/>"
+            "<rect x='24' y='9.5' width='3.4' height='1.8' rx='.9' fill='#60619c'/><rect x='29' y='9.5' width='3.4' height='1.8' rx='.9' fill='#60619c'/></g>")
+    return (f"<svg class='tip-prop tip-pad' viewBox='0 0 57 50' aria-hidden='true'>{body}{arrow}</svg>")
+
+
+WATERCAN = (  # gardener: watering can tipping toward the target, drops falling (above only)
+    "<svg class='tip-prop tip-can' viewBox='0 0 62 46' aria-hidden='true'>"
+    "<path d='M10 9 Q20 -1 30 9' fill='none' stroke='#2f6e8a' stroke-width='2.6' stroke-linecap='round'/>"
+    "<rect x='6' y='10' width='28' height='22' rx='4' fill='#5aa0c8' stroke='#21242e' stroke-width='1.4'/>"
+    "<path d='M9 15 H31' stroke='#8cc4e0' stroke-width='1.4'/>"
+    "<path d='M33 25 L52 13 L54 16 L35 29 Z' fill='#5aa0c8' stroke='#21242e' stroke-width='1.2' stroke-linejoin='round'/>"
+    "<path d='M51 10 L58 16 L54 20 Z' fill='#2f6e8a' stroke='#21242e' stroke-width='1.1' stroke-linejoin='round'/>"
+    "<g fill='#5aa0c8' stroke='#2f6e8a' stroke-width='.6'>"
+    "<path class='drip d1' d='M56 23 Q58 26 56 27.5 Q54 26 56 23 Z'/>"
+    "<path class='drip d2' d='M59.5 21 Q61.5 24 59.5 25.5 Q57.5 24 59.5 21 Z'/>"
+    "<path class='drip d3' d='M53 24 Q55 27 53 28.5 Q51 27 53 24 Z'/></g></svg>")
+
 # name -> (pointer svg or fn(direction), hat key, extra drawn on the mascot, allowed modes)
 PROPS = {
     "hand": (HAND, None, "", ("above", "side")),
@@ -197,8 +329,15 @@ PROPS = {
     "builder": (CRANE, "builder", "", ("above",)),
     "pirate": (SPYGLASS, "pirate", EYEPATCH, ("above", "side")),
     "berkeley": (PENNANT, "berkeley", "", ("above", "side")),
+    "fairy": (BUTTERFLY, "fairy", "", ("above", "side")),
+    "dj": (VINYL, "dj", "", ("above", "side")),
+    "referee": (REF_ARM, "referee", WHISTLE, ("above", "side")),
+    "soldier": (BINOCULARS, "soldier", "", ("above", "side")),
+    "gamer": (_gamepad, "gamer", "", ("above", "side")),
+    "gardener": (WATERCAN, "gardener", "", ("above",)),
 }
-_PROP_CYCLE = ["hand", "explorer", "wizard", "berkeley", "arcade", "scholar", "detective", "builder", "pirate"]
+_PROP_CYCLE = ["hand", "fairy", "explorer", "dj", "wizard", "referee", "berkeley", "gamer", "arcade", "soldier",
+               "scholar", "gardener", "detective", "builder", "pirate"]
 _prop_i = [0]
 
 
@@ -218,15 +357,31 @@ def _pointer(prop, direction):
     return f"<span class='tip-hand-wrap {prop} {direction}'><span class='tip-spin'>{svg}</span></span>"
 
 
+def _mascot(character):
+    _, hat, inside, _modes = PROPS[character]
+    acc = HATS[hat] if hat else ""
+    return f"<span class='tip-mascot' tabindex='0' aria-label='Mascot'>{acc}{_mascot_svg(inside)}</span>"
+
+
+def chat(lines):
+    """A tiny scripted conversation between characters, e.g.
+    chat([("detective", "Isn't 0.550 basically a coin flip?"), ("explorer", "Pretty much.")])
+    The first speaker sits on the left, the second on the right; site.js reveals messages one by one."""
+    sides, rows = {}, []
+    for character, text in lines:
+        side = sides.setdefault(character, "left" if not sides else "right")
+        rows.append(f"<div class='msg {side}'>{_mascot(character)}<p class='msg-bubble'>{text}</p></div>")
+    return ("<div class='chat' role='group' aria-label='Mascot conversation'>" + "".join(rows) +
+            "<button type='button' class='chat-replay' aria-label='Replay conversation'>&#8635; replay</button></div>")
+
+
 def tip(text="", mode="above", pos="right", prop=None):
     """mode="above": mascot sits above the next element and points down at it.
     mode="side": used via beside(); mascot overlays the element's lower corner and points up into it.
     text is optional. prop picks a character (see PROPS); by default characters rotate through the page."""
     if prop is None or mode not in PROPS[prop][3]:
         prop = _next_prop(mode)
-    _, hat, inside, _modes = PROPS[prop]
-    acc = HATS[hat] if hat else ""
-    mascot = (f"<span class='tip-mascot' tabindex='0' aria-label='Mascot'>{acc}{_mascot_svg(inside)}</span>")
+    mascot = _mascot(prop)
     bubble = f"<p class='tip-bubble'>{text}</p>" if text else ""
     if mode == "side":
         parts = [bubble, _pointer(prop, "up"), mascot] if pos == "right" else [mascot, _pointer(prop, "up"), bubble]
@@ -678,6 +833,9 @@ can't push a student over the threshold.</p>
         ["Wrong answer", "0.082", "0.173", "50% of −0.227", "<b>0.287</b>"]], num_cols=(1, 2, 4))}
 <p class="note">Worked from the engine's constants. A wrong answer drops the weight by 0.113, which is about
 1.4× the gain from a right one.</p>
+{chat([("hand", "Why does a wrong answer move mastery more than a right one?"),
+       ("scholar", "Gains are damped to 25% of the step and losses to 50%, so one lucky guess can't fake mastery."),
+       ("hand", "So mastery is easier to lose than to earn. Got it.")])}
 
 <h3>2 · Prerequisite-graph propagation</h3>
 <p>Skills form a directed graph (e.g. linear functions depend on algebra). When a student misses a question,
@@ -847,6 +1005,10 @@ prediction is an unsolved problem.</p>"""
 detection, R²/MAE against a physics baseline for magnitude, and <strong>MCC rather than recall</strong> for
 alerts. Recall is easy to game once you can move the threshold. The baseline reaches similar recall only by
 false-alarming about twice as often.</p>
+{chat([("detective", "STA/LTA scored 0.550. Isn't that basically a coin flip?"),
+       ("explorer", "Pretty much. The deep detector hit 0.992 on the same held-out windows."),
+       ("detective", "And that's on quakes it had never seen?"),
+       ("explorer", "Yes, a chronological split, so it never trained on the future.")])}
 <h3>Detect, in plain English</h3>
 <p>Give it 30 seconds of shaking recorded by a sensor and it decides whether a real earthquake is happening,
 or whether it's just ordinary background noise like traffic or wind. It has learned what genuine quakes look like,
@@ -1016,6 +1178,9 @@ Four defenses work together:</p>
         ("Strict prompt", "Answer only from the context, otherwise return an exact refusal string. Temperature 0, 8K context."),
         ("Query rewriting", "Optionally rewrites vague questions into sharper retrieval queries, and the UI shows which query was used."),
         ("Page citations", "Deduplicated (course, section) citations that open the source PDF at the cited page.")])}
+{chat([("wizard", "What happens when the course materials don't cover the question?"),
+       ("berkeley", "BearLM refuses instead of guessing, and every answer it does give cites its sources."),
+       ("wizard", "No making things up, then. Respect.")])}
 {beside(fig(C.ragas_chart(), "RAGAS with a local Llama 3.1 judge. Better context in gives better-grounded answers out: faithfulness 0.55 → 0.83, relevancy 0.80 → 0.97."), "", "left")}
 <p class="note"><strong>Reported honestly:</strong> the RAGAS runs are small (n = 6) with a small local judge, and on one
 hybrid sample the judge couldn't produce parseable output, so RAGAS dropped it. The retrieval ablation (n = 50) is the
@@ -1145,7 +1310,11 @@ feature is highlighted.</p>
 <p><strong>Long lookback doesn't help at 30 days.</strong> A 3-day lookback wins on 4 of the 6 features and 28 days wins
 the other 2; 100–300-day lookbacks are never the best. The ~100-day seasonal advantage seen at the 1- and 7-day horizons
 doesn't carry over to a 30-day forecast. The shape of the error curve does hint that a lookback around 120 days could
-do better, which is worth testing next.</p>"""
+do better, which is worth testing next.</p>
+{chat([("explorer", "So a longer lookback is always better?"),
+       ("berkeley", "Not at a 30-day horizon. A 3-day lookback wins 4 of the 6 features, and 100+ days never wins."),
+       ("explorer", "But the 100-day window wins at 1 and 7 days?"),
+       ("berkeley", "Right. The seasonal advantage just doesn't carry out to 30 days.")])}"""
 
     eda = f"""
 <p>Before modelling, I built <strong>reproducible Pandas pipelines</strong> over three years of XCache logs:
@@ -1250,6 +1419,8 @@ using only the cleanest inputs. Dropping the noisiest inputs didn't rescue the t
 <p>Finally I swept the amount of measurement noise and tracked R² for each target: an identifiability curve showing how
 much noise each target can tolerate. At the real measurement noise, the hard target can't be recovered.</p>
 
+{chat([("detective", "Could an eighth model have fixed it?"),
+       ("scholar", "No. On clean data the target is recoverable. With the real measurement noise, no model gets it back.")])}
 <h3>The outcome</h3>
 <p>Every line of evidence pointed the same way: the <strong>R² ≈ 0.10 ceiling was a data limitation, not a model
 limitation</strong>. That redirected the team from model tuning to the inputs: what's measured, and at what signal
@@ -1369,6 +1540,9 @@ It's only allocated when a serial is assigned to a submission item, so previews 
 <li><strong>Load label</strong> to reprint the label for a serial that already exists.</li>
 <li>Validation on required fields and the serial-number format, so a bad label can't be printed.</li>
 </ul>
+{chat([("builder", "Does previewing a label use up a serial number?"),
+       ("pirate", "Nope. Only Assign to item allocates the next number in the sequence."),
+       ("builder", "So nobody wastes serials just by looking.")])}
 <p class="note">Open the <a href="NumisToken_Serialization_Screen.html" target="_blank" rel="noopener">interactive design mockup</a>
 (front-end only: its sequence counter runs in the browser, while the production tool allocates it on the backend).</p>"""
 
@@ -1448,6 +1622,9 @@ wasn't reliable. To the learner this looked random: the same question would work
 <h3>2 · Malformed query formulation</h3>
 <p>Other failures came from the request itself. Queries to the GPT and image models were sometimes put together
 wrongly, so the model got a bad request and either errored or answered inconsistently.</p>
+{chat([("hand", "Why did the assistant only fail some of the time?"),
+       ("arcade", "Two separate causes: unstable backend connections, and malformed queries sent to the GPT and image models."),
+       ("hand", "Same symptom, different bugs. Sneaky.")])}
 <h3>How I fixed them</h3>
 <ul>
 <li><strong>Targeted debugging</strong> to separate the two failure classes, since they looked alike from the outside but

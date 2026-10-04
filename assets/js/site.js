@@ -100,7 +100,13 @@ window.addEventListener("error", function () { document.documentElement.classLis
     detective: ["blink", "wiggle", "boop"],
     builder: ["wiggle", "boop", "spin"],
     pirate: ["boop", "wiggle", "flip"],
-    berkeley: ["wiggle", "spin", "boop", "flip"]
+    berkeley: ["wiggle", "spin", "boop", "flip"],
+    fairy: ["spin", "boop", "wiggle"],
+    dj: ["boop", "wiggle", "flip"],
+    referee: ["double-tap", "boop", "wiggle"],
+    soldier: ["boop", "wiggle", "flip"],
+    gamer: ["boop", "wiggle", "spin"],
+    gardener: ["wiggle", "boop"]
   };
 
   function pick(list, last) {
@@ -115,29 +121,33 @@ window.addEventListener("error", function () { document.documentElement.classLis
     }));
     void el.offsetWidth; // restart the animation even if the same class comes back
     el.classList.add(cls);
-    el.addEventListener("animationend", function done() {
+    el.addEventListener("animationend", function done(e) {
+      if (e.target !== el) return; // ignore animations ending on children
       el.classList.remove(cls);
       el.removeEventListener("animationend", done);
     });
   }
 
+  // play a random move on a mascot (never the same twice in a row for that mascot)
+  function move(target) {
+    if (!target || target._busy) return;
+    target._busy = true;
+    target._lastMove = pick(MOVES, target._lastMove);
+    play(target, "move-" + target._lastMove);
+    setTimeout(function () { target._busy = false; }, 1200);
+  }
+  window.mascotMove = move; // used by the conversations below
+
   // random move on hover / focus
   function bindMoves(trigger, target) {
-    var last = null, busy = false;
-    function go() {
-      if (busy) return;
-      busy = true;
-      last = pick(MOVES, last);
-      play(target, "move-" + last);
-      setTimeout(function () { busy = false; }, 1200);
-    }
+    function go() { move(target); }
     trigger.addEventListener("mouseenter", go);
     trigger.addEventListener("focus", go);
     trigger.addEventListener("click", go);
   }
   document.querySelectorAll(".tip-mascot").forEach(function (m) { bindMoves(m, m); });
   var avatarLink = document.querySelector(".avatar-link");
-  if (avatarLink) bindMoves(avatarLink, avatarLink.querySelector(".avatar"));
+  if (avatarLink) bindMoves(avatarLink, avatarLink.querySelector(".avatar-wrap"));
 
   // random pointer tricks on independent timers
   document.querySelectorAll(".tip-hand-wrap").forEach(function (wrap) {
@@ -154,5 +164,57 @@ window.addEventListener("error", function () { document.documentElement.classLis
       }, 3500 + Math.random() * 5500);
     }
     schedule();
+  });
+})();
+
+// Mascot conversations: when a .chat scrolls into view, each message shows "typing…" dots and then
+// appears, one after another. The replay button runs it again. Reduced motion / no observer: all shown.
+(function () {
+  var chats = document.querySelectorAll(".chat");
+  if (!chats.length) return;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window)) return;
+
+  function play(chat) {
+    var msgs = chat.querySelectorAll(".msg");
+    var token = (chat._run = (chat._run || 0) + 1);
+    msgs.forEach(function (m) {
+      m.classList.remove("shown");
+      var b = m.querySelector(".msg-bubble");
+      if (b.dataset.text === undefined) b.dataset.text = b.innerHTML;
+      b.innerHTML = b.dataset.text;
+    });
+    var t = 0;
+    msgs.forEach(function (m) {
+      var b = m.querySelector(".msg-bubble");
+      var typingFor = Math.min(1400, 450 + b.dataset.text.length * 9);
+      setTimeout(function () {
+        if (chat._run !== token) return;
+        b.innerHTML = "<span class='typing' aria-hidden='true'><i></i><i></i><i></i></span>";
+        m.classList.add("shown");
+        // the speaker does a random hover move as they start talking
+        if (window.mascotMove) window.mascotMove(m.querySelector(".tip-mascot"));
+      }, t);
+      setTimeout(function () {
+        if (chat._run !== token) return;
+        b.innerHTML = b.dataset.text;
+      }, t + typingFor);
+      t += typingFor + 900;
+    });
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      play(en.target);
+      io.unobserve(en.target);
+    });
+  }, { threshold: 0.35 });
+
+  chats.forEach(function (chat) {
+    chat.classList.add("armed");
+    io.observe(chat);
+    var btn = chat.querySelector(".chat-replay");
+    if (btn) btn.addEventListener("click", function () { play(chat); });
   });
 })();

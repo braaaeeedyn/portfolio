@@ -85,7 +85,7 @@ def nav(rel, current):
 <header class="shell">
   <div class="masthead">
     <div class="mascot">
-      <a class="avatar-link" href="{rel}index.html" aria-label="Home">{AVATAR}</a>
+      <a class="avatar-link" href="{rel}index.html" aria-label="Home"><span class="avatar-wrap">{AVATAR}{pages.HATS["berkeley"]}</span></a>
       <p class="bubble">Welcome to <b>{NAME}</b>'s portfolio!<br><a href="{rel}index.html#roles">See the roles I'm targeting &rarr;</a></p>
     </div>
     <div class="now">
