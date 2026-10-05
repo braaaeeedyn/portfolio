@@ -820,7 +820,7 @@ frontend, and <strong>PostgreSQL 16</strong>. Flyway migrations are the only way
 deploys to Vercel and the API and database run on Render. Three subsystems hang off the student: the
 study experiences, the AI services (chat + FRQ grading over a shared RAG layer) and the SAT adaptive engine.</p>
 {diagram(rel, "aot-architecture.webp", "academyoftestersDiagram.png", "Academy of Testers architecture diagram",
-         "Student-facing web routes call the platform API. AI chat and FRQ grading share RAG retrieval over a chunk store, and the SAT adaptive engine (diagnostic, sessions, mastery tracking) persists learning state to PostgreSQL.")}"""
+         "The learner uses the exam hubs, SAT adaptive practice and the AI features. In the AI grounding layer, Testy (AI chat) and FRQ grading share RAG retrieval: it embeds the query, loads candidates through chunk queries over the RAG chunks, and gets candidate pools from an in-memory corpus cache. Ingestion embeds and saves new chunks, then invalidates the affected cache pools. Everything persists to PostgreSQL behind the Spring API.")}"""
 
     radar_sec = f"""
 <p>Each student gets a vector of eight mastery weights, one per SAT math skill. Every weight is a
@@ -938,11 +938,45 @@ After this run the grader config was frozen.</p>
 <h3>Where students use it</h3>
 {beside(image(rel, "aot-frq-grader.png", "The FRQ practice screen for a real 2025 AP English Language synthesis question: the official prompt PDF on the left, and on the right the rubric rows (thesis, evidence & commentary, sophistication), a suggested 55-minute timer, the response box and Grade my answer. Tabs open the scoring guide and scored samples, and drafts save as you type.", "Screenshot", alt="AP FRQ practice and grading screen"), "Real 2025 prompt on the left, rubric rows and AI grading on the right.", "left")}"""
 
+    testy = f"""
+<p><strong>Testy</strong> is the AI study assistant, built on the same retrieval-augmented generation (RAG) layer as
+the essay grader. I added two safeguards to its retrieval to keep it <strong>helpful</strong> and <strong>fast</strong>.
+Each one prevents a specific failure mode that a simple RAG setup runs into.</p>
+
+<h3>Safeguard 1 · Irrelevant passages can't force a refusal</h3>
+<p>A simple RAG chat always passes the <strong>closest few passages</strong> to the model, relevant or not, and tells
+it to answer <em>only</em> from them. Together, those two choices make an assistant refuse any reasonable question
+that's slightly off the syllabus. This is the failure mode it prevents:</p>
+{flow([("Always top 4", "the closest passages are sent even when they don't match", False),
+       ("Strict prompt", "\"answer only from these passages\"", False),
+       ("Failure", "reasonable off-syllabus questions get refused", False)])}
+<p>What Testy does instead:</p>
+<ul>
+<li><strong>Similarity cutoff:</strong> weakly related passages are dropped instead of being forced into the prompt.</li>
+<li><strong>Course material as a reference, not a limit:</strong> the prompt tells the model to use the curriculum when
+it applies and to answer from general knowledge when it doesn't.</li>
+<li>So Testy stays <strong>grounded in the course when the course covers it</strong>, and <strong>doesn't refuse</strong>
+reasonable questions when it doesn't.</li>
+</ul>
+{chat([("wizard", "Why doesn't Testy just answer only from the course material?"),
+       ("scholar", "Then any question slightly off the syllabus would get refused, even good ones."),
+       ("wizard", "So how does it stay grounded?"),
+       ("scholar", "Weak matches are cut, and the course is used as a reference rather than a limit.")])}
+
+<h3>Safeguard 2 · No repeated work on every message</h3>
+<p>Embeddings are stored in Postgres as JSON float arrays of <strong>1,536 dimensions</strong>. Without a cache, every
+question would reload and re-parse a whole subject's vectors. An <strong>in-memory caching layer in Spring Boot</strong>
+prevents that:</p>
+{tiles([("Subject embedding cache", "Keeps each subject's parsed embeddings in memory. It's cleared automatically when new content is ingested, so answers never use stale material."),
+        ("Question embedding reuse", "Repeated questions reuse their embedding instead of calling the embedding API again."),
+        ("Conversation context", "Carries each conversation's recent relevant passages forward, so vague follow-ups like \"why?\" still find the right material instead of retrieving nothing.")])}
+{beside(image(rel, "aot-ai-chat.png", "Testy answering a history question. Questions can be scoped to a subject, and usage is rate-limited per user (the counter shows messages left this hour).", "Screenshot", alt="Testy AI study chat"), "Grounded when the course covers it, still helpful when it doesn't.", "right", prop="fairy")}"""
+
     platform = f"""
 <p>Around the two ML systems sits the rest of a real product, which I built too:</p>
 {tiles([("Exam hubs", "Browse AP and SAT, search and filter subjects, and drill into subject pages."),
         ("Resources", "Practice exams, unit overviews, topical review and video resources, with PDFs served inline."),
-        ("AI study chat", "Curriculum-grounded assistant on the same RAG layer, with per-user rate limiting."),
+        ("Testy AI chat", "RAG study assistant that uses the curriculum when it applies, with caching and per-user rate limiting."),
         ("Flashcards", "Cards, stacks and per-card progress tracking."),
         ("Auth", "JWT access/refresh tokens, email verification, account lockout."),
         ("Streaks", "SAT streaks, streak repair and a focus mode with user preferences.")])}
@@ -950,8 +984,7 @@ After this run the grader config was frozen.</p>
 {image(rel, "aot-subject.png", "An AP subject hub (English Language): unit overviews, videos and reference sheets to learn the material, then practice questions, past exams, flash cards, AI-graded FRQ practice, mixed review and a timed mock exam that predicts a 1–5 score.", "Screenshot", alt="AP English Language subject hub")}
 <h3>My AP Planner</h3>
 {image(rel, "aot-ap-planner.png", "The AP planner: a mastery map for each of the student's classes, built from Unit Practice. A question counts as mastered after 3 correct answers (2 in a row), and mastery fades: every 2 weeks without a correct answer it slips a tier.", "Screenshot", alt="My AP Planner mastery map")}
-<h3>Testy, the AI study assistant</h3>
-{beside(image(rel, "aot-ai-chat.png", "Testy answering a history question. Questions can be scoped to a subject, and usage is rate-limited per user (the counter shows messages left this hour).", "Screenshot", alt="Testy AI study chat"), "", "right")}"""
+"""
 
     main_html = (
         image(rel, "aot-home.png", "academyoftesters.com: pick AP (29 subjects: unit reviews, real 2025 free-response questions, timed mocks) or SAT (adaptive practice, topic lessons, full-length tests).", "Live site", alt="Academy of Testers homepage")
@@ -960,7 +993,8 @@ After this run the grader config was frozen.</p>
         + panel("radar", "The mastery radar", radar_sec, num="03")
         + panel("engine", "Adaptive engine, piece by piece", engine, num="04")
         + panel("frq", "RAG essay grader", frq, num="05")
-        + panel("platform", "The rest of the platform", platform, num="06")
+        + panel("testy", "Testy: keeping RAG helpful and fast", testy, num="06")
+        + panel("platform", "The rest of the platform", platform, num="07")
         + pager(rel, None, ("projects/seismicsocal/", "SeismicSoCal")))
 
     rail = (
@@ -968,7 +1002,8 @@ After this run the grader config was frozen.</p>
                    ("GH", "Source code", ctx["github"] + "/academy_of_testers")])
         + panel("toc-aot", "On this page", toc([("overview", "Overview"), ("architecture", "Architecture"),
                                                ("radar", "Mastery radar"), ("engine", "Adaptive engine"),
-                                               ("frq", "RAG essay grader"), ("platform", "Platform")]),
+                                               ("frq", "RAG essay grader"), ("testy", "Testy AI assistant"),
+                                               ("platform", "Platform")]),
                 body_cls="panel-body tight")
         + panel("spec-aot", "Spec sheet", spec([("Role", "ML &amp; AI Developer"), ("Dates", "Jan 2023 – Jun 2026"),
                                                  ("Backend", "Spring Boot 3.2"), ("Frontend", "React + TS"),
