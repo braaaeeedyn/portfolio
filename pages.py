@@ -412,6 +412,27 @@ def image(rel, file, caption, label="Figure", alt=None, phone=False):
             f"<figcaption><b>{label}</b>{caption}</figcaption></figure>")
 
 
+def phone_alert(rel):
+    """A real SeismicSoCal push alert, recreated in HTML (the original screenshot had other phone UI in it)."""
+    return (
+        "<figure class='fig'><div class='fig-body'>"
+        "<div class='phone-mock' role='img' aria-label='Phone notification: SeismicSoCal, Earthquake detected near MWC. "
+        "2 sensors agree, at the MWC station near you. Estimated M2.3. Likely too far to be felt at your area. "
+        "Rapid detection, not an official warning.'>"
+        "<div class='pm-status' aria-hidden='true'><span>6:08</span><span class='pm-icons'>"
+        "<i class='pm-sig'></i><i class='pm-wifi'></i><i class='pm-batt'></i></span></div>"
+        "<div class='pm-notif' aria-hidden='true'>"
+        f"<img class='pm-icon' src='{rel}assets/img/seismic-app-icon.png' alt='' width='40' height='40'>"
+        "<div class='pm-text'><div class='pm-app'>SeismicSoCal <span>· now</span></div>"
+        "<div class='pm-title'>Earthquake detected near MWC</div>"
+        "<div class='pm-body'>2 sensors agree — at the MWC station near you. Estimated M2.3. Likely too far to be "
+        "felt at your area. Rapid detection, not an official warning.</div></div></div>"
+        "<div class='pm-home' aria-hidden='true'></div></div></div>"
+        "<figcaption><b>Real alert</b>A push the live daemon sent on Oct 4, 2026, recreated from the phone screenshot. "
+        "Two stations agreed (the confirmed tier), the GNN ensemble sized it at M2.3, and the shaking model turned "
+        "distance into the plain-language line.</figcaption></figure>")
+
+
 def fig(svg, caption, label="Figure"):
     return (f"<figure class='fig'><div class='fig-body'>{svg}</div>"
             f"<figcaption><b>{label}</b>{caption}</figcaption></figure>")
@@ -1069,7 +1090,11 @@ The 150 km coherence check catches what move-out alone can't.</li>
 <p>Users subscribe to <strong>sensor stations</strong>, not coordinates. Signup ranks the 10 stations by distance and
 auto-selects the nearest 3 within 150 km. Each one can be toggled. No latitude or longitude is stored, only station
 codes and a push token. A shaking model turns magnitude and distance into the plain-language intensity in the alert text.</p>
-{beside(image(rel, "seismic-near-me.png", "Alert me near me, in the Android app: find sensors by city or your location, then subscribe or unsubscribe station by station. It's labelled as rapid detection, not an official warning.", "Screenshot", alt="Alert me near me station subscription screen", phone=True), "Subscribe to sensors, not a location.", "right")}"""
+<div class="fig-pair">
+  {phone_alert(rel)}
+  {image(rel, "seismic-near-me.png", "Alert me near me, in the Android app: find sensors by city or your location, then subscribe or unsubscribe station by station. It's labelled as rapid detection, not an official warning.", "Screenshot", alt="Alert me near me station subscription screen", phone=True)}
+</div>
+{tip("2 sensors agreed, so the alert went out. A lone sensor would only have been logged.", prop="detective")}"""
 
     stack = f"""
 <p>The whole service runs on an <strong>Oracle Cloud Always-Free Ampere A1</strong> (ARM64) VM. <strong>Caddy</strong>
