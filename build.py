@@ -46,7 +46,7 @@ PROJECTS = [
 ]
 EXPERIENCE = [
     ("lawrence-berkeley-lab", "Berkeley Lab"),
-    ("cbu-seismicsocal", "CBU Research"),
+    ("cbu-research", "CBU Research"),
     ("numistoken", "NumIsToken"),
     ("kigumi-group", "Kigumi Group"),
 ]

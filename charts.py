@@ -253,19 +253,110 @@ def seismogram(width=520, height=150, seed=7, dark=True, animate=True):
 def seismic_chart():
     series = {"b": ("Classical seismology baseline", BASE), "d": ("Deep model (5-seed ensemble)", OURS)}
     return hbars(
-        [("Detect · ROC-AUC", [("b", 0.550), ("d", 0.992)]),
-         ("Size · R²", [("b", 0.749), ("d", 0.840)]),
-         ("Warn · alert MCC", [("b", 0.655), ("d", 0.760)])],
-        1.0, lambda v: f"{v:.3f}", series,
-        "Held-out test set, chronological split (higher is better)", label_w=150,
+        [("Detect · ROC-AUC", [("b", 0.816), ("d", 0.9998)]),
+         ("Size · R²", [("b", 0.886), ("d", 0.951)])],
+        1.0, lambda v: f"{v:.4f}" if 0.99 < v < 1 else f"{v:.3f}", series,
+        "Held-out chronological test set, 2022–2026 (higher is better)", label_w=150,
         ticks=(0, 0.25, 0.5, 0.75, 1.0),
-        note="Baselines: STA/LTA trigger · amplitude + distance regression · GMPE-style shaking estimate")
+        note="95% CIs (event-clustered bootstrap): AUC 0.9997–0.9999 vs 0.805–0.828 · R² 0.943–0.959 vs 0.871–0.898")
 
 
 def ablation_chart():
-    series = {"a": ("Nearest single station", BASE), "g": ("Multi-station GNN fusion", OURS)}
-    return hbars([("Magnitude R²", [("a", 0.42), ("g", 0.840)])], 1.0, lambda v: f"{v:.2f}", series,
-                 "Ablation: what the graph network earns", label_w=150, ticks=(0, 0.5, 1.0))
+    series = {"g": ("Deep ensemble", OURS), "a": ("Ablation / baseline", BASE)}
+    return hbars([("All stations", [("g", 0.951)]),
+                  ("Live-like (10 km loc error, 3–6 stations)", [("g", 0.939)]),
+                  ("Amplitude + distance baseline", [("a", 0.886)]),
+                  ("Nearest single station only", [("a", 0.808)])],
+                 1.0, lambda v: f"{v:.3f}", series,
+                 "Magnitude R² on 937 held-out quakes: what the graph network earns", label_w=250,
+                 ticks=(0, 0.5, 1.0))
+
+
+def alert_timeline(width=640, height=170):
+    """Median times after the quake's origin, from replayed archive days (HOW_IT_WORKS §5.7)."""
+    L, R, y = 20, 24, 92
+    pw = width - L - R
+
+    def X(t):
+        return L + pw * t / 60
+
+    out = [f"<svg viewBox='0 0 {width} {height}' role='img' aria-label='Alert timeline after a quake begins'>",
+           _t(0, 14, "When each message arrives (median seconds after the quake begins, replayed days)", 12, weight="700"),
+           f"<line x1='{L}' x2='{L + pw}' y1='{y}' y2='{y}' stroke='{SOFT}' stroke-width='1.5'/>"]
+    for t in range(0, 61, 10):
+        out.append(f"<line x1='{X(t):.1f}' x2='{X(t):.1f}' y1='{y}' y2='{y + 5}' stroke='{SOFT}'/>")
+        out.append(_t(X(t), y + 18, f"{t} s", 10, "middle", fill=SOFT))
+    out.append(f"<rect x='{X(25):.1f}' y='{y - 7}' width='{X(55) - X(25):.1f}' height='14' fill='{GRID}' opacity='.7'/>")
+    marks = [(0, "Origin", "quake begins", BASE, "up"),
+             (25.9, "Fast", "first notice, 2 s of P", MID, "up"),
+             (33.4, "Standard", "first notice, 4 s of P", OURS, "down"),
+             (55, "Confirmed", "full size, or retraction", OURS, "up")]
+    for t, name, sub, color, side in marks:
+        x = X(t)
+        out.append(f"<circle cx='{x:.1f}' cy='{y}' r='6' fill='{color}' stroke='#fff' stroke-width='2'/>")
+        anchor = "start" if t == 0 else ("end" if t >= 55 else "middle")
+        if side == "up":
+            out.append(_t(x, y - 30, name, 11.5, anchor, "700", OURS if color == OURS else INK))
+            out.append(_t(x, y - 16, sub, 10, anchor, fill=SOFT))
+        else:
+            out.append(_t(x, y + 40, name, 11.5, anchor, "700", OURS))
+            out.append(_t(x, y + 54, sub, 10, anchor, fill=SOFT))
+    out.append(_t(width - R, height - 2, "Live adds ~2–5 s of SeedLink delay", 10, "end", fill=SOFT))
+    out.append("</svg>")
+    return "".join(out)
+
+
+def seismic_system(width=680, height=330):
+    """Offline / online / QuakeOps schematic for SeismicSoCal (replaces the v1 raster diagram)."""
+    out = [f"<svg viewBox='0 0 {width} {height}' role='img' aria-label='SeismicSoCal system: offline training, online VM, QuakeOps loop'>"]
+
+    def box(x, y, w, h, title, lines, hot=False):
+        stroke = OURS if hot else "#9aa3bd"
+        fill = "#eef1f9" if hot else "#f7f8fb"
+        out.append(f"<rect x='{x}' y='{y}' width='{w}' height='{h}' fill='{fill}' stroke='{stroke}' stroke-width='1.4'/>")
+        out.append(_t(x + 8, y + 16, title, 11, weight="700", fill=OURS if hot else INK))
+        for i, ln in enumerate(lines):
+            out.append(_t(x + 8, y + 31 + i * 13, ln, 9.8, fill=SOFT))
+
+    def arrow(x1, y1, x2, y2, dash=False):
+        d = " stroke-dasharray='4 3'" if dash else ""
+        out.append(f"<line x1='{x1}' y1='{y1}' x2='{x2}' y2='{y2}' stroke='{SOFT}' stroke-width='1.3'{d} marker-end='url(#ah)'/>")
+
+    out.append(f"<defs><marker id='ah' viewBox='0 0 8 8' refX='7' refY='4' markerWidth='7' markerHeight='7' orient='auto'>"
+               f"<path d='M0 0 L8 4 L0 8 z' fill='{SOFT}'/></marker></defs>")
+    out.append(_t(0, 13, "OFFLINE · PC (RTX 4060)", 10.5, weight="700", fill=SOFT))
+    out.append(_t(352, 13, "ONLINE · Oracle A1 VM (systemd + Caddy)", 10.5, weight="700", fill=SOFT))
+    box(0, 24, 150, 62, "Data", ["USGS catalogue M1+", "SCEDC waveforms,", "response removed"])
+    box(170, 24, 160, 62, "build_dataset.py", ["6,243 events", "50,743 detect windows", "chronological 70/15/15"])
+    box(0, 106, 150, 62, "Train (GPU)", ["Detect: CNN→Transformer", "Size: CNN→GNN→Transformer", "5 seeds, MLflow-tracked"], True)
+    box(170, 106, 160, 62, "Replay harness", ["same engine, archived days", "calibrate on validation", "score test days once"], True)
+    box(352, 24, 160, 62, "SeedLink", ["19 stations, real time", "per-station buffers", "data-quality gate"])
+    box(532, 24, 148, 62, "pipeline.py", ["detect → pick → locate", "→ quick check → size", "→ decide (data time)"], True)
+    box(352, 106, 160, 62, "server.py (API)", ["supervises the daemon", "/api/status /ca /health", "push registration"])
+    box(532, 106, 148, 62, "FCM push", ["two-stage alerts", "station subscriptions", "shadow mode switch"])
+    box(352, 188, 160, 54, "Web + Android", ["React + Vite, Capacitor", "coverage map, /health"])
+    box(532, 188, 148, 54, "Nightly crosscheck", ["live log vs USGS,", "+1 h chance baseline"])
+    # QuakeOps band
+    out.append(_t(0, 270, "QUAKEOPS · MLOps loop", 10.5, weight="700", fill=SOFT))
+    steps = ["Dagster monthly", "train challenger", "gate G1–G6", "MLflow @champion", "VM pull (sha256)", "drift check"]
+    sw, gap = 104, 11.2
+    for i, st in enumerate(steps):
+        x = i * (sw + gap)
+        hot = i in (2, 3)
+        out.append(f"<rect x='{x:.1f}' y='280' width='{sw}' height='30' fill='{'#eef1f9' if hot else '#f7f8fb'}' "
+                   f"stroke='{OURS if hot else '#9aa3bd'}' stroke-width='1.3'/>")
+        out.append(_t(x + sw / 2, 299, st, 10, "middle", "700" if hot else "400", OURS if hot else INK))
+        if i:
+            arrow(x - gap + 1, 295, x - 1, 295)
+    arrow(150, 55, 168, 55)
+    arrow(178, 86, 142, 104)
+    arrow(150, 137, 168, 137)
+    arrow(512, 55, 530, 55)
+    arrow(606, 86, 606, 104)
+    arrow(532, 137, 514, 137)
+    arrow(432, 168, 432, 186)
+    out.append("</svg>")
+    return "".join(out)
 
 
 # ----------------------------------------------------------------------------- BearLM

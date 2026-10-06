@@ -412,27 +412,6 @@ def image(rel, file, caption, label="Figure", alt=None, phone=False):
             f"<figcaption><b>{label}</b>{caption}</figcaption></figure>")
 
 
-def phone_alert(rel):
-    """A real SeismicSoCal push alert, recreated in HTML (the original screenshot had other phone UI in it)."""
-    return (
-        "<figure class='fig'><div class='fig-body'>"
-        "<div class='phone-mock' role='img' aria-label='Phone notification: SeismicSoCal, Earthquake detected near MWC. "
-        "2 sensors agree, at the MWC station near you. Estimated M2.3. Likely too far to be felt at your area. "
-        "Rapid detection, not an official warning.'>"
-        "<div class='pm-status' aria-hidden='true'><span>6:08</span><span class='pm-icons'>"
-        "<i class='pm-sig'></i><i class='pm-wifi'></i><i class='pm-batt'></i></span></div>"
-        "<div class='pm-notif' aria-hidden='true'>"
-        f"<img class='pm-icon' src='{rel}assets/img/seismic-app-icon.png' alt='' width='40' height='40'>"
-        "<div class='pm-text'><div class='pm-app'>SeismicSoCal <span>· now</span></div>"
-        "<div class='pm-title'>Earthquake detected near MWC</div>"
-        "<div class='pm-body'>2 sensors agree — at the MWC station near you. Estimated M2.3. Likely too far to be "
-        "felt at your area. Rapid detection, not an official warning.</div></div></div>"
-        "<div class='pm-home' aria-hidden='true'></div></div></div>"
-        "<figcaption><b>Real alert</b>A push the live daemon sent on Oct 4, 2026, recreated from the phone screenshot. "
-        "Two stations agreed (the confirmed tier), the GNN ensemble sized it at M2.3, and the shaking model turned "
-        "distance into the plain-language line.</figcaption></figure>")
-
-
 def fig(svg, caption, label="Figure"):
     return (f"<figure class='fig'><div class='fig-body'>{svg}</div>"
             f"<figcaption><b>{label}</b>{caption}</figcaption></figure>")
@@ -467,28 +446,28 @@ def research_steps(cbu_public):
     steps = [
         ("Frame the question", "Turn a vague problem into one that evidence can answer.",
          ["CBU: is the R² ≈ 0.10 ceiling a model problem or a data problem?",
-          "SeismicSoCal: can a learned detector tell real quakes from noise better than the classic STA/LTA trigger?"]),
+          "SeismicSoCal: not \"is the test AUC high?\" but \"would this live system have alerted correctly on real days?\""]),
         ("Know the field &amp; pick baselines", "Start from what practitioners already use, so a result means something.",
-         ["STA/LTA for detection, amplitude + distance for magnitude, a GMPE-style estimate for shaking.",
-          "Persistence for forecasting (Berkeley Lab), a baseline random forest for inverse-FEA."]),
+         ["STA/LTA for detection, amplitude + distance for magnitude, and a time-shifted chance baseline for every live precision.",
+          "Persistence for forecasting (Berkeley Lab); a baseline random forest and predict-the-mean for inverse-FEA."]),
         ("Design the experiment", "Decide how results will be judged before running anything.",
-         ["Chronological 70/15/15 splits and walk-forward folds, so no model ever sees the future.",
-          "Thresholds tuned on validation only; a paired clean-vs-noisy design that isolates noise as the one variable."]),
+         ["Chronological 70/15/15 splits, hard negatives split by date, thresholds calibrated on validation days and test days scored once.",
+          "Leak-free, out-of-fold cross-validation, and a paired clean-vs-noisy design that isolates noise as the one variable."]),
         ("Collect &amp; check the data", "Most bad results start as bad data.",
-         ["5,800+ SCEDC waveform windows labelled against the USGS catalog.",
-          "A quality gate that drops gap-fill zeros, flat runs, clipping and glitch spikes; three years of XCache logs explored before modelling."]),
+         ["50,743 SCEDC waveform windows and 6,243 quakes labelled against the USGS catalogue, on one shared station list.",
+          "A quality gate that drops gap-fill zeros, stuck runs, clipping and glitch spikes; three years of XCache logs explored before modelling."]),
         ("Run experiments &amp; ablations", "Change one thing at a time and see what actually carries the result.",
-         ["5-seed ensembles for stability; a nearest-single-station ablation (R² 0.84 → 0.42) that proves the graph fusion matters.",
+         ["A nearest-single-station ablation (R² 0.951 → 0.808) that proves the graph fusion matters; a 10-seed study; five alert variants replayed over 20 days.",
           f"A lookback sweep across forecast horizons, and {fea_ablation}."]),
         ("Analyze honestly", "Use metrics that can't be gamed, and write down the limits.",
-         ["ROC-AUC and MCC on imbalanced data instead of accuracy; MCC instead of recall for alerts.",
-          "Known limits stated plainly, e.g. the magnitude model under-predicts the very largest events."]),
+         ["ROC-AUC and MCC on imbalanced data, event-clustered bootstrap CIs, and precision always next to its chance baseline.",
+          "Known limits stated plainly, e.g. off-network quakes are located from one side, and sizes below M2 read high."]),
         ("Conclude &amp; communicate", "Say exactly what the evidence supports, to the people who need it.",
-         ["The inverse-FEA ceiling is a data limit: written up for the team's IEEE paper, and it redirected their effort.",
-          "SeismicSoCal's results published next to their baselines on the live site."]),
+         ["The inverse-FEA ceiling is a data limit, with the measurement precision each target needs: written up for the team's IEEE paper.",
+          "SeismicSoCal's results published with their baselines and CIs on the live site and its /health page."]),
         ("Iterate", "Every answer sets up the next question.",
-         ["Test a ~120-day lookback at the 30-day horizon.",
-          "Wire the early-warning model into live alerts and extend coverage statewide."]),
+         ["Score shadow mode against USGS before switching live pushes on; run the first gated monthly retrain.",
+          "Test a ~120-day lookback at the 30-day horizon."]),
     ]
     cards = "".join(
         f"<li class='step'><span class='step-n halftone'>{i + 1:02d}</span><div class='step-body'>"
@@ -610,29 +589,29 @@ ROLES = [
       ("experience/kigumi-group/", "Kigumi Group", "fixed recurring GPT / image-model pipeline failures")]),
     ("ML", "Machine Learning Engineer",
      "Train models that beat a real baseline, then run them in production.",
-     [("projects/seismicsocal/", "SeismicSoCal", "CNN → Transformer + GNN, 0.992 ROC-AUC, live 24/7 daemon"),
+     [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST forecasting, up to 24% lower RMSE"),
       ("projects/academy-of-testers/", "Academy of Testers", "BKT + IRT adaptive engine as pure, testable code")]),
     ("DS", "Data Scientist",
      "Design honest experiments and find out what the data can support.",
-     [("experience/cbu-seismicsocal/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
+     [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
-      ("projects/seismicsocal/", "SeismicSoCal", "chronological splits, MCC/AUC on imbalanced data, ablations")]),
+      ("projects/seismicsocal/", "SeismicSoCal", "chronological splits, clustered-bootstrap CIs, precision vs. chance")]),
     ("DE", "Data Engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [("projects/bearlm/", "BearLM", "ETL over PDF / md / ipynb, ~10K records with retry/backoff"),
-      ("projects/seismicsocal/", "SeismicSoCal", "real-time SeedLink streaming from 10 stations, quality gating"),
+      ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas pipelines over 3 years of logs")]),
     ("DA", "Data Analyst",
      "Turn raw logs and metrics into clear charts and decisions.",
      [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "seasonality, change-points and peaks in Matplotlib / Seaborn / Plotly"),
-      ("experience/cbu-seismicsocal/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
+      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
       ("projects/bearlm/", "BearLM", "SQLite usage analytics and weakest-area reporting")]),
     ("RES", "AI / ML Researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
-     [("experience/cbu-seismicsocal/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
+     [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST forecasting + the peak-predictability ceiling"),
-      ("projects/seismicsocal/", "SeismicSoCal", "CNN → Transformer + GNN vs. classical baselines, with ablations")]),
+      ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test")]),
 ]
 
 # Which résumé best fits each role (keys from build.RESUMES)
@@ -665,7 +644,7 @@ def home(ctx):
         "<svg viewBox='0 0 420 220' role='img' aria-label='Headline results'>"
         "<text x='14' y='26' font-family='Silkscreen, monospace' font-size='12' fill='#7a8aba'>SYSTEM CHECK . . . OK</text>"
         "<g font-family='VT323, monospace' fill='#9fbee7'>"
-        "<text x='14' y='66' font-size='30'>0.992</text><text x='120' y='66' font-size='18' fill='#7a8aba'>quake detection ROC-AUC</text>"
+        "<text x='14' y='66' font-size='30'>0.9998</text><text x='120' y='66' font-size='18' fill='#7a8aba'>quake detection ROC-AUC</text>"
         "<text x='14' y='106' font-size='30'>0.82</text><text x='120' y='106' font-size='18' fill='#7a8aba'>BearLM recall@1 (from 0.56)</text>"
         "<text x='14' y='146' font-size='30'>-23%</text><text x='120' y='146' font-size='18' fill='#7a8aba'>AP essay grading error</text>"
         "<text x='14' y='186' font-size='30'>-85%</text><text x='120' y='186' font-size='18' fill='#7a8aba'>redemption load time</text>"
@@ -681,7 +660,7 @@ def home(ctx):
         ("projects/academy-of-testers/", "field-lavender", "Academy of<br>Testers", "academyoftesters.com",
          "Adaptive SAT engine (BKT + IRT) and a RAG essay grader cutting AP scoring error ~23%."),
         ("projects/seismicsocal/", "field-teal", "Seismic<br>SoCal", "seismicsocal.duckdns.org",
-         "Live earthquake detection on 10 SeedLink stations: CNN→Transformer + GNN, push alerts."),
+         "Live quake detection on 19 stations: CNN→Transformer + GNN, two-stage alerts, MLOps."),
         ("projects/bearlm/", "field-red", "BearLM", "fully local RAG",
          "Zero-cost cited Q&amp;A over ~10K Berkeley CS/DS chunks. recall@1 56% → 82%."),
     ]
@@ -695,8 +674,8 @@ def home(ctx):
         ("experience/lawrence-berkeley-lab/", "LBL", "Lawrence Berkeley National Laboratory",
          "Data Science &amp; ML Research Intern · PatchTST forecasting of XCache traffic, up to 24% lower RMSE than persistence.",
          "SEP 2026 – NOW"),
-        ("experience/cbu-seismicsocal/", "CBU", "California Baptist University · SeismicSoCal",
-         "ML Research Intern · diagnosed an inverse-FEA data ceiling; 0.992 ROC-AUC detection; live alert daemon.",
+        ("experience/cbu-research/", "CBU", "California Baptist University · SeismicSoCal",
+         "ML Research Intern · diagnosed an inverse-FEA data ceiling; 0.9998 ROC-AUC detection; live alert pipeline.",
          "MAY 2026 – NOW"),
         ("experience/numistoken/", "NIT", "NumIsToken",
          "Full-Stack Software Engineering Intern · resumable redemptions; serialization tool; load time ~2–3 s → ~300 ms.",
@@ -732,7 +711,7 @@ tuning models that had nothing left to find.</p>"""
         ("Data", "Pandas, ETL pipelines, EDA, rolling CV, Matplotlib, Seaborn, Plotly, SQL"),
         ("Backend", "Python, FastAPI, Java / Spring Boot, PostgreSQL, Flyway, SQLite, Chroma"),
         ("Frontend", "React, TypeScript, Vite, Tailwind, Capacitor (Android), hand-built SVG"),
-        ("Ops", "Docker, systemd, Caddy, Oracle Cloud, Render, Vercel, FCM push"),
+        ("Ops &amp; MLOps", "MLflow, Dagster, Evidently, GitHub Actions, Docker, systemd, Caddy, Oracle Cloud, FCM push"),
     ])
 
     contact = f"""
@@ -1026,150 +1005,237 @@ def seismic(ctx):
     rel = ctx["rel"]
     site = "https://seismicsocal.duckdns.org"
     h = hero(
-        "field-teal", "PROJECT 02 · DEEP LEARNING · LIVE", "Seismic<br>SoCal",
-        "Deep-learning seismology for Southern California. It detects an earthquake, sizes it and "
-        "estimates shaking on a live 10-station waveform stream, then push-alerts nearby subscribers.",
-        ["Deployed live", "PyTorch", "CNN → Transformer · GNN", "Oracle Cloud"],
+        "field-teal", "PROJECT 02 · DEEP LEARNING · MLOPS · LIVE", "Seismic<br>SoCal",
+        "A live system that listens to 19 seismometers across Southern California. Two neural networks turn the "
+        "first seconds of ground motion into a detection, a location and a magnitude, and phones that follow nearby "
+        "sensors get a two-stage alert. QuakeOps keeps the models tracked, gated and watched for drift.",
+        ["Deployed live", "PyTorch", "CNN → Transformer · GNN", "MLflow · Dagster · Evidently"],
         C.seismogram(),
-        go(site, "Open the live console", True) + go(rel + "experience/cbu-seismicsocal/", "Research internship"))
+        go(site, "Open the live console", True) + go(site + "/health", "Model health", True)
+        + go(rel + "experience/cbu-research/", "Research internship"))
 
     overview = f"""
-{stats([("0.992", "Detection ROC-AUC", "vs 0.550 STA/LTA"),
-        ("0.840", "Magnitude R²", "vs 0.749 amp+distance"),
-        ("0.760", "Alert MCC", "vs 0.655 GMPE-style"),
-        ("10", "SeedLink stations", "CI / SCEDC network, live")])}
+{stats([("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"),
+        ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
+        ("93<small>%</small>", "Replay events real", "chance baseline 0%"),
+        ("0", "False pushes in replay", "10 held-out days")])}
 <hr class="dotted">
-<p class="lede">Detect → Size → Warn. Each step is a model, each is compared with the classic seismology
-baseline on held-out real waveforms, and the whole chain runs live, 24/7, on a free cloud VM.</p>
-<p>SeismicSoCal trains on <strong>5,800+ multi-station SCEDC waveform windows</strong> and 1,126 magnitude events
-from 2000–2025. Every split is <strong>chronological</strong> (70/15/15 by event time), because a random split leaks the
-future into training. A daemon streams 10 SoCal stations over SeedLink, runs detection continuously, confirms
-events across stations, sizes them, and sends Firebase push alerts to the Android app.</p>
-<p class="note"><strong>Scope:</strong> this is a research prototype, not an official warning system. It does
-detection, characterization and rapid shaking estimation. It does not predict earthquakes, because short-term
-prediction is an unsolved problem.</p>"""
+<p class="lede">Detect → Locate → Size → Alert. Every claim sits next to its classic-seismology baseline, a 95%
+confidence interval and a replay of real days the system never trained on.</p>
+<p>SeismicSoCal trains on <strong>26 years of Southern California data</strong> (USGS catalogue + SCEDC waveforms,
+2000 → 2026): <strong>6,243 quakes (M2.0–7.1)</strong> for sizing and <strong>50,743 detection windows</strong>, including 2,062
+<em>hard negatives</em>: real live-stream noise that once fooled a detector. Every split is chronological. A
+SeedLink daemon runs the same engine 24/7 on a free Oracle VM, and a monthly MLOps loop decides whether a retrained
+model is allowed to replace the live one.</p>
+{bullets([
+    "Built the detector as a <strong>CNN → Transformer</strong> on the 19 stations that actually stream, with the P-wave "
+    "anywhere in the window and real live-noise false triggers as hard negatives: <strong>ROC-AUC 0.9998</strong> (95% CI "
+    "0.9997–0.9999) vs. 0.816 for STA/LTA on 7,303 held-out windows.",
+    "Sized quakes with a <strong>CNN → GNN → Transformer</strong> over the station graph: <strong>R² 0.951, MAE 0.10</strong> on 937 "
+    "held-out quakes vs. 0.886 for amplitude + distance; a 10-seed study separates seed variance from sampling variance.",
+    "Made a <strong>replay of archived days</strong> the acceptance test: 93% of confirmed events real (chance 0%), 5 pushes and "
+    "0 false, median location error 2.5 km.",
+    "Built <strong>QuakeOps</strong>: MLflow tracking and a champion/challenger registry, a Dagster retrain job, a six-rule "
+    "statistical + replay promotion gate, Evidently drift checks and GitHub Actions deploys.",
+])}
+<p class="note"><strong>Scope:</strong> research demonstration, not an official warning system. It detects quakes
+<em>after</em> they begin and alerts within tens of seconds; it does not predict them.</p>"""
 
     results = f"""
-{tip("Deep models beat every classical baseline. Detection: 0.992 vs 0.550.")}
-{fig(C.seismic_chart(), "All three models beat the classical baseline on a held-out chronological test set. Detection: 880 windows / 255 events. Magnitude: 5-seed ensemble. Alerts: threshold tuned on validation, not test.")}
-{table(["Task", "Architecture", "Deep model", "Baseline"],
-       [["<b>Detect</b>: is it a quake?", "CNN → Transformer, single station", "<span class='win'>AUC 0.992</span>, MCC 0.930", "STA/LTA 0.550"],
-        ["<b>Size</b>: how big?", "CNN → GNN → Transformer, multi-station", "<span class='win'>R² 0.840</span>, MAE 0.12", "amp + distance 0.749"],
-        ["<b>Warn</b>: how hard will it shake?", "CNN → GNN → Transformer on first ~8 s", "<span class='win'>MCC 0.760</span>, recall 0.76 @ precision 0.82", "GMPE-style 0.655"]])}
-<h3>Why MCC and AUC, not accuracy</h3>
-<p>Earthquake windows are rare, so an "always no" detector looks very accurate. I report ROC-AUC and MCC for
-detection, R²/MAE against a physics baseline for magnitude, and <strong>MCC rather than recall</strong> for
-alerts. Recall is easy to game once you can move the threshold. The baseline reaches similar recall only by
-false-alarming about twice as often.</p>
-{chat([("detective", "STA/LTA scored 0.550. Isn't that basically a coin flip?"),
-       ("explorer", "Pretty much. The deep detector hit 0.992 on the same held-out windows."),
-       ("detective", "And that's on quakes it had never seen?"),
-       ("explorer", "Yes, a chronological split, so it never trained on the future.")])}
+{tip("Deep beats classical on both tasks, and the confidence intervals don't overlap.")}
+{fig(C.seismic_chart(), "Both models beat the classical baseline on a strictly chronological held-out test (2022–2026). CIs are bootstrapped and clustered by event, so a quake's correlated station windows resample together.")}
+{table(["Task", "Architecture", "Deep model (95% CI)", "Classical baseline"],
+       [["<b>Detect</b>: is it a quake?", "CNN → Transformer, single station, 30 s", "<span class='win'>AUC 0.9998</span> (0.9997–0.9999), MCC 0.886", "STA/LTA 0.816 (0.805–0.828)"],
+        ["<b>Size</b>: how big?", "CNN → GNN → Transformer, multi-station", "<span class='win'>R² 0.951</span> (0.943–0.959), MAE 0.10", "amp + distance 0.886 (0.871–0.898)"],
+        ["<b>Quick check</b>: worth a first alert?", "median of a·log peak + b·log dist + c, first 4 s of P", "MAE 0.24; passes 93% of M3+, 1.1% of &lt;M2.5", "n/a (it <em>is</em> the classic formula)"]])}
 <h3>Detect, in plain English</h3>
-<p>Give it 30 seconds of shaking recorded by a sensor and it decides whether a real earthquake is happening,
-or whether it's just ordinary background noise like traffic or wind. It has learned what genuine quakes look like,
-so it spots ones the older, simpler alarm would miss. On earthquakes it had never seen before, it makes the right
-call about 99% of the time.</p>
-{beside(image(rel, "seismic-detect-roc.png", "Held-out test set. Top left: ROC curve, deep detector vs. STA/LTA (0.550). Top right: test AUC for each of 5 seeds, mean 0.992 ± 0.007. Bottom: a real event at CI.TOW2 the deep model caught (P = 1.00) and STA/LTA missed, and a noise window where STA/LTA false-alarmed but the deep model correctly said no (P = 0.00).", alt="Detection ROC, per-seed AUC, and example event and noise windows"), "It catches the quake STA/LTA missed and ignores the noise STA/LTA flagged.", "right")}
+<p>Every 2 seconds each sensor hands the model its last 30 seconds of ground motion, and the model decides whether an
+earthquake is in it or just traffic, wind or sensor noise. It works wherever the quake starts in the window (AUC 0.9997
+/ 0.9999 / 0.9997 with the P-wave at 2 / 12 / 22 s), and train, validation and test AUC match, so it isn't memorising.</p>
+{beside(image(rel, "seismic-detect-evidence.png", "From the live site's Evidence panel: held-out ROC vs. STA/LTA on 7,303 windows (2022–2026), and AUC by where the P-wave falls in the 30 s window.", alt="Detection evidence: ROC vs STA/LTA and robustness to onset position"), "Near-perfect wherever the quake starts in the window.", "right")}
+<h3>False triggers, at the threshold that actually runs</h3>
+<p>The live trigger is 0.6, not the checkpoint's MCC-optimal 0.9987, so both are reported. A per-window trigger still
+isn't an alert: it also needs a clean pick and two more stations that locate the same source.</p>
+{table(["Threshold", "Test noise (n = 2,339)", "Held-out live noise, Oct 2–5 (n = 397)", "Event windows caught"],
+       [["0.6 (live trigger)", "1.41%", "0.25%", "99.6%"], ["0.9987 (checkpoint MCC)", "0.00%", "0.25%", "91.9%"]],
+       num_cols=(1, 2, 3))}
 <h3>Size, technically</h3>
-<p><strong>Network-magnitude regression.</strong> Per-station 3-component waveforms feed a CNN feature extractor,
-then a graph convolution across the 10-station network, then a transformer, then a magnitude head. On 1,126 SoCal
-events (2000–2025), the 5-seed ensemble scores <strong>R² = 0.840 (MAE 0.12)</strong> against an amplitude + distance
-linear baseline at R² = 0.749. A nearest-single-station ablation drops to R² +0.42, which isolates the multi-station
-graph fusion as the source of the skill.</p>
-{image(rel, "seismic-magnitude-scatter.png", "Predicted vs. USGS catalog magnitude on held-out California events: deep multi-station ensemble (R² 0.840, left) vs. the amplitude + distance physics baseline (R² 0.749, right). Both under-predict the largest event (M5.8 → M5.2 deep, M5.1 baseline), the known limit noted below.", alt="Predicted vs true magnitude scatter, deep ensemble vs baseline")}"""
-
-    models = f"""
-<p>All three models share one idea: a <strong>1-D CNN</strong> turns raw waveform into local features, and a
-<strong>Transformer encoder</strong> reasons over time. Where several stations matter, a <strong>graph network</strong>
-fuses them along the real station geometry.</p>
-<h3>Detect · CNN → Transformer</h3>
-<p>A 30-second, 100 Hz vertical window (3,000 samples) goes through four strided Conv1d blocks (16→64 channels),
-then a 2-layer, 4-head Transformer encoder, then mean pooling and a detection head. It learns waveform shape that a
-threshold-on-energy detector like STA/LTA can't see. Mean AUC across 5 seeds is 0.992 ± 0.007.</p>
-<h3>Size · CNN → GNN → Transformer</h3>
-<p>Each station's 3-component trace is embedded by a CNN, tagged with log-distance, and passed through two
-<strong>graph-convolution</strong> layers over a normalized adjacency built from station coordinates. A masked Transformer
-then attends across the stations that actually recorded the event, and a hybrid head adds network amplitude features.</p>
-{beside(fig(C.ablation_chart(), "Using only the nearest station drops R² from 0.840 to 0.42. The multi-station graph fusion is what beats the baseline."), "Take away the graph network and R² falls from 0.84 to 0.42.", "right")}
-<h3>Warn · early-warning ensemble</h3>
-<p>The same backbone sees only the <strong>first ~8 seconds after the P-wave</strong> and predicts the peak ground velocity
-that arrives later. On the continuous value it ties the physics baseline (R² 0.728 vs 0.720). On the decision
-that matters, whether shaking will cross a notable threshold, it wins clearly: MCC 0.760 vs 0.655.</p>
-<p class="note"><strong>Known limits:</strong> the magnitude regressor under-predicts the very largest events, and
-a five-variant fine-tune search (augmentation, cosine LR, Huber, dropout, physics blend) found no reliable
-gain over 0.840. That points to a real ceiling for this data.</p>"""
+<p>Each station's 3-component window is normalised to unit peak, so the CNN reads <strong>shape</strong>; its log peak
+velocity and log distance from the <em>located</em> epicentre are graph-node features, so the graph reads <strong>size</strong>.
+Two graph-convolution layers over the 19-station network (Gaussian distance weights, σ = 50 km) and a Transformer across
+stations feed the head. Training jitters the epicentre by ~8 km and the picks by ±0.5 s and drops stations at random, so
+it learns under live conditions.</p>
+{image(rel, "seismic-size-evidence.png", "From the live site. Top: predicted vs. catalogue magnitude on 937 held-out quakes (MAE 0.10 vs. 0.16), and error by size. Bottom: what the network fusion buys, and the live pipeline replayed on 20 days (quakes below M2 are outside training and read high, but stay under the M3.0 push floor).", alt="Size evidence: scatter, error by size, ablation, replayed live sizing")}
+{beside(fig(C.ablation_chart(), "Only the nearest station: R² 0.808, worse than the classic formula. The graph fusion is the skill. Live-like conditions (10 km location error, 3–6 stations) cost just 0.012."), "Take away the graph and it loses to the classic formula.", "right")}
+<h3>Seed variance vs. sampling variance</h3>
+{table(["Magnitude model (937 held-out quakes)", "R²", "95% CI"],
+       [["Single model, mean over 10 seeds", "0.949", "0.948–0.951 (t-interval over seeds)"],
+        ["10-seed ensemble", "0.952", "0.944–0.959 (event bootstrap)"],
+        ["Live 5-seed ensemble", "<span class='win'>0.951</span>", "0.943–0.959"],
+        ["Amplitude + distance baseline", "0.886", "0.871–0.898"],
+        ["Ensemble − baseline (paired)", "+0.067", "+0.056 … +0.079"]], num_cols=(1,))}
+<p>The deep model's lead over the baseline is about 6× the width of either uncertainty. Ensembling adds only +0.003,
+well inside the sampling CI, so the live system keeps 5 seeds rather than 10.</p>"""
 
     live = f"""
-<p>The models run <strong>continuously on a live stream</strong>. USGS isn't in the loop, so the detector fires on the
-raw waveforms.</p>
-{flow([("SeedLink", "10 CI/SCEDC stations stream into rolling per-station buffers", False),
-       ("Quality gate", "drop gap-fill zeros, flat runs, clipping and glitch spikes before scoring", False),
-       ("Detect", "CNN→Transformer on sliding 30 s windows, all stations", True),
-       ("Confirm", "graded multi-station coincidence + geographic move-out check", True),
-       ("Size", "GNN magnitude ensemble on confirmed events", False),
-       ("Alert", "one combined FCM push per subscribed device", False)], dark=True)}
-{tip("This check is what stops phones buzzing on sensor noise.")}
-<h3>Killing false alarms: graded coincidence</h3>
-<ul>
-<li><strong>Confirmed</strong>: at least 2 stations trigger (p ≥ 0.60) within 12 s, cluster within 150 km of the strongest
-one, <em>and</em> pass a move-out check. The arrival-time differences must be physically possible given the
-distance between stations (slowest wave 2 km/s, plus 4 s of pick jitter). Only confirmed events are sized and pushed.</li>
-<li><strong>Tentative</strong>: a lone station above a higher 0.85 bar is logged as a possible false alarm but not
-pushed, because lone live triggers are almost always telemetry noise.</li>
-<li>Two far-apart stations glitching in the same 12-second window are independent noise, not one source.
-The 150 km coherence check catches what move-out alone can't.</li>
-<li>Every declaration goes to an audit log, and a scheduled job cross-checks it against the official catalog.</li>
-</ul>
-<h3>Alerts by station, not location</h3>
-<p>Users subscribe to <strong>sensor stations</strong>, not coordinates. Signup ranks the 10 stations by distance and
-auto-selects the nearest 3 within 150 km. Each one can be toggled. No latitude or longitude is stored, only station
-codes and a push token. A shaking model turns magnitude and distance into the plain-language intensity in the alert text.</p>
+<p>The models run <strong>continuously on a live SeedLink stream</strong> with USGS out of the loop, and everything
+runs on waveform (data) time, never wall-clock time. The same module, <code>pipeline.py</code>, runs live and in the
+replay harness.</p>
+{flow([("SeedLink", "19 stations, 300 s rolling 3-component buffers", False),
+       ("Quality gate", "reject gap-fill zeros, stuck runs, clipping, lone spikes", False),
+       ("Detect", "CNN→Transformer every 2 s per station; trigger at 0.6", True),
+       ("Pick", "STA/LTA + AIC onset, SNR ≥ 3; the picker that aligned training", False),
+       ("Locate", "grid search; ≥ 3 picks, RMS ≤ 1.5 s, no silent nearer station", True),
+       ("Quick check", "first 2 or 4 s of P → provisional push", False),
+       ("Size", "GNN ensemble on [P−5 s, P+25 s] from every station ≤ 200 km", True),
+       ("Decide", "M ≥ 3.0 confirms, otherwise retracts", False)], dark=True)}
+{tip("Every first notice is followed by a confirmation or a retraction that replaces it.", prop="dj")}
+{fig(C.alert_timeline(), "Medians from replayed days. The first notice waits for the third station's pick; the confirmation waits for 25 s of P-wave at the nearest stations.", "Timeline")}
+<h3>Why three stations</h3>
+<p>With 3 picks, latitude, longitude and origin time are exactly determined, so a low misfit proves nothing on its
+own. The <strong>negative evidence</strong> does the work: a real quake reaches nearer stations first, so a solution
+whose closer stations stayed quiet is coincident noise. One or two stations become a <em>tentative</em> event: logged,
+never pushed. Requiring four stations was tested on validation days: it confirmed 31 events instead of 86 and missed a
+real out-of-network M3.6 that three stations caught.</p>
+<h3>Two-stage alerts, with a speed the user picks</h3>
+<p>Five variants of the first message were replayed over 20 days, and the trade-off became a setting instead of a
+hidden constant:</p>
+{table(["First-message variant", "Test days: sent / real M2.5+ / retracted / no quake", "Median after origin", "Quick-size MAE"],
+       [["<b>Standard</b> (4 s of P, full response removal)", "6 / 6 / 1 / 0", "33.4 s", "0.21"],
+        ["4 s, sensitivity-scaled (not offered)", "6 / 6 / 1 / 0", "27.7 s", "0.20"],
+        ["<b>Fast</b> (2 s of P, sensitivity-scaled)", "7 / 6 / 2 / 0", "25.9 s", "0.26"],
+        ["Push on location alone (rejected)", "72 / 8 / 67 / 5", "25.6 s", "–"]], num_cols=(2, 3))}
+<p>Pushing on location alone would mean about 7 first messages a day, nearly all retracted. Both stages carry the same
+notification tag, so the confirmation (<em>"M<i>x.x</i> earthquake confirmed"</em>, with the distance and expected shaking)
+or the retraction (<em>"Update: smaller quake… you can disregard the earlier alert"</em>) replaces the first message in
+the tray.</p>
+<h3>Where it can see, and who gets alerted</h3>
 <div class="fig-pair">
-  {phone_alert(rel)}
-  {image(rel, "seismic-near-me.png", "Alert me near me, in the Android app: find sensors by city or your location, then subscribe or unsubscribe station by station. It's labelled as rapid detection, not an official warning.", "Screenshot", alt="Alert me near me station subscription screen", phone=True)}
+  {image(rel, "seismic-coverage.png", "The live coverage map, drawn from Census outlines: dark areas have 3+ stations within 100 km, so a quake there is located, sized and can alert; light areas reach 2 and are logged only. Zoom reveals more cities and boundaries.", "Live site", alt="Interactive coverage map of the 19 stations")}
+  {image(rel, "seismic-alert-me.png", "Alert me near me: follow a region, switch single sensors off, and choose Standard or Fast. Coordinates never leave the device; only station codes and a push token are stored.", "Live site", alt="Alert me near me with regions and alert speed")}
 </div>
-{tip("2 sensors agreed, so the alert went out. A lone sensor would only have been logged.", prop="detective")}"""
+<p>Users follow <strong>stations, not a location</strong>. A device is alerted when a confirmed quake is within 150 km of
+a station it follows, with the distance measured from the located epicentre to that station.</p>"""
+
+    replay = f"""
+<p>A test AUC alone doesn't say whether a live system can be trusted, so the <strong>acceptance test is a replay</strong>:
+the exact live engine runs over archived continuous data. Thresholds (trigger, pick SNR, misfit, station count, push floor)
+were calibrated on 10 <em>validation</em> days and scored once on 10 held-out <em>test</em> days. Every precision is reported
+next to a <strong>chance baseline</strong>: the same declarations shifted by an hour.</p>
+{stats([("93<small>%</small>", "Confirmed events real", "chance 0%"),
+        ("5 / 0", "Pushes / false pushes", "10 held-out days"),
+        ("2.5<small>km</small>", "Median location error", "10 held-out days"),
+        ("±0.13", "Pushed sizes vs catalogue", "e.g. 4.09 vs 4.0")])}
+{chat([("detective", "How do you know an alert from this thing is real?"),
+       ("referee", "It replayed 10 archived days it never trained on. 93% of confirmed events were real quakes; chance was 0%."),
+       ("detective", "And the pushes?"),
+       ("referee", "Five, all real quakes, each sized within 0.13 of the catalogue.")])}
+<h3>Catch rate by size</h3>
+{table(["Inside coverage, 20 replayed days", "M1–1.5", "M1.5–2", "M2–2.5", "M2.5–3", "M3+"],
+       [["Confirmed", "9%", "48%", "81%", "75%", "86%"]], num_cols=(1, 2, 3, 4, 5))}
+<p>The one in-coverage M3+ miss on the test days came 80 s after an M4.0 at the same spot, inside the window where coda
+is absorbed so a big quake can't re-trigger itself: a known, logged cost. An event-centric test on 833 held-out quakes in
+live geometry located 89% of them (median error 3.8 km) with magnitude MAE 0.135.</p>
+<h3>Shadow mode before alerts</h3>
+<p>After going live on Oct 5, 2026 the system runs in <strong>shadow mode</strong>: it detects, locates, sizes and logs
+everything but sends no pushes. A nightly job scores the live log against USGS in three tiers (confirmed, pushed,
+tentative), each with its own chance baseline. Pushes are switched on only once confirmed precision on live data clearly
+beats chance and pushed magnitudes match the catalogue.</p>"""
+
+    ops = f"""
+<p>A model that's right today can quietly go stale. <strong>QuakeOps</strong> makes the system maintain itself, and a
+retrained model can only replace the live one by proving, statistically and on replayed days, that it's at least as good.</p>
+{flow([("Data", "monthly append; older months never change", False),
+       ("Train", "challenger logged to MLflow with commit, data hash, seeds", False),
+       ("Compare", "champion re-scored on the challenger's unseen test split", False),
+       ("Replay", "10 held-out days, champion vs challenger", True),
+       ("Gate", "six rules, every result logged", True),
+       ("Promote", "@champion alias moves; VM pulls, verifies sha256", False)])}
+{table(["Rule", "Detect", "Size"],
+       [["G1 beats the classic baseline", "paired ΔAUC vs STA/LTA, CI low &gt; 0", "paired ΔR² vs amp + dist, CI low &gt; 0"],
+        ["G2 non-inferior to the champion", "ΔAUC ≥ −0.001; ΔMCC ≥ −0.02; false triggers at the live 0.6 ≤ champion + 0.5 pp", "ΔR² ≥ −0.01 and CI high ≥ 0; ΔMAE ≤ +0.01"],
+        ["G3 replay acceptance", "precision ≥ 0.85 and ≥ chance + 0.5; no false pushes; M3 recall ≥ champion", "same push checks; event-centric MAE ≤ champion + 0.02"],
+        ["G4 tests", "pytest + daemon selftest", "same"],
+        ["G5 lineage", "clean tree; commit, dataset version, seeds recorded", "same"],
+        ["G6 reason to switch", "newer data, or a superiority CI &gt; 0", "same"]])}
+<p class="note">A rule that can't be evaluated is logged as <strong>SKIPPED</strong>, never a silent pass. The gate never
+edits the live operating thresholds: a detector that needs a new trigger fails G3, and recalibrating is a deliberate,
+manual step.</p>
+{tip("Every live model traces back to its commit, dataset and seeds.", prop="soldier")}
+<div class="fig-pair">
+  {image(rel, "seismic-health.png", "The live /health page: the serving version of each model, its held-out metrics with 95% CIs, the data version and commit it came from, per-station drift status and the promotion history.", "Live site", alt="SeismicSoCal model health page")}
+  <div>
+<h3>Watching the live stream for drift</h3>
+<p>The daemon logs three scale-free features per station every 30 s (detector score, crest factor, high-frequency
+share), computed on the model's own input so they're comparable with training. A daily <strong>Evidently</strong> job
+compares each station with its training noise: ok, watch (1 feature drifted) or drifting (2+), with an email after two
+drifting days in a row.</p>
+<p>Drift features started logging on Oct 6, 2026, which is why the station pills still read "no data": the first
+statuses arrive with the next daily run.</p>
+<p class="note"><strong>Status, honestly:</strong> the registry, daily pull, drift logging, /health page and CI/CD deploys
+are live. The gate has been checked on a dry run (champion vs. itself); the first end-to-end monthly retrain hasn't run yet.</p>
+  </div>
+</div>"""
 
     stack = f"""
-<p>The whole service runs on an <strong>Oracle Cloud Always-Free Ampere A1</strong> (ARM64) VM. <strong>Caddy</strong>
-provides automatic HTTPS and the static site, and a <strong>systemd</strong> unit runs the stdlib-Python backend, which
-auto-spawns the SeedLink daemon and respawns it if the stream drops. A separate systemd timer runs the
-catalog cross-check.</p>
-{tiles([("Backend", "Python stdlib HTTP server: stations, geocode, push registration, status, contact, biggest SoCal quakes."),
-        ("Frontend", "React + Vite console: Detect/Size/Warn carousel with evidence, quake browser, near-me signup."),
-        ("Mobile", "Capacitor Android app built against the live backend, downloadable from /app."),
-        ("Push", "Firebase Cloud Messaging, with one combined message per device personalised by station distance.")])}
-{diagram(rel, "seismicsocal-architecture.webp", "earthquakeDiagram.png", "SeismicSoCal architecture diagram",
-         "Offline: SCEDC waveforms labelled against the USGS catalog train the detection, EEW and magnitude models. Online: the live watcher streams SeedLink, runs detection and sizing, and sends FCM alerts. The React console and mobile clients talk to the API server.")}
-{image(rel, "seismic-console.png", "The live console's Detect card with its evidence open: the headline 0.992 ROC-AUC vs. STA/LTA, the plain-English explanation, and the same held-out evidence figure shown above.", "Live site", alt="SeismicSoCal Detect card with evidence")}"""
+<p>The whole service runs on an <strong>Oracle Cloud Always-Free Ampere A1</strong> (ARM64) VM for $0. Caddy provides
+HTTPS and serves the site, systemd runs the API server, which supervises the SeedLink daemon and respawns it if the
+stream drops, and separate timers run the nightly crosscheck and the daily QuakeOps pull + drift check. The Android
+app is a Capacitor build of the same web app with FCM push and a forced-update gate for breaking releases.</p>
+{fig(C.seismic_system(), "Offline, the PC builds datasets, trains on the GPU and replays archived days. Online, the VM runs the same engine on the live stream. QuakeOps connects them through the MLflow registry.", "Architecture")}
+{tiles([("One station list", "network.py is imported by the builder, daemon, API, scorer and replay; every station must stream on the public relay."),
+        ("Self-checking checkpoints", "Models carry their normalizers and station list; the daemon refuses a model trained on a different network."),
+        ("Privacy by design", "Subscriptions store station codes, a push token and an alert speed. Never a location."),
+        ("CI/CD", "GitHub Actions: ruff, 25 pytest tests, daemon selftest and site build on every change; tar deploy to the VM on main.")])}
+{diagram(rel, "seismicsocal-architecture.webp", "earthquakeDiagram.png", "SeismicSoCal code-level architecture diagram",
+         "Code-level view: the web and mobile console, the alert and operations services (API, FCM push, the QuakeOps promotion gate and registry), the live seismic engine, and the data and model modules that read the USGS catalogue and SCEDC archive.", scroll=True)}
+<h3>Known limits</h3>
+<ul>
+<li><strong>Coverage:</strong> strongest where 3+ stations sit within ~100 km (LA basin, Inland Empire, Mojave, Ridgecrest,
+Kern). Quakes outside the network are located from a one-sided set of stations and can be tens of km off.</li>
+<li><strong>Latency:</strong> 25–60 s after origin. This is rapid detection, not pre-arrival warning (ShakeAlert's job).</li>
+<li><strong>Locator:</strong> fixed 8 km depth and a 1-D travel-time model, with an empirical correction fitted on 31,427 picks.</li>
+<li><strong>Small quakes:</strong> below M2 (outside the magnitude training range) sizes read slightly high; harmless for the M3 floor.</li>
+</ul>"""
 
     main_html = (
-        image(rel, "seismic-hero.png", "seismicsocal.duckdns.org: three deep models on real held-out waveforms (1,126 events, 10 stations, M 3.5–7.1), each tested against the classic seismology baseline, with the live SeedLink status in the corner.", "Live site", alt="SeismicSoCal live site")
+        image(rel, "seismic-live-detect.png", "seismicsocal.duckdns.org: the Detect card, with the held-out AUC, its 95% CI and the STA/LTA baseline on one line, and the live SeedLink status in the corner.", "Live site", alt="SeismicSoCal live site")
         + panel("overview", "Overview", overview, num="01")
         + panel("results", "Results vs. classical seismology", results, num="02")
-        + panel("models", "The three models", models, num="03")
-        + panel("live", "Live detection daemon", live, num="04")
-        + panel("deploy", "Deployment &amp; architecture", stack, num="05")
+        + panel("live", "The live pipeline &amp; alerts", live, num="03")
+        + panel("replay", "The acceptance test: replaying real days", replay, num="04")
+        + panel("quakeops", "QuakeOps: production ML", ops, num="05")
+        + panel("deploy", "Deployment &amp; architecture", stack, num="06")
         + pager(rel, ("projects/academy-of-testers/", "Academy of Testers"), ("projects/bearlm/", "BearLM")))
 
     rail = (
-        rail_btns([("WWW", "Live console", site), ("APK", "Android app", site + "/app"),
-                   ("GH", "Source code", ctx["github"] + "/earthquake")])
-        + panel("toc-sz", "On this page", toc([("overview", "Overview"), ("results", "Results"), ("models", "Models"),
-                                              ("live", "Live daemon"), ("deploy", "Deployment")]),
+        rail_btns([("WWW", "Live console", site), ("OPS", "Model health", site + "/health"),
+                   ("APK", "Android app", site + "/app"), ("GH", "Source code", ctx["github"] + "/earthquake")])
+        + panel("toc-sz", "On this page", toc([("overview", "Overview"), ("results", "Results"),
+                                              ("live", "Live pipeline"), ("replay", "Replay test"),
+                                              ("quakeops", "QuakeOps"), ("deploy", "Deployment")]),
                 body_cls="panel-body tight")
-        + panel("spec-sz", "Spec sheet", spec([("Region", "Southern California"), ("Data", "SCEDC, 2000–2025"),
-                                                ("Events", "1,126 (magnitude)"), ("Windows", "5,863 (detection)"),
+        + panel("spec-sz", "Spec sheet", spec([("Region", "Southern California"), ("Data", "USGS + SCEDC, 2000–2026"),
+                                                ("Events", "6,243 (M2.0–7.1)"), ("Windows", "50,743 (detection)"),
                                                 ("Split", "chronological 70/15/15"), ("Ensembles", "5 seeds"),
-                                                ("Host", "Oracle A1 · systemd")]), body_cls="panel-body tight")
-        + panel("stations", "Stations", chips(["CCC", "CLC", "TOW2", "WBM", "PASC", "SVD", "RIO", "MWC", "DGR", "BAK"]),
+                                                ("Live since", "Oct 5, 2026"), ("Host", "Oracle A1 · systemd")]),
                 body_cls="panel-body tight")
-        + panel("stack-sz", "Stack", chips(["PyTorch", "ObsPy", "SeedLink", "scikit-learn", "NumPy", "React", "Vite",
-                                            "Capacitor", "FCM", "Caddy", "systemd", "Oracle Cloud"]), body_cls="panel-body tight")
+        + panel("stations", "19 stations", spec([("LA basin", "PASC · BFS"), ("Inland Empire", "SVD · DGR"),
+                                                 ("San Diego / Imperial", "BAR · IKP · SWS · BEL"),
+                                                 ("Mojave", "GSC · GMR · EDW2"), ("Ridgecrest", "LRL · MPM"),
+                                                 ("Kern", "ISA · ARV"), ("Coast / offshore", "SMM · MPP · SNCC · CIA")]),
+                body_cls="panel-body tight")
+        + panel("stack-sz", "Stack", chips(["PyTorch", "ObsPy", "SeedLink", "NumPy / SciPy", "scikit-learn", "MLflow",
+                                            "Dagster", "Evidently", "React", "TypeScript", "Vite", "Capacitor", "FCM",
+                                            "Caddy", "systemd", "Oracle Cloud", "GitHub Actions", "pytest"]),
+                body_cls="panel-body tight")
         + info("What is — STA/LTA?",
                "<p>The classic trigger: the ratio of short-term to long-term average signal energy. It's fast and "
-               "simple, but it reacts to any burst of energy, which is why it scores only 0.550 AUC here.</p>"))
+               "simple, but it reacts to any burst of energy, which is why it scores 0.816 AUC here against the deep "
+               "detector's 0.9998.</p>")
+        + info("What is — a chance baseline?",
+               "<p>Shift every declared event by an hour and score it again. Real detections stop matching the "
+               "catalogue; coincidences in a busy catalogue don't. Precision only means something next to that number.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -1399,7 +1465,7 @@ horizon.</p>
         panel("overview", "Overview", overview, num="01")
         + panel("model", "Forecasting with PatchTST", model, num="02")
         + panel("eda", "EDA &amp; the predictability ceiling", eda, num="03")
-        + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/cbu-seismicsocal/", "CBU Research")))
+        + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/cbu-research/", "CBU Research")))
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("model", "PatchTST forecasting"), ("eda", "EDA &amp; ceiling")]),
@@ -1425,26 +1491,31 @@ def cbu(ctx):
     h = hero(
         "field-ice", "INTERNSHIP · RESEARCH", "CBU Research",
         "Machine Learning Research Intern at California Baptist University. I diagnosed why a structural "
-        "inverse-FEA predictor stalled, then built the deep-learning detection and alerting system behind SeismicSoCal.",
+        "inverse-FEA predictor stalled, then built SeismicSoCal: live deep-learning earthquake detection, "
+        "location, sizing and alerts for Southern California.",
         ["May 2026 – present", "Riverside, CA", "seismicsocal.duckdns.org"],
         (C.mini_bars(full.HERO_BARS, title=full.HERO_TITLE, fmt=lambda v: f"{v:.3f}") if full else C.seismogram()),
-        go(rel + "projects/seismicsocal/", "SeismicSoCal case study") + go("https://seismicsocal.duckdns.org", "Live site", True))
+        go("#fea", "Inverse-FEA diagnosis") + go(rel + "projects/seismicsocal/", "SeismicSoCal case study")
+        + go("https://seismicsocal.duckdns.org", "Live site", True))
 
     overview = f"""
 {stats([("7", "ML models benchmarked", "inverse-FEA diagnosis"),
 (full.STAT if full else ("~0.10", "R² ceiling", "a data limit, not a model limit")),
-        ("0.992", "Detection ROC-AUC", "vs 0.550 baseline"),
-        ("0.840", "Magnitude R²", "GNN ensemble")])}
+        ("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"),
+        ("0.951", "Magnitude R²", "vs 0.886 baseline")])}
 <hr class="dotted">
+<p class="lede">Two research problems, one habit: find out what the data can actually support before promising anything.</p>
 {bullets([
     "Diagnosed the root cause of a stalled <strong>inverse-FEA predictor</strong> by benchmarking 7 ML models (Random Forest, XGBoost, "
-    "HGB/ExtraTrees ensembles, PCA pipelines) and running paired clean-vs-noisy signal analysis. This proved the "
-    "<strong>R² ≈ 0.10 ceiling was a data limitation rather than a model limitation</strong> and redirected the team away from futile model tuning.",
-    "Raised earthquake-detection accuracy to <strong>0.992 ROC-AUC (vs. 0.550 baseline)</strong> and magnitude-estimation <strong>R² to 0.840</strong> by "
-    "training PyTorch CNN→Transformer and GNN ensembles on 5,800+ multi-station SCEDC waveform windows.",
-    "Built a <strong>real-time daemon streaming 10 SeedLink stations</strong> that runs continuous CNN→Transformer detection plus GNN-fused "
-    "multi-station magnitude estimation. It confirms events with graded multi-station coincidence and geographic move-out checks before "
-    "dispatching FCM push alerts, and it's deployed on an Oracle Cloud VM under systemd.",
+    "HGB/ExtraTrees ensembles, PCA pipelines), running paired clean-vs-noisy analysis and a noise-identifiability sweep. This proved the "
+    "<strong>R² ≈ 0.10 ceiling was a data limitation rather than a model limitation</strong>, gave the team the measurement precision each "
+    "target needs, and redirected them away from futile model tuning.",
+    "Raised earthquake detection to <strong>0.9998 ROC-AUC (vs. 0.816 STA/LTA)</strong> and magnitude <strong>R² to 0.951 (vs. 0.886)</strong> by "
+    "training PyTorch CNN→Transformer and CNN→GNN→Transformer ensembles on 50,743 windows and 6,243 quakes from 19 live stations, "
+    "with chronological splits and event-clustered bootstrap CIs.",
+    "Built and deployed a <strong>real-time SeedLink pipeline</strong> that detects, picks, locates (≥ 3 stations, negative evidence) and sizes "
+    "quakes, then sends two-stage FCM alerts. On a replay of 10 held-out days: <strong>93% of confirmed events real (chance 0%), 0 false "
+    "pushes</strong>, median location error 2.5 km.",
 ])}"""
 
     if full:
@@ -1453,45 +1524,87 @@ def cbu(ctx):
         # Unpublished research: method only, no figures, no exact results beyond what the résumé states.
         fea = f"""
 <p>An <strong>inverse finite-element</strong> problem runs simulation backwards: given a structure's measured
-response, recover the material properties that produced it. One target in the model behind the team's IEEE
-research paper was stuck at <strong>R² ≈ 0.10</strong>, and the instinct was to keep tuning models. I set out to find
-out whether tuning could help at all.</p>
+response, recover the material properties that produced it. Here, the measured shape of a deformed structure
+(landmark positions, summarised with PCA) is used to predict the stiffness of several of its components. Two targets
+were predicted well. One was stuck at <strong>R² ≈ 0.10</strong>, which was holding up the team's IEEE research paper, and
+the instinct was to keep tuning models. I set out to find out whether tuning could help at all.</p>
 <p class="note">This work is part of an unpublished paper, so its figures and detailed results are held back until
 publication. The method is below.</p>
+{flow([("Audit", "make the evaluation leak-free first", False),
+       ("Benchmark", "7 models, same CV", False),
+       ("Clean vs. noisy", "paired, one variable", True),
+       ("Bottlenecks", "PCA? noisy inputs?", False),
+       ("Sim-to-real", "train clean, test noisy", False),
+       ("Noise sweep", "how much noise each target tolerates", True)])}
 
-<h3>Step 1 · Benchmark seven models</h3>
+<h3>Step 1 · Make the evaluation trustworthy</h3>
+<p>Before comparing models I fixed how they were judged, so a small difference couldn't be an artefact:</p>
+{tiles([("Leak-free scaling", "Scalers fit on the training fold only, never on the rows being scored."),
+        ("Out-of-fold scores", "Every reported R² comes from rows the model never trained on."),
+        ("Predict-the-mean", "Each target is compared with a trivial baseline, the real test for a hard target."),
+        ("Overfitting, measured", "Train-minus-out-of-fold gap reported per target, so a good score can be shown to be real.")])}
+<p>I also dropped the chained setup (feeding one target's prediction into the next). The targets are drawn
+independently, so chaining passes noise along rather than signal.</p>
+
+<h3>Step 2 · Benchmark seven models</h3>
 <p>If the bottleneck is the model, different inductive biases should give different answers. I benchmarked
 <strong>seven model configurations</strong> under the same cross-validation: a baseline random forest, chained random
-forests, and my own models, including boosted / ExtraTrees ensembles and PCA pipelines. Every one landed on the same
+forests, and my own models, including boosted / ExtraTrees voting ensembles and PCA pipelines. Every one landed on the same
 ceiling for the hard target, while the easier targets were predicted well by all of them.</p>
 {tip("Seven very different models, one ceiling. That's the data talking.")}
 
-<h3>Step 2 · Paired clean vs. noisy data</h3>
+<h3>Step 3 · Paired clean vs. noisy data</h3>
 <p>The decisive test was to <strong>train on clean data and on noisy data side by side</strong>. If a target is recoverable
 from clean data but not once realistic noise is added, then no model trained on noisy data will get it back, however
 it's tuned. That's exactly what happened.</p>
 
-<h3>Step 3 · Where the noise lives</h3>
-<p>Next I measured how much noise each group of measurements carries relative to its signal, and ran an ablation
-using only the cleanest inputs. Dropping the noisiest inputs didn't rescue the target.</p>
+<h3>Step 4 · Rule out the obvious bottlenecks</h3>
+<ul>
+<li><strong>Is PCA throwing the signal away?</strong> I bypassed it and trained on the raw landmark coordinates, alone and
+alongside the PCA features. Neither rescued the hard target, so the signal isn't hiding in the discarded components.</li>
+<li><strong>Are the noisiest inputs drowning it?</strong> I measured each landmark group's noise relative to its signal and
+ran an ablation on only the cleanest group. Dropping the noisiest inputs didn't rescue the target either.</li>
+</ul>
 
-<h3>Step 4 · How fragile is each target?</h3>
-<p>Finally I swept the amount of measurement noise and tracked R² for each target: an identifiability curve showing how
-much noise each target can tolerate. At the real measurement noise, the hard target can't be recovered.</p>
+<h3>Step 5 · Sim-to-real</h3>
+<p>The realistic deployment is a model trained on clean simulations and used on noisy measurements. Trained that way it
+failed on every target until I mean-centred the noisy features onto the clean ones, which fixed a systematic offset and
+recovered the easy targets. The hard target stayed unrecoverable.</p>
 
+<h3>Step 6 · Turn "it doesn't work" into a spec</h3>
+<p>Finally I rebuilt the feature generator, injected Gaussian landmark noise at increasing levels, re-projected through
+the clean PCA and cross-validated each target. The result is an <strong>identifiability curve</strong>: the noise level at
+which each target stops being predictable. At the real measurement noise the hard target is far past that point, and
+the curve says how precise the measurements would need to be for it to work.</p>
 {chat([("detective", "Could an eighth model have fixed it?"),
-       ("scholar", "No. On clean data the target is recoverable. With the real measurement noise, no model gets it back.")])}
+       ("scholar", "No. On clean data the target is recoverable. With the real measurement noise, no model gets it back."),
+       ("detective", "So what does the team do instead?"),
+       ("scholar", "Fix the measurements. The noise sweep says how much cleaner they need to be.")])}
+
 <h3>The outcome</h3>
 <p>Every line of evidence pointed the same way: the <strong>R² ≈ 0.10 ceiling was a data limitation, not a model
 limitation</strong>. That redirected the team from model tuning to the inputs: what's measured, and at what signal
-quality. A negative result like this saves weeks.</p>"""
+quality. In the meantime, the useful outputs are the targets that <em>are</em> identifiable, plus a calibrated prediction
+interval (quantile models) for the hard one instead of a misleading point estimate. A negative result like this saves weeks.</p>"""
 
     seismic_sec = f"""
-<p>The second half of the internship became <strong>SeismicSoCal</strong>, deep-learning seismology for Southern
-California, now deployed live. The full case study has the details. In short:</p>
-{beside(fig(C.seismic_chart(), "Held-out chronological test set. Detection 0.992 vs 0.550 STA/LTA, magnitude R² 0.840 vs 0.749, early-warning alert MCC 0.760 vs 0.655."), "", "right")}
-{flow([("Stream", "10 SeedLink stations", False), ("Detect", "CNN→Transformer, continuous", True),
-       ("Confirm", "coincidence + move-out", True), ("Size", "GNN ensemble", False), ("Push", "FCM alerts", False)], dark=True)}
+<p>The second half of the internship is <strong>SeismicSoCal</strong>, deep-learning seismology for Southern California,
+deployed live. It listens to 19 stations in real time, detects, locates and sizes each quake, and sends two-stage
+alerts to people who follow nearby sensors. Everything measured offline is exactly what runs live, and a replay of real
+archived days is the acceptance test.</p>
+{beside(fig(C.seismic_chart(), "Held-out chronological test (2022–2026). Detection AUC 0.9998 vs 0.816 STA/LTA; magnitude R² 0.951 vs 0.886 amplitude + distance, with non-overlapping 95% CIs."), "", "right")}
+{flow([("Stream", "19 SeedLink stations", False), ("Detect", "CNN→Transformer, every 2 s", True),
+       ("Locate", "≥ 3 picks, no silent nearer station", True), ("Size", "CNN→GNN→Transformer ensemble", False),
+       ("Alert", "two-stage FCM push", False)], dark=True)}
+{table(["Replay of 10 held-out days", "Result"],
+       [["Confirmed events that were real quakes", "<span class='win'>93%</span> (chance baseline 0%)"],
+        ["Push alerts / false", "<span class='win'>5 / 0</span>"],
+        ["Median location error", "<span class='win'>2.5 km</span>"],
+        ["Pushed magnitudes vs. catalogue", "within 0.13"]])}
+<p>It is also a production ML system: <strong>QuakeOps</strong> tracks every training run in MLflow, only promotes a
+retrained model through a six-rule statistical + replay gate, and checks the live stream for drift every day.</p>
+<p>The case study covers <a href="{rel}projects/seismicsocal/#live">the live pipeline</a>, the
+<a href="{rel}projects/seismicsocal/#replay">replay acceptance test</a> and <a href="{rel}projects/seismicsocal/#quakeops">QuakeOps</a>.</p>
 <p style="margin-top:12px">{go(rel + "projects/seismicsocal/", "Read the full SeismicSoCal case study")}</p>"""
 
     approach = f"""
@@ -1514,13 +1627,19 @@ looked like in practice.</p>
                                               ("seismic", "SeismicSoCal"), ("approach", "Approach")]), body_cls="panel-body tight")
         + panel("spec-cb", "Spec sheet", spec([("Org", "California Baptist Univ."), ("Role", "ML Research Intern"),
                                                 ("Dates", "May 2026 – present"), ("Location", "Riverside, CA"),
-                                                ("Models", "RF · XGB · CNN · GNN"), ("Deploy", "Oracle Cloud · systemd")]),
+                                                ("Models", "RF · XGB · HGB · CNN · GNN"), ("Deploy", "Oracle Cloud · systemd"),
+                                                ("MLOps", "MLflow · Dagster · Evidently")]),
                 body_cls="panel-body tight")
-        + panel("stack-cb", "Stack", chips(["scikit-learn", "XGBoost", "PyTorch", "ObsPy", "SeedLink", "NumPy", "FCM", "systemd"]),
+        + panel("stack-cb", "Stack", chips(["scikit-learn", "XGBoost", "PCA", "PyTorch", "ObsPy", "SeedLink", "NumPy",
+                                            "MLflow", "Dagster", "Evidently", "GitHub Actions", "pytest", "FCM",
+                                            "Caddy", "systemd", "Oracle Cloud"]),
                 body_cls="panel-body tight")
         + info("What is — inverse FEA?",
                "<p>Finite-element analysis predicts how a structure responds to loads. The <i>inverse</i> problem "
-               "infers the hidden properties or loads from a measured response, and it's only as good as the measurements.</p>"))
+               "infers the hidden properties or loads from a measured response, and it's only as good as the measurements.</p>")
+        + info("What is — identifiability?",
+               "<p>Whether the data could determine a quantity at all, for <i>any</i> model. If adding realistic noise "
+               "erases a target that's recoverable from clean data, better models can't bring it back; better measurements can.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -1621,7 +1740,7 @@ them. That gave the same build in development and production, reproducible envir
         + panel("resumable", "Resumable redemptions", resumable, num="02")
         + panel("serial", "Product serialization tool", serial, num="03")
         + panel("perf", "~85% faster redemption actions", perf, num="04")
-        + pager(rel, ("experience/cbu-seismicsocal/", "CBU Research"), ("experience/kigumi-group/", "Kigumi Group")))
+        + pager(rel, ("experience/cbu-research/", "CBU Research"), ("experience/kigumi-group/", "Kigumi Group")))
 
     rail = (
         panel("toc-nt", "On this page", toc([("overview", "Overview"), ("resumable", "Resumable redemptions"),
@@ -1739,16 +1858,16 @@ ALL = [
      "description": "Adaptive SAT engine (BKT + IRT + forgetting + prerequisite graph) and a RAG AP essay grader that cut scoring error ~23%."},
     {"path": "projects/seismicsocal", "key": "seismicsocal", "render": seismic,
      "title": "SeismicSoCal · Braedyn Thompson",
-     "description": "Live deep-learning earthquake detection for Southern California: 0.992 ROC-AUC detection, GNN magnitude R² 0.840, push alerts."},
+     "description": "Live deep-learning earthquake detection for Southern California: 0.9998 ROC-AUC detection, GNN magnitude R² 0.951, replay-tested two-stage alerts and MLflow-gated retraining."},
     {"path": "projects/bearlm", "key": "bearlm", "render": bearlm,
      "title": "BearLM · Braedyn Thompson",
      "description": "Fully local hybrid-search RAG over Berkeley CS/DS courses: recall@1 56% to 82%, RAGAS faithfulness 0.55 to 0.83."},
     {"path": "experience/lawrence-berkeley-lab", "key": "lawrence-berkeley-lab", "render": lbnl,
      "title": "Berkeley Lab Internship · Braedyn Thompson",
      "description": "PatchTST forecasting of XCache traffic beating persistence by up to 24% RMSE, plus EDA exposing the peak-predictability ceiling."},
-    {"path": "experience/cbu-seismicsocal", "key": "cbu-seismicsocal", "render": cbu,
+    {"path": "experience/cbu-research", "key": "cbu-research", "render": cbu,
      "title": "CBU Research Internship · Braedyn Thompson",
-     "description": "Diagnosed an inverse-FEA data ceiling across 7 models, and built SeismicSoCal's deep detection and live alert daemon."},
+     "description": "Diagnosed an inverse-FEA data ceiling across 7 models with a noise-identifiability study, and built SeismicSoCal's live detection, location, sizing and alert pipeline."},
     {"path": "experience/numistoken", "key": "numistoken", "render": numis,
      "title": "NumIsToken Internship · Braedyn Thompson",
      "description": "Resumable redemptions via History and Detail services, a product serialization tool with barcode labels, and ~85% faster redemption actions."},
