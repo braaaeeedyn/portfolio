@@ -590,7 +590,7 @@ ROLES = [
     ("ML", "Machine Learning Engineer",
      "Train models that beat a real baseline, then run them in production.",
      [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST forecasting, up to 24% lower RMSE"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
       ("projects/academy-of-testers/", "Academy of Testers", "BKT + IRT adaptive engine as pure, testable code")]),
     ("DS", "Data Scientist",
      "Design honest experiments and find out what the data can support.",
@@ -601,7 +601,7 @@ ROLES = [
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [("projects/bearlm/", "BearLM", "ETL over PDF / md / ipynb, ~10K records with retry/backoff"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas pipelines over 3 years of logs")]),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas pipelines over years of cache logs")]),
     ("DA", "Data Analyst",
      "Turn raw logs and metrics into clear charts and decisions.",
      [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "seasonality, change-points and peaks in Matplotlib / Seaborn / Plotly"),
@@ -610,21 +610,15 @@ ROLES = [
     ("RES", "AI / ML Researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
      [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST forecasting + the peak-predictability ceiling"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST + showing peaks aren't predictable from history alone"),
       ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test")]),
 ]
 
-# Which résumé best fits each role (keys from build.RESUMES)
-ROLE_RESUME = {"AI": "aiml", "ML": "aiml", "RES": "aiml", "DS": "ds", "DA": "ds", "DE": "de"}
-
-
-def roles_section(rel, resumes):
-    paths = {k: (label, path) for k, label, path in resumes}
+def roles_section(rel, resume):
     cards = []
     for ico, role, pitch, proofs in ROLES:
-        label, path = paths[ROLE_RESUME[ico]]
-        cv = (f"<a class='role-cv' href='{rel}{path}' target='_blank' rel='noopener' "
-              f"title='Open my {label} r&eacute;sum&eacute;'>PDF &darr;</a>")
+        cv = (f"<a class='role-cv' href='{rel}{resume}' target='_blank' rel='noopener' "
+              f"title='Open my r&eacute;sum&eacute;'>PDF &darr;</a>")
         links = "".join(
             f"<a class='proof' href='{rel}{href}'><span><span class='proof-where'>{where}</span>"
             f"<span class='proof-what'>{what}</span></span><span class='arrow-chip'></span></a>"
@@ -717,17 +711,20 @@ tuning models that had nothing left to find.</p>"""
     contact = f"""
 <p>I'm looking for AI, machine learning and data roles (see <a href="#roles">roles I'm targeting</a>).
 The fastest way to reach me is email.</p>
+<div class="email-line"><code class="email-addr">{ctx["email"]}</code>
+<button class="chip email-copy" type="button" data-copy="{ctx["email"]}">Copy</button>
+<a class="chip" href="https://mail.google.com/mail/?view=cm&amp;to={ctx["email"]}" target="_blank" rel="noopener">Open in Gmail</a></div>
 {rail_btns([("@", "Email me", "mailto:" + ctx["email"]), ("GH", "GitHub", ctx["github"]),
             ("IN", "LinkedIn", ctx["linkedin"])])}"""
 
-    resumes = ("<p>Pick the version that matches the role. Each is a one-page PDF.</p>"
-               + rail_btns([("CV", f"{label} r&eacute;sum&eacute;", rel + path) for _, label, path in ctx["resumes"]]))
+    resumes = ("<p>A one-page PDF covering all of the roles above.</p>"
+               + rail_btns([("CV", "R&eacute;sum&eacute; (PDF)", rel + ctx["resume"])]))
 
     education = spec([("School", "UC Berkeley"), ("Major", "Computer Science &amp; Data Science"),
                       ("Emphasis", "Applied Math &amp; Modeling"), ("Graduation", "Fall 2027"), ("GPA", "3.75 / 4.00")])
 
     main_html = (
-        panel("roles", "Roles I'm targeting", roles_section(rel, ctx["resumes"]), num=f"{len(ROLES):02d}", body_cls="panel-body")
+        panel("roles", "Roles I'm targeting", roles_section(rel, ctx["resume"]), num=f"{len(ROLES):02d}", body_cls="panel-body")
         + panel("projects", "Featured projects", f"<div class='featured'>{feat_html}</div>", num="03",
                 body_cls="panel-body")
         + panel("experience", "Experience", exp_html, cls="platinum", num=f"{len(exp):02d}", body_cls="panel-body tight")
@@ -735,12 +732,8 @@ The fastest way to reach me is email.</p>
         + panel("skills", "Toolkit", skills, body_cls="panel-body"))
 
     rail = (
-        info("What is — this site?",
-             "<p>A portfolio styled like a 2001 game-console web page: periwinkle metal plates, carbon "
-             "command bars, and orange only where it moves you forward.</p><p>Every number on it comes "
-             "from a held-out evaluation in the project's own repo.</p>")
-        + panel("contact", "Contact", contact, dark=False)
-        + panel("resumes", "R&eacute;sum&eacute;s", resumes)
+        panel("contact", "Contact", contact, dark=False)
+        + panel("resumes", "R&eacute;sum&eacute;", resumes)
         + panel("education", "Education", education, body_cls="panel-body tight")
         + panel("timeline", "Timeline", """
 <ul class="timeline">
@@ -1374,111 +1367,186 @@ answer time of about 6 s on an 8 GB RTX 4060.</p>
 def lbnl(ctx):
     rel = ctx["rel"]
     h = hero(
-        "field-indigo", "INTERNSHIP · RESEARCH", "Berkeley Lab",
-        "Data Science &amp; Machine Learning Research Intern at Lawrence Berkeley National Laboratory, "
-        "forecasting XCache traffic so the people who run the cache can plan for load before it arrives.",
-        ["Sep 2026 – present", "Berkeley, CA", "PatchTST · PyTorch"],
+        "field-indigo", "INTERNSHIP · RESEARCH · ESNET", "Berkeley Lab",
+        "Data Science &amp; Machine Learning Research Intern at Lawrence Berkeley National Laboratory (ESnet), "
+        "forecasting traffic at the regional data caches that serve CMS physicists, and finding out how "
+        "predictable that traffic really is.",
+        ["Sep 2026 – present", "Berkeley, CA", "PatchTST · PyTorch · NeuralForecast"],
         C.patchtst_schematic(dark=True), small=False)
 
+    summary = table(["Question", "How I tested it", "What I concluded"], [
+        ["Can a deep forecaster beat the naive baseline at all?",
+         "PatchTST vs. persistence and linear regression on a chronological hold-out",
+         "Yes on the headline metric, but the average error hid that it smoothed over every spike"],
+        ["How much history should the model see?",
+         "Lookback sweep per horizon, scored with rolling-origin cross-validation",
+         "Long context helps a day ahead; at a month ahead short windows win"],
+        ["Is that result real or luck?",
+         "Hyperparameter grid on the two finalists, then retraining on several random seeds",
+         "Stable across seeds; the long window specifically controls large errors"],
+        ["Are the missed peaks a training problem?",
+         "Five losses from soft to strict, then deliberately high percentile forecasts",
+         "No: every variant misses the same spikes, so the signal isn't in past traffic"],
+        ["Does the right setup depend on the kind of traffic?",
+         "Separate models for a calm era and an erratic era of the same cache",
+         "Yes: calm traffic rewards longer history, erratic traffic rewards the last few days"],
+    ])
+
     overview = f"""
-{stats([("-24<small>%</small>", "RMSE vs persistence", "best target"),
-        ("3<small>yr</small>", "of XCache traffic logs", "EDA + forecasting"),
-        ("All", "targets beat baseline", "every horizon"),
-        ("Multi", "horizon forecasts", "tuned lookback windows")])}
-<hr class="dotted">
-<p class="lede">XCache is a data cache layer for large scientific workflows. If you know traffic will spike,
-you can provision for it. If you miss the spike, everything downstream slows down.</p>
-<p>My work had two halves. One was building a forecaster that beats the hard-to-beat naive baseline. The other was
+<p class="lede">If the people who run a data cache know traffic will spike, they can provision for it. If they miss
+the spike, everything downstream slows down.</p>
+<p>My work has two halves. One is building a forecaster that beats a hard-to-beat naive baseline. The other is
 finding out, with evidence, <em>how predictable the peaks are at all</em>, so the team designs features and models
-around a real ceiling instead of chasing it.</p>
+around a real limit instead of chasing it. I present to the group every week, and each week's question comes out of
+the last one's result.</p>
 {bullets([
-    "Implemented <strong>PatchTST</strong> (PyTorch / neuralforecast) for multivariate time-series forecasting of cache-traffic "
-    "signals across multiple horizons, tuning lookback windows and <strong>beating a persistence baseline on all targets by up to 24% RMSE</strong>.",
-    "Exposed the ceiling on peak-load predictability and guided feature and model design by building reproducible <strong>Pandas EDA "
-    "pipelines over 3 years of XCache traffic logs</strong>. I visualized seasonality, change-points and right-skewed peaks with "
-    "Matplotlib, Seaborn and Plotly, and used <strong>rolling cross-validation</strong> to show that models under-predict rare peaks.",
-])}"""
+    "Implemented <strong>PatchTST</strong> (PyTorch / NeuralForecast) for multivariate forecasting of cache traffic at 1-, 7- and "
+    "30-day horizons, choosing the lookback window with rolling cross-validation and <strong>beating a persistence baseline on "
+    "every variable and horizon</strong>, by up to 24% RMSE.",
+    "Showed that the missed traffic peaks are a <strong>predictability limit, not a modelling flaw</strong>: changing the loss or "
+    "forecasting high on purpose missed the same spikes, which redirected the work toward new input signals.",
+    "Built reproducible <strong>Pandas EDA pipelines</strong> over several years of XCache logs from three regional caches, and "
+    "showed that the best amount of history depends on whether traffic is calm or erratic.",
+])}
+<h3>The research at a glance</h3>
+{summary}"""
+
+    problem = f"""
+<p>Experiments like the Large Hadron Collider store their data at a few large sites, while the physicists analysing it
+are spread across the country, and ESnet carries that traffic. Much of a popular dataset is read again and again, so
+<strong>regional caches</strong> (XCache) keep copies close to the users: fewer repeated transfers, lower latency, less
+wide-area traffic. Forecasting how hard each cache will be used is what lets operators size them.</p>
+<p>The data is a daily record from three CMS caches (Southern California, Chicago and Boston) covering several years.
+Each day has six variables: how many file accesses there were and how much data they moved, split into cache
+<strong>hits</strong> (served locally) and <strong>misses</strong> (fetched over the network). Operators care most about the volume
+served from the cache.</p>
+<h3>Exploring before modelling</h3>
+<p>I built <strong>reproducible Pandas pipelines</strong> that load, clean, resample and plot every site the same way and rerun
+end to end on new data. Exploration shaped every later decision:</p>
+{tiles([("Structure in the data", "Total accesses always equal hits plus misses, for counts and volumes, a constraint a model should respect."),
+        ("Sites differ", "The largest cache has the most traffic and the best hit rate; the smallest is more volatile. One model shouldn't be assumed to fit every site, so sites are modelled separately."),
+        ("Right-skewed peaks", "Most days are ordinary and a few are extreme. The rare tail is what operations care about most."),
+        ("Change-points", "The level and variance of traffic shift over time, so old history can mislead. This later became its own experiment.")])}"""
 
     model = f"""
 <p><strong>PatchTST</strong> treats a time series the way a vision transformer treats an image. It cuts the lookback
-window into short <em>patches</em>, turns each patch into a token, and lets a Transformer attend across patches.
-Each channel is handled independently with shared weights. Patching keeps local shape (a ramp, a burst) intact
-inside one token and cuts the sequence length the attention has to cover.</p>
+window into short overlapping <em>patches</em>, turns each into a token, and lets a Transformer attend across them. Each
+variable is encoded separately with shared weights. Patching keeps local shape (a ramp, a burst) inside one token and
+lets the model see a long history cheaply, which is why I chose it for multi-step forecasting.</p>
 {beside(fig(C.patchtst_schematic(), "How PatchTST sees a lookback window: patches become tokens, a channel-independent Transformer encodes them, and heads emit forecasts at several horizons. Schematic only, not real data.", "Schematic"), "", "right")}
-<h3>The baseline that's hard to beat</h3>
-<p>For traffic, "tomorrow looks like today" (<strong>persistence</strong>) is a strong baseline. Most of the
-signal is momentum and daily rhythm. A model that can't beat persistence on every horizon isn't worth deploying,
-so persistence was the bar for every target.</p>
-{tip("Persistence is hard to beat. PatchTST beat it on every target.")}
-{fig(C.rmse_gauge(), "Persistence indexed to 100. PatchTST beat it on every target; the largest margin was 24% lower RMSE.")}
-<h3>What I tuned</h3>
-<ul>
-<li><strong>Lookback window length</strong> per horizon. Longer windows capture weekly structure, while shorter ones adapt faster to change-points.</li>
-<li>Forecast horizons from short to long, with a separate evaluation for each so a good short horizon can't hide a weak long one.</li>
-<li>Evaluation that is <strong>always walk-forward</strong>. No fold ever trains on data that comes after its test window.</li>
-</ul>
-{image(rel, "lbnl-forecast-vs-actual.png", "Daily hit_size (TB) over the test period: actual vs. PatchTST. The forecast tracks the everyday level and rhythm, but the rare spikes (some above 200 TB) are far above the prediction.", alt="Daily hit_size, actual vs PatchTST")}
+<h3>Step 1 · Set a bar worth clearing</h3>
+<p>For traffic, "tomorrow looks like today" (<strong>persistence</strong>) is a strong baseline because most of the signal is
+momentum and weekly rhythm. I compared PatchTST with persistence and a linear model on a <strong>chronological</strong>
+hold-out (never a random split, which would leak the future), with early stopping on validation loss to avoid overfitting.</p>
+<h3>Step 2 · Look past the headline number</h3>
+<p>The first model beat both baselines on most variables, including the one operators care about. Plotting the forecasts
+against reality told a different story: it tracked the typical level but <strong>smoothed straight through the spikes</strong>,
+and on the low-volume miss variables it collapsed toward zero. Those variables only looked fine because their true values
+are mostly near zero too.</p>
+<p><strong>Conclusion:</strong> RMSE rewards being right on average, so a model that plays it safe near the typical value can
+score well while missing every spike. From then on I judged every experiment on both the average error and the peaks.</p>
+{image(rel, "lbnl-forecast-vs-actual.png", "Daily cache-hit volume over the test period: actual vs. the first PatchTST model. The forecast tracks the everyday level and rhythm but stays far below the rare spikes.", alt="Daily hit volume, actual vs PatchTST")}"""
 
-<h3>Lookback depends on the horizon</h3>
-<p>The best lookback window isn't fixed. At 1-day and 7-day horizons a <strong>~100-day lookback</strong> wins, which
-reflects real seasonality. At a <strong>30-day horizon</strong> that advantage disappears:</p>
-{tip("At 30 days out, short lookbacks win. 100–300 days never does.")}
-{table(["Feature", "3", "7", "14", "28", "40", "60", "80", "100", "120", "150", "200", "300"],
-       [["access_count", "<span class='win'>11,641</span>", "11,858", "12,915", "13,219", "12,774", "12,601", "12,150", "11,917", "11,803", "12,506", "12,327", "12,898"],
-        ["access_size", "<span class='win'>28.51</span>", "29.52", "31.47", "33.36", "32.11", "33.08", "32.01", "32.18", "33.45", "33.44", "32.15", "34.23"],
-        ["hit_count", "<span class='win'>10,708</span>", "10,880", "11,358", "12,264", "11,815", "11,669", "11,010", "10,955", "10,988", "11,745", "11,786", "12,117"],
-        ["hit_size", "<span class='win'>27.95</span>", "29.02", "30.64", "32.72", "31.46", "32.59", "31.36", "31.56", "32.90", "32.93", "31.85", "33.75"],
-        ["miss_count", "1,475", "1,444", "1,677", "<span class='win'>1,300</span>", "1,768", "1,704", "1,697", "1,879", "1,737", "2,030", "1,896", "2,640"],
-        ["miss_size", "0.860", "0.785", "1.030", "<span class='win'>0.715</span>", "0.956", "0.962", "0.936", "1.009", "1.030", "1.049", "1.080", "1.673"]],
-       num_cols=tuple(range(1, 13)))}
-<p class="note">RMSE by lookback window (days) at a 30-day forecast horizon, per feature; lower is better and the best per
-feature is highlighted.</p>
-<p><strong>Long lookback doesn't help at 30 days.</strong> A 3-day lookback wins on 4 of the 6 features and 28 days wins
-the other 2; 100–300-day lookbacks are never the best. The ~100-day seasonal advantage seen at the 1- and 7-day horizons
-doesn't carry over to a 30-day forecast. The shape of the error curve does hint that a lookback around 120 days could
-do better, which is worth testing next.</p>
-{chat([("explorer", "So a longer lookback is always better?"),
-       ("berkeley", "Not at a 30-day horizon. A 3-day lookback wins 4 of the 6 features, and 100+ days never wins."),
-       ("explorer", "But the 100-day window wins at 1 and 7 days?"),
-       ("berkeley", "Right. The seasonal advantage just doesn't carry out to 30 days.")])}"""
-
-    eda = f"""
-<p>Before modelling, I built <strong>reproducible Pandas pipelines</strong> over three years of XCache logs:
-loading, cleaning, resampling, and a fixed set of diagnostic views that rerun end to end on new data.</p>
-{tiles([("Seasonality", "Daily and weekly rhythm in request volume, which is what persistence and the model both exploit."),
-        ("Change-points", "Regime shifts where the level or variance of traffic jumps, so a window from before is misleading after."),
-        ("Right-skewed peaks", "Most hours are ordinary and a few are extreme. The tail is what operations care about most."),
-        ("Rolling CV", "Walk-forward folds that show where errors concentrate over time.")])}
+    tuning = f"""
+<p>I chose each hyperparameter deliberately rather than leaving defaults, and tested the one that mattered most, the
+amount of history, as an experiment of its own.</p>
+{tiles([("Lookback", "How many past days the model sees. Swept from a few days to most of a year, separately for each horizon."),
+        ("Horizon", "1, 7 and 30 days, each evaluated on its own so a good short horizon can't hide a weak long one."),
+        ("Scaling", "Each variable standardised, because counts and data volumes live on very different scales."),
+        ("Loss", "MAE aims at the median and under-shoots bursts; MSE chases peaks but inflates typical-day error. Tested in between.")])}
+<h3>Step 3 · Choose the lookback with rolling cross-validation</h3>
+<p>A single test period can flatter one setting by chance, so every lookback was scored across many <strong>rolling
+windows</strong>: train on the past, forecast the next block, slide forward, repeat. The persistence baseline was scored on the
+identical windows, so every comparison is like for like.</p>
 {beside(fig(C.rolling_cv_schematic(), "Rolling-origin cross-validation: each fold trains only on the past and validates on the next block, which mirrors how the model would actually be used.", "Schematic"), "Walk-forward only: no fold ever peeks at the future.", "right")}
-<h3>The finding: a ceiling on peaks</h3>
-<p>Across folds the models track the baseline load well but <strong>systematically under-predict rare peaks</strong>.
-Peaks are right-skewed, infrequent, and often not foreshadowed in the lookback window, so a model trained to
-minimize average error learns to hedge toward the typical level. That changed the question the team asked. Instead of
-"which architecture predicts peaks?", it became "what signal would make peaks predictable?", and that question drives feature design.</p>
-<h3>Does the loss function fix it?</h3>
-<p>One natural fix is to change what the model is trained to minimise. I compared five losses, from the softest
-(MAE) through Huber at three thresholds to the strictest (MSE), on hit_size with a 100-day lookback at a 1-day
-horizon.</p>
-{beside(image(rel, "lbnl-loss-comparison.png", "hit_size, prediction vs. actual for five training losses (MAE, Huber δ = 0.5 / 1.0 / 2.0, MSE), lookback 100, 1-day horizon. The shaded areas are the peak gap: under every loss the largest spikes are still under-predicted.", alt="Prediction vs actual for five loss functions"), "Five losses, same story: the biggest spikes stay under-predicted.", "right")}"""
+<p><strong>What I saw:</strong> one day ahead, error was lowest with roughly three months of history, long enough to span
+a monthly cycle. A week to a month of history did worst (too short to see a cycle, long enough to add noise), and among the
+short windows, 3 days stood out. A week ahead, 3 days was best.</p>
+{image(rel, "lbnl-lookback-relative.png", "Error for each lookback as a percentage above the best lookback at that horizon (0% = best). Computed from the rolling-CV sweeps for 1 and 7 days and the 30-day sweep; relative values only.", "Figure", alt="Error above the best lookback, by lookback and horizon")}
+<p>At each variable's best setting, PatchTST beat persistence on every variable at both horizons, with the largest gains
+on data volumes one day ahead and the smallest on miss counts a week ahead.</p>
+{image(rel, "lbnl-vs-persistence.png", "RMSE improvement over persistence at each variable's best lookback, on the same rolling windows.", "Figure", alt="RMSE improvement over persistence by variable and horizon")}
+<h3>Step 4 · Check the result isn't luck</h3>
+<ul>
+<li><strong>Head-to-head grid.</strong> I tuned model size and dropout for the two finalists (3 vs. 100 days of history). On
+average error their configurations overlapped; on RMSE, which weights big misses, every 100-day configuration beat every 3-day
+one. So long context specifically controls large errors.</li>
+<li><strong>Seeds.</strong> Retraining the chosen model on several random seeds changed its error only slightly, so the choice is a
+stable finding rather than a lucky initialisation.</li>
+</ul>
+{image(rel, "lbnl-grid-relative.png", "Each configuration's error as a percentage above the best one, averaged over the six variables. Dark = 100-day lookback.", "Figure", alt="Grid search, error relative to the best configuration")}
+{image(rel, "lbnl-seed-spread.png", "Seed-to-seed spread (std / mean) of the chosen model over 5 seeds. Only the low-volume miss_size moves more than a few percent.", "Figure", alt="Seed-to-seed spread by variable")}
+<h3>Step 5 · Push the horizon out to a month</h3>
+<p>If long history helps a day ahead because it captures seasonality, it should help even more a month ahead. It didn't:
+at 30 days the short windows won and the longest ones never did (the dashed line in the lookback chart above).</p>
+{chat([("explorer", "So a longer lookback is always better?"),
+       ("berkeley", "Not a month ahead. Short windows win there, and the longest ones never do."),
+       ("explorer", "But long history wins a day ahead?"),
+       ("berkeley", "Right, and the seed check says that's real. The seasonal advantage just doesn't carry out to 30 days.")])}"""
+
+    peaks = f"""
+<p>Every experiment so far tracked ordinary days well and <strong>under-predicted the rare peaks</strong>. Rather than keep
+tuning, I turned the two obvious explanations into hypotheses and tested each directly.</p>
+<h3>Hypothesis 1 · The loss function is to blame</h3>
+<p>If training rewards average correctness, a stricter loss should chase peaks. I trained the same model under five losses
+from softest to strictest (MAE, three Huber settings, MSE). All five produced nearly identical forecasts and missed the
+same spikes by the same amount. Measured against the MAE-trained model, every stricter loss was equal or slightly worse,
+on peak days too. <strong>Rejected.</strong></p>
+{image(rel, "lbnl-loss-relative.png", "Each loss compared with the MAE-trained model (0 = same). If stricter losses chased peaks, the dark bars would be negative.", "Figure", alt="Change in error vs. the MAE loss")}
+{beside(image(rel, "lbnl-loss-comparison.png", "Prediction vs. actual for five training losses (MAE, Huber δ = 0.5 / 1.0 / 2.0, MSE). The shaded areas are the peak gap: under every loss the largest spikes are still under-predicted.", alt="Prediction vs actual for five loss functions"), "Five losses, same story: the biggest spikes stay under-predicted.", "right")}
+<h3>Hypothesis 2 · Just forecast high on purpose</h3>
+<p>For provisioning, over-shooting is cheaper than falling short, so I trained <strong>percentile forecasts</strong> that aim
+above the median. Raising the target added spare capacity on ordinary days but barely changed how often a busy day was
+missed: the whole forecast shifted up without learning to see spikes coming. <strong>Rejected.</strong></p>
+<h3>Conclusion · A limit on what history can predict</h3>
+<p>If neither a stricter objective nor a deliberately high forecast catches the spikes, the information isn't in the past
+traffic. The peaks are infrequent and rarely foreshadowed, so a model trained on history alone can't anticipate them. That
+changed the team's question from <em>"which model predicts peaks?"</em> to <em>"what signal would make peaks predictable?"</em>,
+and it now drives feature design: calendar features, rolling variance and recent miss activity.</p>"""
+
+    regimes = f"""
+<p>The most recent test period was far more erratic than earlier years, which raised a new question: is there one best
+setup at all, or does it depend on the kind of traffic?</p>
+<h3>Step 6 · Split by regime and compare</h3>
+<p>I divided the longest-running cache's history into a calmer earlier era and an erratic recent era, trained a separate
+model on each with the same chronological split, and repeated the lookback-by-horizon comparison inside both.</p>
+{tiles([("Calm traffic", "The best amount of history grows with the horizon: short windows a day or a week ahead, and long history starts to pay off a month ahead."),
+        ("Erratic traffic", "A window of the last few days wins almost everywhere. Rapid shifts make long history stale, so it turns into misleading noise."),
+        ("Same model, different worlds", "Error was dramatically higher in the erratic era, so a single model judged on mixed data hides how differently it behaves in each.")])}
+{image(rel, "lbnl-regimes.png", "For each era, every lookback's error divided by the best lookback for the same variable and horizon (1.0 = best, outlined). Ratios only: absolute errors differ hugely between the eras.", "Figure", alt="Heatmaps of error relative to the best lookback, calm vs erratic era")}
+<p><strong>Conclusion:</strong> rather than one model for all traffic, <strong>detect the regime and use a model tuned for it</strong>.
+The next step is a measurable seasonality or regime signal that says in advance whether traffic will be calm or erratic,
+and fixing patch length and stride for each lookback.</p>"""
 
     main_html = (
         panel("overview", "Overview", overview, num="01")
-        + panel("model", "Forecasting with PatchTST", model, num="02")
-        + panel("eda", "EDA &amp; the predictability ceiling", eda, num="03")
+        + panel("problem", "The problem &amp; the data", problem, num="02")
+        + panel("model", "A baseline worth beating", model, num="03")
+        + panel("tuning", "Choosing how much history to use", tuning, num="04")
+        + panel("peaks", "Testing why peaks are missed", peaks, num="05")
+        + panel("regimes", "Calm vs. erratic traffic", regimes, num="06")
         + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/cbu-research/", "CBU Research")))
 
     rail = (
-        panel("toc-lb", "On this page", toc([("overview", "Overview"), ("model", "PatchTST forecasting"), ("eda", "EDA &amp; ceiling")]),
+        panel("toc-lb", "On this page", toc([("overview", "Overview"), ("problem", "Problem &amp; data"),
+                                             ("model", "Baseline"), ("tuning", "Lookback &amp; robustness"),
+                                             ("peaks", "Peak hypotheses"), ("regimes", "Traffic regimes")]),
               body_cls="panel-body tight")
-        + panel("spec-lb", "Spec sheet", spec([("Org", "Lawrence Berkeley National Lab"), ("Role", "DS &amp; ML Research Intern"),
-                                                ("Dates", "Sep 2026 – present"), ("Model", "PatchTST"),
+        + panel("spec-lb", "Spec sheet", spec([("Org", "Berkeley Lab · ESnet"), ("Role", "DS &amp; ML Research Intern"),
+                                                ("Program", "Data Science Discovery"), ("Dates", "Sep 2026 – present"),
+                                                ("Data", "XCache, 3 CMS caches"), ("Model", "PatchTST"),
                                                 ("Baseline", "Persistence"), ("Validation", "Rolling-origin CV")]),
                 body_cls="panel-body tight")
-        + panel("stack-lb", "Stack", chips(["PyTorch", "neuralforecast", "Pandas", "NumPy", "Matplotlib", "Seaborn", "Plotly"]),
+        + panel("stack-lb", "Stack", chips(["PyTorch", "NeuralForecast", "PyTorch Lightning", "Pandas", "NumPy",
+                                            "Matplotlib", "Seaborn", "Plotly", "Jupyter"]),
                 body_cls="panel-body tight")
         + info("What is — persistence?",
                "<p>The naive forecast: predict that the next value equals the last observed one. For traffic with "
-               "strong momentum it's surprisingly hard to beat, which makes it the honest bar.</p>"))
+               "strong momentum it's surprisingly hard to beat, which makes it the honest bar.</p>")
+        + info("What is — XCache?",
+               "<p>A regional data cache for scientific computing. When a physicist reads a file, a <b>hit</b> serves "
+               "it from the nearby cache; a <b>miss</b> fetches it over the wide-area network and keeps a copy for "
+               "the next reader.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -1864,7 +1932,7 @@ ALL = [
      "description": "Fully local hybrid-search RAG over Berkeley CS/DS courses: recall@1 56% to 82%, RAGAS faithfulness 0.55 to 0.83."},
     {"path": "experience/lawrence-berkeley-lab", "key": "lawrence-berkeley-lab", "render": lbnl,
      "title": "Berkeley Lab Internship · Braedyn Thompson",
-     "description": "PatchTST forecasting of XCache traffic beating persistence by up to 24% RMSE, plus EDA exposing the peak-predictability ceiling."},
+     "description": "PatchTST forecasting of XCache traffic at ESnet: rolling cross-validation, hypothesis tests on why peaks are missed, and regime-aware lookback selection."},
     {"path": "experience/cbu-research", "key": "cbu-research", "render": cbu,
      "title": "CBU Research Internship · Braedyn Thompson",
      "description": "Diagnosed an inverse-FEA data ceiling across 7 models with a noise-identifiability study, and built SeismicSoCal's live detection, location, sizing and alert pipeline."},

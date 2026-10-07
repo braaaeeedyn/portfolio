@@ -32,12 +32,7 @@ NAME = "Braedyn Thompson"
 GITHUB = "https://github.com/braaaeeedyn"
 EMAIL = "braedynthompson@berkeley.edu"
 LINKEDIN = "https://www.linkedin.com/in/braedyn-thompson-67a396284/"
-# One résumé per target track: (key, label, path)
-RESUMES = [
-    ("aiml", "AI / ML", "resumes/CV_BraedynThompson28AIML.pdf"),
-    ("de", "Data Engineering", "resumes/CV_BraedynThompson28DE.pdf"),
-    ("ds", "Data Science", "resumes/CV_BraedynThompson28DS.pdf"),
-]
+RESUME = "resumes/CV_BraedynThompson28.pdf"
 
 PROJECTS = [
     ("academy-of-testers", "Academy of Testers"),
@@ -77,10 +72,15 @@ def nav(rel, current):
         ("index.html#contact", "Contact", "contact"),
     ]
     nav_html = "".join(f"<li><a href='{rel}{h}'{cur(k)}>{t}</a></li>" for h, t, k in links)
-    sub = ["<span class='group'>Projects</span>"]
-    sub += [f"<a href='{rel}projects/{s}/'{cur(s)}>{t}</a>" for s, t in PROJECTS]
-    sub += ["<span class='group'>Internships</span>"]
-    sub += [f"<a href='{rel}experience/{s}/'{cur(s)}>{t}</a>" for s, t in EXPERIENCE]
+    def group(key, label, links):
+        # The label collapses its links; site.js toggles it and the <head> script restores the saved state.
+        return (f"<button class='group' type='button' data-group='{key}' aria-expanded='true' "
+                f"aria-controls='sub-{key}'>{label}<span class='caret' aria-hidden='true'></span></button>"
+                f"<span class='group-links' id='sub-{key}'>{''.join(links)}</span>")
+
+    sub = [group("projects", "Projects", [f"<a href='{rel}projects/{s}/'{cur(s)}>{t}</a>" for s, t in PROJECTS])]
+    sub += [group("internships", "Internships",
+                  [f"<a href='{rel}experience/{s}/'{cur(s)}>{t}</a>" for s, t in EXPERIENCE])]
     return f"""
 <header class="shell">
   <div class="masthead">
@@ -101,7 +101,7 @@ def nav(rel, current):
     <a class="logo-pill" href="{rel}index.html"><span>BRAEDYN</span></a>
     <ul class="nav-links">{nav_html}</ul>
     <div class="nav-utility">
-      <a class="chip" href="{rel}index.html#resumes">R&eacute;sum&eacute;s</a>
+      <a class="chip" href="{rel}{RESUME}" target="_blank" rel="noopener">R&eacute;sum&eacute;</a>
       <a class="chip" href="{GITHUB}" rel="noopener">GitHub</a>
     </div>
   </nav>
@@ -120,7 +120,7 @@ def footer(rel):
         <a href="mailto:{EMAIL}">Email</a>
         <a href="{GITHUB}" rel="noopener">GitHub</a>
         <a href="{LINKEDIN}" rel="noopener">LinkedIn</a>
-        {''.join(f'<a href="{rel}{path}" target="_blank" rel="noopener">R&eacute;sum&eacute; ({label})</a>' for _, label, path in RESUMES)}
+        <a href="{rel}{RESUME}" target="_blank" rel="noopener">R&eacute;sum&eacute;</a>
       </div>
     </div>
     <span class="badge"><strong>HAND-BUILT</strong>HTML &middot; CSS &middot; SVG</span>
@@ -149,7 +149,7 @@ def page(rel, key, title, description, hero, body):
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONTS}">
 <link rel="stylesheet" href="{rel}assets/css/site.css?v={_ver("assets/css/site.css")}">
-<script>document.documentElement.classList.add("js")</script>
+<script>document.documentElement.classList.add("js");try{{["projects","internships"].forEach(function(g){{if(localStorage.getItem("nav-"+g)==="closed")document.documentElement.classList.add("nav-closed-"+g)}})}}catch(e){{}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Crect width='12' height='12' rx='2' fill='%2321242e'/%3E%3Cpath fill='%23ecab37' d='M3 2h5v1h1v2h-1v1h1v2h-1v1h-5zM4 3v2h3v-2zM4 6v2h4v-2z'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -179,7 +179,7 @@ def build():
     out = []
     for spec in pages.ALL:
         rel = "" if spec["path"] == "" else "../../"
-        ctx = {"rel": rel, "github": GITHUB, "email": EMAIL, "linkedin": LINKEDIN, "resumes": RESUMES,
+        ctx = {"rel": rel, "github": GITHUB, "email": EMAIL, "linkedin": LINKEDIN, "resume": RESUME,
                "cbu_public": CBU_FIGURES_PUBLIC}
         hero, body = spec["render"](ctx)
         html = page(rel, spec["key"], spec["title"], spec["description"], hero, body)

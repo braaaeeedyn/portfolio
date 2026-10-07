@@ -218,3 +218,37 @@ window.addEventListener("error", function () { document.documentElement.classLis
     if (btn) btn.addEventListener("click", function () { play(chat); });
   });
 })();
+
+// Subnav groups: the "Projects" / "Internships" labels collapse their links. The state is a per-visitor
+// convenience in localStorage; the <head> script applies it before first paint so nothing flashes open.
+(function () {
+  var root = document.documentElement;
+  document.querySelectorAll(".subnav button.group[data-group]").forEach(function (btn) {
+    var key = btn.getAttribute("data-group");
+    var cls = "nav-closed-" + key;
+    btn.setAttribute("aria-expanded", root.classList.contains(cls) ? "false" : "true");
+    btn.addEventListener("click", function () {
+      var closed = root.classList.toggle(cls);
+      btn.setAttribute("aria-expanded", closed ? "false" : "true");
+      try { localStorage.setItem("nav-" + key, closed ? "closed" : "open"); } catch (e) {}
+    });
+  });
+})();
+
+// Contact: copy the email address (mailto: does nothing on machines without a default mail app).
+(function () {
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.getAttribute("data-copy");
+      function done() { btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy"; }, 1600); }
+      function fallback() {
+        var sel = window.getSelection(), addr = btn.parentNode.querySelector(".email-addr");
+        if (!addr || !sel) return;
+        var r = document.createRange(); r.selectNodeContents(addr); sel.removeAllRanges(); sel.addRange(r);
+        try { if (document.execCommand("copy")) done(); } catch (e) {}
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+      else fallback();
+    });
+  });
+})();

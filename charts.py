@@ -473,16 +473,9 @@ def rolling_cv_schematic(width=620, height=190):
         out.append(f"<rect x='{x0 + tr:.0f}' y='{y}' width='{te:.0f}' height='18' rx='2' fill='{OURS}'/>")
     out.append(f"<path d='M{x0} {height - 8} L{x0 + w} {height - 8}' stroke='{SOFT}' marker-end='url(#ta)'/>"
                f"<defs><marker id='ta' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10z' fill='{SOFT}'/></marker></defs>")
-    out.append(_t(x0 + w / 2, height - 14, "time (3 years of XCache logs) → never train on the future", 10, "middle", fill=SOFT))
+    out.append(_t(x0 + w / 2, height - 14, "time → never train on the future", 10, "middle", fill=SOFT))
     out.append("</svg>")
     return "".join(out)
-
-
-def rmse_gauge():
-    series = {"p": ("Persistence baseline (indexed to 100)", BASE), "m": ("PatchTST, best target", OURS)}
-    return hbars([("Relative RMSE", [("p", 100), ("m", 76)])], 110, lambda v: f"{v:.0f}", series,
-                 "Up to 24% lower RMSE than persistence (lower is better)", label_w=120, ticks=(0, 50, 100),
-                 note="PatchTST beat persistence on every target; 24% is the largest margin.")
 
 
 # ----------------------------------------------------------------------------- CBU
