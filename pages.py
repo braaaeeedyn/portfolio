@@ -1428,12 +1428,50 @@ end to end on new data. Exploration shaped every later decision:</p>
         ("Right-skewed peaks", "Most days are ordinary and a few are extreme. The rare tail is what operations care about most."),
         ("Change-points", "The level and variance of traffic shift over time, so old history can mislead. This later became its own experiment.")])}"""
 
+    how = f"""
+<p><strong>PatchTST</strong> (Nie et al., ICLR 2023, <em>"A Time Series is Worth 64 Words"</em>) is a Transformer built for
+long-horizon forecasting. Given the last <em>L</em> days of a series (the <strong>lookback</strong>), it predicts the next
+<em>H</em> days (the <strong>horizon</strong>) in one shot, instead of predicting one day and feeding that guess back in. One set of
+weights serves every variable.</p>
+<p>Its key idea is borrowed from vision transformers, which cut an image into small squares and treat each square as a
+"word". PatchTST cuts a time series into short <strong>patches</strong> of consecutive days and treats each patch as a token.</p>
+{beside(fig(C.patchtst_schematic(), "How PatchTST sees a lookback window: patches become tokens, a channel-independent Transformer encodes them, and a head emits the forecast. Schematic only, not real data.", "Schematic"), "", "right")}
+<h3>How a forecast is made, step by step</h3>
+{flow([("Normalize", "each window is shifted and scaled to mean 0, std 1 (RevIN); undone at the end", False),
+       ("Patch", "slide a window of P days with stride S, so ~L/S tokens instead of L", True),
+       ("Embed", "each patch becomes a vector, plus a learned position embedding", False),
+       ("Attend", "Transformer encoder: every patch can look at every other patch", True),
+       ("Forecast", "flatten all patch outputs; one linear layer emits all H future days", False)])}
+<ul>
+<li><strong>Normalize per window (RevIN).</strong> Traffic levels drift over months. Removing each window's own mean and scale
+lets the model learn the <em>shape</em> of what comes next, then the level is added back to the output.</li>
+<li><strong>Patch.</strong> A 128-day window with 16-day patches and an 8-day stride becomes about 15 tokens instead of 128.
+Each token now carries a local shape (a ramp, a weekly dip, a burst) rather than a single number with no context.</li>
+<li><strong>Attend.</strong> Self-attention learns which stretches of the past matter for the forecast: last week, the same
+point last month, the start of a burst. Its cost grows with the square of the number of tokens, so patching is what makes a
+long lookback affordable.</li>
+<li><strong>Channel independence.</strong> Each of the six traffic variables goes through the same network separately. That
+multiplies the training examples and reduces overfitting on a short history, at a cost: the model doesn't know that hits
+plus misses must equal accesses.</li>
+<li><strong>Direct multi-step output.</strong> The linear head predicts every future day at once, so errors don't compound the
+way they do when a model feeds its own predictions back in.</li>
+</ul>
+{table(["", "A Transformer on daily values", "PatchTST"],
+       [["One token is", "one day (a single number)", "a patch of consecutive days"],
+        ["Tokens for a long lookback", "one per day", "about one per stride"],
+        ["What attention compares", "individual days, noisy", "local shapes, more meaningful"],
+        ["Variables", "often mixed into one token", "encoded separately, shared weights"]])}
+<h3>How I set it up</h3>
+<ul>
+<li><strong>Framework:</strong> NeuralForecast's PatchTST on PyTorch Lightning, with RevIN on and early stopping on validation loss.</li>
+<li><strong>Patches follow the lookback:</strong> 16-day patches with an 8-day stride once the window is long enough; for very
+short windows the patch shrinks to half the window, since a patch can't be longer than its input.</li>
+<li><strong>Scaling:</strong> each variable standardised, because counts and data volumes live on very different scales.</li>
+<li><strong>Chosen deliberately:</strong> lookback, horizon, model size, dropout and loss were each tested as experiments (below),
+not left at defaults.</li>
+</ul>"""
+
     model = f"""
-<p><strong>PatchTST</strong> treats a time series the way a vision transformer treats an image. It cuts the lookback
-window into short overlapping <em>patches</em>, turns each into a token, and lets a Transformer attend across them. Each
-variable is encoded separately with shared weights. Patching keeps local shape (a ramp, a burst) inside one token and
-lets the model see a long history cheaply, which is why I chose it for multi-step forecasting.</p>
-{beside(fig(C.patchtst_schematic(), "How PatchTST sees a lookback window: patches become tokens, a channel-independent Transformer encodes them, and heads emit forecasts at several horizons. Schematic only, not real data.", "Schematic"), "", "right")}
 <h3>Step 1 · Set a bar worth clearing</h3>
 <p>For traffic, "tomorrow looks like today" (<strong>persistence</strong>) is a strong baseline because most of the signal is
 momentum and weekly rhythm. I compared PatchTST with persistence and a linear model on a <strong>chronological</strong>
@@ -1520,15 +1558,16 @@ and fixing patch length and stride for each lookback.</p>"""
 
     main_html = (
         panel("overview", "Overview", overview, num="01")
-        + panel("problem", "The problem &amp; the data", problem, num="02")
-        + panel("model", "A baseline worth beating", model, num="03")
-        + panel("tuning", "Choosing how much history to use", tuning, num="04")
-        + panel("peaks", "Testing why peaks are missed", peaks, num="05")
-        + panel("regimes", "Calm vs. erratic traffic", regimes, num="06")
+        + panel("patchtst", "What PatchTST is &amp; how it works", how, num="02")
+        + panel("problem", "The problem &amp; the data", problem, num="03")
+        + panel("model", "A baseline worth beating", model, num="04")
+        + panel("tuning", "Choosing how much history to use", tuning, num="05")
+        + panel("peaks", "Testing why peaks are missed", peaks, num="06")
+        + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
         + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/cbu-research/", "CBU Research")))
 
     rail = (
-        panel("toc-lb", "On this page", toc([("overview", "Overview"), ("problem", "Problem &amp; data"),
+        panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
                                              ("model", "Baseline"), ("tuning", "Lookback &amp; robustness"),
                                              ("peaks", "Peak hypotheses"), ("regimes", "Traffic regimes")]),
               body_cls="panel-body tight")
