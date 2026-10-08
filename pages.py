@@ -755,8 +755,9 @@ def aot(ctx):
     sample = [0.78, 0.86, 0.71, 0.52, 0.44, 0.63, 0.81, 0.38]
     h = hero(
         "field-lavender", "PROJECT 01 · ED-TECH · ML", "Academy of<br>Testers",
-        "A full-stack AP/SAT study platform with an adaptive learning engine that models what each "
-        "student knows, and a RAG essay grader calibrated against official College Board scores.",
+        "A full-stack AP/SAT study platform: an adaptive SAT engine that models what each student knows, a RAG "
+        "essay grader calibrated against official College Board scores, and study tools that turn every miss "
+        "into spaced review.",
         ["Jan 2023 – Jun 2026", "ML &amp; AI Software Developer", "Berkeley, CA"],
         C.radar(sample, 300, labels=False, dark=True),
         go("https://academyoftesters.com", "Visit academyoftesters.com", True)
@@ -766,15 +767,16 @@ def aot(ctx):
 {tip("Start here: grading error down ~23% against official College Board scores.")}
 {stats([("-23<small>%</small>", "AP grading error (MAE)", "vs. naive LLM grader"),
         ("0.62", "QWK vs. official scores", "English Lang + Lit, n=39"),
-        ("8", "skills in the mastery model", "SAT math radar axes"),
+        ("5,160", "AP practice questions", "172 units · 29 subjects"),
         ("4", "models fused", "BKT · IRT · decay · prereq graph")])}
 <hr class="dotted">
 <p class="lede">Most test-prep sites hand every student the same practice set. Academy of Testers
 tries to work out what <em>this</em> student knows and ask the question that will teach us the most.</p>
-<p>The platform covers AP and SAT: curated practice exams, subject resources, unit overviews, an AI
-study assistant, and two ML systems I designed and built. The first is an <strong>adaptive SAT math engine</strong>
-that tracks mastery of 8 skills. The second is a <strong>retrieval-augmented essay grader</strong> for AP
-free-response questions.</p>
+<p>The platform covers 29 AP subjects and SAT Math: unit practice, the real 2025 free-response questions, timed
+mock exams, lessons, and an AI study assistant. At its core are two ML systems I designed and built: an
+<strong>adaptive SAT math engine</strong> that tracks mastery of 8 skills, and a <strong>retrieval-augmented essay grader</strong> for AP
+free-response questions. Around them, a <strong>Mistake Notebook</strong> and <strong>week-by-week study plans</strong> turn what a
+student gets wrong into what they study next.</p>
 {bullets([
     "Architected an adaptive learning engine that models per-student skill mastery by combining "
     "<strong>Bayesian Knowledge Tracing</strong> with <strong>Item Response Theory</strong>, selecting questions to maximize "
@@ -792,7 +794,7 @@ frontend, and <strong>PostgreSQL 16</strong>. Flyway migrations are the only way
 deploys to Vercel and the API and database run on Render. Three subsystems hang off the student: the
 study experiences, the AI services (chat + FRQ grading over a shared RAG layer) and the SAT adaptive engine.</p>
 {diagram(rel, "aot-architecture.webp", "academyoftestersDiagram.png", "Academy of Testers architecture diagram",
-         "The learner uses the exam hubs, SAT adaptive practice and the AI features. In the AI grounding layer, Testy (AI chat) and FRQ grading share RAG retrieval: it embeds the query, loads candidates through chunk queries over the RAG chunks, and gets candidate pools from an in-memory corpus cache. Ingestion embeds and saves new chunks, then invalidates the affected cache pools. Everything persists to PostgreSQL behind the Spring API.")}"""
+         "The student works in the web study experience: exam browsing, subject resources, adaptive SAT, FRQ practice, AI chat and AP planning, all through one API client. Behind the Spring REST API, FRQ grading and the AI chat share grounded retrieval over OpenAI embeddings, adaptive sessions select questions from the SAT bank, Mistake review reloads a missed question, and accounts use JWT security. Everything persists in PostgreSQL.")}"""
 
     radar_sec = f"""
 <p>Each student gets a vector of eight mastery weights, one per SAT math skill. Every weight is a
@@ -826,6 +828,10 @@ can't push a student over the threshold.</p>
         ["Wrong answer", "0.082", "0.173", "50% of −0.227", "<b>0.287</b>"]], num_cols=(1, 2, 4))}
 <p class="note">Worked from the engine's constants. A wrong answer drops the weight by 0.113, which is about
 1.4× the gain from a right one.</p>
+<p><strong>A guard on top of textbook BKT.</strong> BKT applies its learning transition after <em>every</em> answer, so for a
+very weak skill (below w ≈ 0.115) a <em>wrong</em> answer would nudge mastery up, and that negative "loss" would then
+flow upstream and raise the prerequisites too. The update caps a miss at no change, so a wrong answer can never raise
+a skill or its prerequisites. It's a pure function with its own unit tests.</p>
 {chat([("hand", "Why does a wrong answer move mastery more than a right one?"),
        ("scholar", "Gains are damped to 25% of the step and losses to 50%, so one lucky guess can't fake mastery."),
        ("hand", "So mastery is easier to lose than to earn. Got it.")])}
@@ -856,6 +862,8 @@ candidate's score blends three terms:</p>
 withheld until after submission. Knowing an item's difficulty changes how students answer, which would
 contaminate the data used to recalibrate <code>irt_b</code>.</li>
 <li><strong>Question IDs are permanent</strong>, because the response history references them forever.</li>
+<li><strong>Every engine class is unit-tested</strong> (36 JUnit tests across BKT, IRT, forgetting, diagnostic, propagation,
+mastery updates and selection). Because the engine is pure, the tests need no Spring context and no database.</li>
 <li>The question bank's source of truth is reviewable JSON. A deterministic, idempotent normalizer turns
 raw practice tests into that JSON, and a generator emits the Flyway seed migration from it.</li>
 </ul>
@@ -908,6 +916,10 @@ four passes, and APUSH is the clean, untuned check. Packets don't include source
 arms grade without them. That's fine for the A/B difference, but these aren't production accuracy numbers.
 After this run the grader config was frozen.</p>
 <h3>Where students use it</h3>
+<p>Practice uses the <strong>real 2025 released exam questions</strong>: 179 questions across 26 subjects, split from the College
+Board booklets into per-question PDFs with their rubric rows, scoring guides and scored samples. Each question's rubric
+and exemplar chunks are tagged with its prompt id, so grading retrieves <em>that</em> question's own rubric and samples.
+The scoring guide and scored samples unlock after the student's first attempt.</p>
 {beside(image(rel, "aot-frq-grader.png", "The FRQ practice screen for a real 2025 AP English Language synthesis question: the official prompt PDF on the left, and on the right the rubric rows (thesis, evidence & commentary, sophistication), a suggested 55-minute timer, the response box and Grade my answer. Tabs open the scoring guide and scored samples, and drafts save as you type.", "Screenshot", alt="AP FRQ practice and grading screen"), "Real 2025 prompt on the left, rubric rows and AI grading on the right.", "left")}"""
 
     testy = f"""
@@ -929,6 +941,8 @@ that's slightly off the syllabus. This is the failure mode it prevents:</p>
 it applies and to answer from general knowledge when it doesn't.</li>
 <li>So Testy stays <strong>grounded in the course when the course covers it</strong>, and <strong>doesn't refuse</strong>
 reasonable questions when it doesn't.</li>
+<li>Any schoolwork is in scope; the selected subject is context, not a limit. If the AI call fails, the student's
+hourly allowance is refunded rather than spent on an error.</li>
 </ul>
 {chat([("wizard", "Why doesn't Testy just answer only from the course material?"),
        ("scholar", "Then any question slightly off the syllabus would get refused, even good ones."),
@@ -944,14 +958,42 @@ prevents that:</p>
         ("Conversation context", "Carries each conversation's recent relevant passages forward, so vague follow-ups like \"why?\" still find the right material instead of retrieving nothing.")])}
 {beside(image(rel, "aot-ai-chat.png", "Testy answering a history question. Questions can be scoped to a subject, and usage is rate-limited per user (the counter shows messages left this hour).", "Screenshot", alt="Testy AI study chat"), "Grounded when the course covers it, still helpful when it doesn't.", "right", prop="fairy")}"""
 
+    study = f"""
+<p>Practice only helps if the misses come back. Three tools close that loop, and all of them work without an account.</p>
+<h3>Mistake Notebook: spaced repetition on every miss</h3>
+<p>Every question a student misses, in AP unit practice, mixed review, mock exams or SAT sessions, lands in a
+<strong>Leitner queue</strong>. Each correct review moves it to a longer interval; a wrong one sends it back to the start:</p>
+{flow([("Miss", "added, due again in 1 day", False),
+       ("1 → 3 days", "correct moves it up a box", False),
+       ("7 → 14 days", "wrong at any point resets to 1 day", False),
+       ("30 days", "last box", True),
+       ("Graduates", "correct on the last box removes it", True)])}
+<ul>
+<li><strong>Reviews never change SAT mastery.</strong> A notebook review happens with the answer fresh in mind, so letting it
+move the weights would contaminate the model. The server has separate, answer-free review endpoints for this.</li>
+<li><strong>Only references are stored</strong> (source, subject, question id, schedule), never question text or answers; content is
+looked up at review time. The scheduling is a pure function, checked by an acceptance script.</li>
+<li><strong>"Explain my mistake"</strong> opens Testy pre-filled with the missed question and the student's answer.</li>
+</ul>
+<h3>Week-by-week study plans</h3>
+<p>Given a test date, the plan spreads topics over the weeks left: the last week is a final review, a full timed mock
+exam goes in the week before it (when there are six or more weeks), and spare weeks become mixed review that pulls in the
+Mistake Notebook. For signed-in SAT students the topics are ordered <strong>weakest first from their mastery weights</strong>;
+date math runs in UTC so a plan never shifts with time zones.</p>
+<h3>SAT lessons</h3>
+<p>Each of the eight SAT Math skills has a written lesson before the videos: concepts, a formula sheet, worked examples
+with step-by-step reveals, quick checks, common traps, then strategy. A Desmos calculator guide and exam-logistics pages
+round out the prep.</p>
+{beside(image(rel, "aot-sat-lesson.png", "An SAT Math lesson (Linear Functions): the concept walkthrough, a formula sheet, worked examples with hidden solutions and quick checks, with links into the adaptive academy and to Testy.", "Live site", alt="SAT Linear Functions lesson page"), "Learn it, check it, then practise it in the adaptive academy.", "right")}"""
+
     platform = f"""
 <p>Around the two ML systems sits the rest of a real product, which I built too:</p>
 {tiles([("Exam hubs", "Browse AP and SAT, search and filter subjects, and drill into subject pages."),
-        ("Resources", "Practice exams, unit overviews, topical review and video resources, with PDFs served inline."),
-        ("Testy AI chat", "RAG study assistant that uses the curriculum when it applies, with caching and per-user rate limiting."),
-        ("Flashcards", "Cards, stacks and per-card progress tracking."),
+        ("Practice bank", "5,160 AP multiple-choice questions (30 per unit, easy / medium / hard) and 590 SAT Math items."),
+        ("Flashcards", "Premade decks plus your own stacks, with per-card progress."),
         ("Auth", "JWT access/refresh tokens, email verification, account lockout."),
-        ("Streaks", "SAT streaks, streak repair and a focus mode with user preferences.")])}
+        ("Performance", "Routes and the chat panel load lazily: the initial bundle went from 5.8 MB to ~335 KB."),
+        ("Reliability", "Rate-limited contact form; GET retries plus an uptime ping ride out the free host's cold starts.")])}
 <h3>Subject hubs</h3>
 {image(rel, "aot-subject.png", "An AP subject hub (English Language): unit overviews, videos and reference sheets to learn the material, then practice questions, past exams, flash cards, AI-graded FRQ practice, mixed review and a timed mock exam that predicts a 1–5 score.", "Screenshot", alt="AP English Language subject hub")}
 <h3>My AP Planner</h3>
@@ -959,14 +1001,15 @@ prevents that:</p>
 """
 
     main_html = (
-        image(rel, "aot-home.png", "academyoftesters.com: pick AP (29 subjects: unit reviews, real 2025 free-response questions, timed mocks) or SAT (adaptive practice, topic lessons, full-length tests).", "Live site", alt="Academy of Testers homepage")
+        image(rel, "aot-home.png", "academyoftesters.com: choose AP (29 subjects: unit reviews, the real 2025 free-response questions, timed mocks) or SAT (adaptive practice, topic lessons, full-length tests).", "Live site", alt="Academy of Testers homepage")
         + panel("overview", "Overview", overview, num="01")
         + panel("architecture", "System architecture", arch, num="02")
         + panel("radar", "The mastery radar", radar_sec, num="03")
         + panel("engine", "Adaptive engine, piece by piece", engine, num="04")
         + panel("frq", "RAG essay grader", frq, num="05")
         + panel("testy", "Testy: keeping RAG helpful and fast", testy, num="06")
-        + panel("platform", "The rest of the platform", platform, num="07")
+        + panel("study", "Study tools that close the loop", study, num="07")
+        + panel("platform", "The rest of the platform", platform, num="08")
         + pager(rel, None, ("projects/seismicsocal/", "SeismicSoCal")))
 
     rail = (
@@ -975,14 +1018,15 @@ prevents that:</p>
         + panel("toc-aot", "On this page", toc([("overview", "Overview"), ("architecture", "Architecture"),
                                                ("radar", "Mastery radar"), ("engine", "Adaptive engine"),
                                                ("frq", "RAG essay grader"), ("testy", "Testy AI assistant"),
-                                               ("platform", "Platform")]),
+                                               ("study", "Study tools"), ("platform", "Platform")]),
                 body_cls="panel-body tight")
         + panel("spec-aot", "Spec sheet", spec([("Role", "ML &amp; AI Developer"), ("Dates", "Jan 2023 – Jun 2026"),
                                                  ("Backend", "Spring Boot 3.2"), ("Frontend", "React + TS"),
                                                  ("Database", "PostgreSQL 16"), ("LLM", "GPT-4o (grader)"),
                                                  ("Hosting", "Vercel + Render")]), body_cls="panel-body tight")
         + panel("stack-aot", "Stack", chips(["Java 17", "Spring Boot", "PostgreSQL", "Flyway", "React", "TypeScript",
-                                             "Vite", "Tailwind", "OpenAI", "Embeddings", "JWT", "Docker"]),
+                                             "Vite", "Tailwind", "KaTeX", "OpenAI", "Embeddings", "JWT", "JUnit 5",
+                                             "Docker"]),
                 body_cls="panel-body tight")
         + info("What is — BKT + IRT?",
                "<p><b>BKT</b> estimates whether a skill is learned from a sequence of right and wrong answers, "
@@ -1010,8 +1054,8 @@ def seismic(ctx):
     overview = f"""
 {stats([("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"),
         ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
-        ("93<small>%</small>", "Replay events real", "chance baseline 0%"),
-        ("0", "False pushes in replay", "10 held-out days")])}
+        ("145", "Replay pushes, all real quakes", "80 held-out days · chance 0%"),
+        ("83<small>%</small>", "Isolated M3+ caught", "with 3+ sensors online")])}
 <hr class="dotted">
 <p class="lede">Detect → Locate → Size → Alert. Every claim sits next to its classic-seismology baseline, a 95%
 confidence interval and a replay of real days the system never trained on.</p>
@@ -1026,8 +1070,11 @@ model is allowed to replace the live one.</p>
     "0.9997–0.9999) vs. 0.816 for STA/LTA on 7,303 held-out windows.",
     "Sized quakes with a <strong>CNN → GNN → Transformer</strong> over the station graph: <strong>R² 0.951, MAE 0.10</strong> on 937 "
     "held-out quakes vs. 0.886 for amplitude + distance; a 10-seed study separates seed variance from sampling variance.",
-    "Made a <strong>replay of archived days</strong> the acceptance test: 93% of confirmed events real (chance 0%), 5 pushes and "
-    "0 false, median location error 2.5 km.",
+    "Made a <strong>replay of 80 archived days</strong> the acceptance test: 145 push alerts and <strong>every one a real quake</strong> "
+    "(time-shifted chance baseline 0%), pushed sizes within MAE 0.12 of the catalogue, median location error 3–4 km.",
+    "Estimated the <strong>shaking at each user's home</strong> (Modified Mercalli intensity) from magnitude, distance, ground type and "
+    "a per-quake correction, validated on USGS \"Did You Feel It?\" reports: <strong>MAE 0.42 levels, 94% within one level</strong> "
+    "on 28 held-out quakes, with the home location never leaving the phone.",
     "Built <strong>QuakeOps</strong>: MLflow tracking and a champion/challenger registry, a Dagster retrain job, a six-rule "
     "statistical + replay promotion gate, Evidently drift checks and GitHub Actions deploys.",
 ])}
@@ -1083,7 +1130,7 @@ replay harness.</p>
        ("Size", "GNN ensemble on [P−5 s, P+25 s] from every station ≤ 200 km", True),
        ("Decide", "M ≥ 3.0 confirms, otherwise retracts", False)], dark=True)}
 {tip("Every first notice is followed by a confirmation or a retraction that replaces it.", prop="dj")}
-{fig(C.alert_timeline(), "Medians from replayed days. The first notice waits for the third station's pick; the confirmation waits for 25 s of P-wave at the nearest stations.", "Timeline")}
+{fig(C.alert_timeline(), "Medians over the 80 replayed days. The first notice waits for the third station's pick; the confirmation waits for 25 s of P-wave at the nearest stations.", "Timeline")}
 <h3>Why three stations</h3>
 <p>With 3 picks, latitude, longitude and origin time are exactly determined, so a low misfit proves nothing on its
 own. The <strong>negative evidence</strong> does the work: a real quake reaches nearer stations first, so a solution
@@ -1110,30 +1157,84 @@ the tray.</p>
 <p>Users follow <strong>stations, not a location</strong>. A device is alerted when a confirmed quake is within 150 km of
 a station it follows, with the distance measured from the located epicentre to that station.</p>"""
 
+    shaking = f"""
+<p>A magnitude and a distance don't tell someone what they actually felt. For every quake, the current one in a push
+and every past one in the quake list, the app estimates the <strong>shaking at the user's home</strong> as a
+Modified Mercalli Intensity level (I–X, e.g. <em>"Light: felt indoors; dishes and windows rattle"</em>). It's an
+estimate from the physics and our own sensors, not a measurement at the house.</p>
+{flow([("Ground motion", "peak velocity from magnitude and distance, fitted on 25k of our own station records", False),
+       ("Ground type", "USGS Vs30 site term: soft ground shakes harder", False),
+       ("This quake", "correction from how hard it actually shook our sensors (live quakes)", True),
+       ("Intensity", "velocity → MMI (Worden et al. 2012), offset calibrated on Did You Feel It?", True),
+       ("On the phone", "computed on the device; the home never leaves it", False)])}
+<div class="formula halftone">log10 PGV = a + b·M + c·log10 R + d·R + e·log10(Vs30 / 631) + event_term
+<span class="c">// fitted on the training events only (chronological split); event_term = how this quake shook our sensors, clipped to ±0.5</span></div>
+<h3>Validated on people's reports, not on itself</h3>
+<p>USGS "Did You Feel It?" collects what people report feeling. The DYFI offset was fitted on the older 29 Southern
+California M3.5+ quakes and the result scored <strong>once</strong> on the newer 28 quakes (1,892 report cells):</p>
+{table(["Held out: 28 quakes, 1,892 cells", "MAE (MMI levels)", "Within one level"],
+       [["This model", "<span class='win'>0.42</span>", "<span class='win'>94%</span>"],
+        ["Without the DYFI offset", "0.68", "–"],
+        ["Without the ground-type term", "0.40", "–"]], num_cols=(1, 2))}
+<p class="note"><strong>Reported honestly:</strong> the ground-type term gave no measurable gain on these reports (a 10 km
+report cell averages many kinds of ground). It stays because it's physically right and fitted from our own records, but
+it isn't what makes the estimate work. Error is flat with distance.</p>
+<h3>One set of equations, three implementations</h3>
+{tiles([("Server", "Python, for the push wording every app version gets: shaking at the subscriber's nearest followed station."),
+        ("Web app", "TypeScript: the line under each quake and the quake page, from coefficients served by /api/shaking-model."),
+        ("Native Android", "Java: a data-only push lets the app write \"Light shaking likely at Pasadena\" itself, with the server's text as fallback."),
+        ("Privacy", "The home is saved only on the device; the server only ever sees station codes.")])}
+{beside(image(rel, "seismic-biggest-quakes.png", "The quake list on the live site: every catalogued Southern California quake the network could catch, marked caught by our model (with our size and station count), seen but not confirmed, or not caught. With a home saved, each row also shows the estimated shaking there.", "Live site", alt="Biggest Southern California quakes with caught and seen marks"), "Every quake is checked against what the live system actually caught.", "right")}"""
+
     replay = f"""
 <p>A test AUC alone doesn't say whether a live system can be trusted, so the <strong>acceptance test is a replay</strong>:
-the exact live engine runs over archived continuous data. Thresholds (trigger, pick SNR, misfit, station count, push floor)
-were calibrated on 10 <em>validation</em> days and scored once on 10 held-out <em>test</em> days. Every precision is reported
-next to a <strong>chance baseline</strong>: the same declarations shifted by an hour.</p>
-{stats([("93<small>%</small>", "Confirmed events real", "chance 0%"),
-        ("5 / 0", "Pushes / false pushes", "10 held-out days"),
-        ("2.5<small>km</small>", "Median location error", "10 held-out days"),
-        ("±0.13", "Pushed sizes vs catalogue", "e.g. 4.09 vs 4.0")])}
+the exact live engine runs over archived continuous data. Thresholds were calibrated on separate <em>validation</em>
+days, then frozen and scored <strong>once</strong> on <strong>80 held-out days</strong> (Apr 2022 – Aug 2026): 60 days with an
+M3+ quake in coverage and 20 random days. Every precision is reported next to a <strong>chance baseline</strong>: the same
+declarations shifted by an hour.</p>
+{stats([("145", "Push alerts", "every one a real quake"),
+        ("92<small>%</small>", "Placed within 60 km", "the rest: off-network quakes"),
+        ("0.12", "Pushed size MAE", "bias +0.05 vs catalogue"),
+        ("3–4<small>km</small>", "Median location error", "confirmed events")])}
+{table(["80 held-out days", "Result"],
+       [["Push alerts", "145; 133 matched a catalogued M2.5+ within 60 km. The other 12 were also real quakes, outside the network and placed 63–145 km off. <b>None was for a quake that didn't happen</b> (chance baseline 0%)."],
+        ["Confirmed events that were real", "86% on busy days, 79% on random days (chance 4% / 0%); about 7 false confirmations a week, logged and never pushed"],
+        ["First message → confirmation", "Standard ~31 s, Fast ~25 s, confirmation ~50 s after the quake begins"],
+        ["First messages later retracted", "Standard 28%, Fast 36%: the price of speed, and why the confirmation replaces them"]])}
 {chat([("detective", "How do you know an alert from this thing is real?"),
-       ("referee", "It replayed 10 archived days it never trained on. 93% of confirmed events were real quakes; chance was 0%."),
-       ("detective", "And the pushes?"),
-       ("referee", "Five, all real quakes, each sized within 0.13 of the catalogue.")])}
-<h3>Catch rate by size</h3>
-{table(["Inside coverage, 20 replayed days", "M1–1.5", "M1.5–2", "M2–2.5", "M2.5–3", "M3+"],
-       [["Confirmed", "9%", "48%", "81%", "75%", "86%"]], num_cols=(1, 2, 3, 4, 5))}
-<p>The one in-coverage M3+ miss on the test days came 80 s after an M4.0 at the same spot, inside the window where coda
-is absorbed so a big quake can't re-trigger itself: a known, logged cost. An event-centric test on 833 held-out quakes in
-live geometry located 89% of them (median error 3.8 km) with magnitude MAE 0.135.</p>
+       ("referee", "It replayed 80 archived days it never trained on. 145 pushes, and every one was a real quake."),
+       ("detective", "And how many quakes did it miss?"),
+       ("referee", "About a third of M3+ overall, mostly inside aftershock swarms. Isolated M3+ with sensors up: 83% caught.")])}
+<h3>Catch rate, and where the misses are</h3>
+{table(["Catalogued quakes in coverage", "M1–1.5", "M1.5–2", "M2–2.5", "M2.5–3", "M3+", "M2+"],
+       [["Caught", "9%", "29%", "41%", "60%", "<b>68%</b> (CI 60–74%)", "52%"]], num_cols=(1, 2, 3, 4, 5, 6))}
+<ul>
+<li><strong>By situation:</strong> with at least 3 stations online, <strong>83%</strong> of isolated M3+ quakes were caught (86% in good
+coverage, 80% where it's thin), against <strong>60%</strong> inside rapid sequences. For most missed sequence quakes a neighbour within
+10 minutes and 50 km was caught, so the area was still alerted.</li>
+<li><strong>All 58 missed M3+, classified:</strong> 27 came back-to-back with another quake nearby, 16 happened while fewer than 3
+stations had data in the archive, 7 were seen but not confirmed, and 8 weren't seen; most of those last ones sit where
+coverage is thinnest (Imperial Valley and the Salton Sea).</li>
+<li>Below M2 is outside the magnitude training range; those sizes read slightly high but stay under the M3 push floor.</li>
+</ul>
+<h3>Fixing swarms without buying false alarms</h3>
+<p>Most misses were a second quake absorbed into the first: an <strong>echo window</strong> (a new event this close to a declared
+one counts as its coda) and a <strong>station rest period</strong> (no new pick this soon after the last) hid it. I swept 32
+configurations on <strong>validation</strong> days only (12 swarm days, including Ridgecrest 2019, plus 10 quiet days), with an
+adoption rule fixed in advance: raise the catch rate with <em>no</em> more duplicates and <em>no</em> more quiet-day false detections.</p>
+{table(["Validation swarm days", "Before (120 s / 60 s)", "Adopted (30 s / 45 s)"],
+       [["M3+ caught", "40.0%", "<span class='win'>59.1%</span>"],
+        ["M2+ caught", "32.4%", "<span class='win'>45.4%</span>"],
+        ["Confirmed events that were real", "76.5%", "75.2%"],
+        ["Duplicates / quiet-day false detections per week", "0 / 13.3", "0 / 13.3"]], num_cols=(1, 2))}
+<p>Configurations that caught more (up to 84% of M3+) were rejected because every one added false detections or duplicates.
+Scored once on the 80 held-out days, the adopted setting raised M3+ catch from <strong>71% to 78%</strong> (detection-only scoring)
+with no duplicates and precision 85% → 84%. It went live on Oct 7, 2026.</p>
 <h3>Shadow mode before alerts</h3>
-<p>After going live on Oct 5, 2026 the system runs in <strong>shadow mode</strong>: it detects, locates, sizes and logs
-everything but sends no pushes. A nightly job scores the live log against USGS in three tiers (confirmed, pushed,
-tentative), each with its own chance baseline. Pushes are switched on only once confirmed precision on live data clearly
-beats chance and pushed magnitudes match the catalogue.</p>"""
+<p>After going live the system runs in <strong>shadow mode</strong>: it detects, locates, sizes and logs everything but sends no
+pushes. A nightly job scores the live log against USGS in three tiers (confirmed, pushed, tentative), each with its own
+chance baseline. Pushes are switched on only once confirmed precision on live data clearly beats chance and pushed
+magnitudes match the catalogue.</p>"""
 
     ops = f"""
 <p>A model that's right today can quietly go stale. <strong>QuakeOps</strong> makes the system maintain itself, and a
@@ -1174,14 +1275,15 @@ are live. The gate has been checked on a dry run (champion vs. itself); the firs
 <p>The whole service runs on an <strong>Oracle Cloud Always-Free Ampere A1</strong> (ARM64) VM for $0. Caddy provides
 HTTPS and serves the site, systemd runs the API server, which supervises the SeedLink daemon and respawns it if the
 stream drops, and separate timers run the nightly crosscheck and the daily QuakeOps pull + drift check. The Android
-app is a Capacitor build of the same web app with FCM push and a forced-update gate for breaking releases.</p>
+app is a Capacitor build of the same web app with FCM push, native code that writes the home-shaking line into
+notifications, and an update gate for breaking releases.</p>
 {fig(C.seismic_system(), "Offline, the PC builds datasets, trains on the GPU and replays archived days. Online, the VM runs the same engine on the live stream. QuakeOps connects them through the MLflow registry.", "Architecture")}
 {tiles([("One station list", "network.py is imported by the builder, daemon, API, scorer and replay; every station must stream on the public relay."),
         ("Self-checking checkpoints", "Models carry their normalizers and station list; the daemon refuses a model trained on a different network."),
-        ("Privacy by design", "Subscriptions store station codes, a push token and an alert speed. Never a location."),
-        ("CI/CD", "GitHub Actions: ruff, 25 pytest tests, daemon selftest and site build on every change; tar deploy to the VM on main.")])}
+        ("Privacy by design", "Subscriptions store station codes, a push token and an alert speed. Never a location: the home used for shaking estimates stays on the phone."),
+        ("CI/CD", "GitHub Actions: ruff, the pytest suite, the daemon selftest and the site build on every change; tar deploy to the VM on main.")])}
 {diagram(rel, "seismicsocal-architecture.webp", "earthquakeDiagram.png", "SeismicSoCal code-level architecture diagram",
-         "Code-level view: the web and mobile console, the alert and operations services (API, FCM push, the QuakeOps promotion gate and registry), the live seismic engine, and the data and model modules that read the USGS catalogue and SCEDC archive.", scroll=True)}
+         "Code-level view: the web and mobile app (coverage map, push registration, native notifications, and the on-device shaking estimate, which fetches its coefficients from the API); the HTTP API, which spawns the live stream daemon; detection and alerts, where one event pipeline scores windows with the detection model, picks and locates, sizes events with the magnitude model and estimates shaking before push dispatch through Firebase; models and evaluation (detector and magnitude training, the dataset builder, and the archive replay that re-runs the same engine); and the data layer over the SeedLink stream, the USGS catalogue and the SCEDC waveform service.", scroll=True)}
 <h3>Known limits</h3>
 <ul>
 <li><strong>Coverage:</strong> strongest where 3+ stations sit within ~100 km (LA basin, Inland Empire, Mojave, Ridgecrest,
@@ -1189,6 +1291,9 @@ Kern). Quakes outside the network are located from a one-sided set of stations a
 <li><strong>Latency:</strong> 25–60 s after origin. This is rapid detection, not pre-arrival warning (ShakeAlert's job).</li>
 <li><strong>Locator:</strong> fixed 8 km depth and a 1-D travel-time model, with an empirical correction fitted on 31,427 picks.</li>
 <li><strong>Small quakes:</strong> below M2 (outside the magnitude training range) sizes read slightly high; harmless for the M3 floor.</li>
+<li><strong>Swarms:</strong> a quake right after another nearby can still be absorbed into it; about 60% are caught inside sequences.</li>
+<li><strong>Shaking estimates:</strong> depth is ignored, an off-network mislocation shifts the estimate, and a single house can
+differ more than the 0.42-level average, which is measured over 10 km report cells.</li>
 </ul>"""
 
     main_html = (
@@ -1196,22 +1301,25 @@ Kern). Quakes outside the network are located from a one-sided set of stations a
         + panel("overview", "Overview", overview, num="01")
         + panel("results", "Results vs. classical seismology", results, num="02")
         + panel("live", "The live pipeline &amp; alerts", live, num="03")
-        + panel("replay", "The acceptance test: replaying real days", replay, num="04")
-        + panel("quakeops", "QuakeOps: production ML", ops, num="05")
-        + panel("deploy", "Deployment &amp; architecture", stack, num="06")
+        + panel("shaking", "Shaking at your home (MMI)", shaking, num="04")
+        + panel("replay", "The acceptance test: 80 real days", replay, num="05")
+        + panel("quakeops", "QuakeOps: production ML", ops, num="06")
+        + panel("deploy", "Deployment &amp; architecture", stack, num="07")
         + pager(rel, ("projects/academy-of-testers/", "Academy of Testers"), ("projects/bearlm/", "BearLM")))
 
     rail = (
         rail_btns([("WWW", "Live console", site), ("OPS", "Model health", site + "/health"),
                    ("APK", "Android app", site + "/app"), ("GH", "Source code", ctx["github"] + "/earthquake")])
         + panel("toc-sz", "On this page", toc([("overview", "Overview"), ("results", "Results"),
-                                              ("live", "Live pipeline"), ("replay", "Replay test"),
+                                              ("live", "Live pipeline"), ("shaking", "Shaking at home"),
+                                              ("replay", "Replay test"),
                                               ("quakeops", "QuakeOps"), ("deploy", "Deployment")]),
                 body_cls="panel-body tight")
         + panel("spec-sz", "Spec sheet", spec([("Region", "Southern California"), ("Data", "USGS + SCEDC, 2000–2026"),
                                                 ("Events", "6,243 (M2.0–7.1)"), ("Windows", "50,743 (detection)"),
                                                 ("Split", "chronological 70/15/15"), ("Ensembles", "5 seeds"),
-                                                ("Live since", "Oct 5, 2026"), ("Host", "Oracle A1 · systemd")]),
+                                                ("Live since", "Oct 5, 2026"), ("App", "Android 2.01 (Capacitor)"),
+                                                ("Host", "Oracle A1 · systemd")]),
                 body_cls="panel-body tight")
         + panel("stations", "19 stations", spec([("LA basin", "PASC · BFS"), ("Inland Empire", "SVD · DGR"),
                                                  ("San Diego / Imperial", "BAR · IKP · SWS · BEL"),
@@ -1220,7 +1328,7 @@ Kern). Quakes outside the network are located from a one-sided set of stations a
                 body_cls="panel-body tight")
         + panel("stack-sz", "Stack", chips(["PyTorch", "ObsPy", "SeedLink", "NumPy / SciPy", "scikit-learn", "MLflow",
                                             "Dagster", "Evidently", "React", "TypeScript", "Vite", "Capacitor", "FCM",
-                                            "Caddy", "systemd", "Oracle Cloud", "GitHub Actions", "pytest"]),
+                                            "Java (Android)", "Caddy", "systemd", "Oracle Cloud", "GitHub Actions", "pytest"]),
                 body_cls="panel-body tight")
         + info("What is — STA/LTA?",
                "<p>The classic trigger: the ratio of short-term to long-term average signal energy. It's fast and "
@@ -1621,8 +1729,8 @@ def cbu(ctx):
     "training PyTorch CNN→Transformer and CNN→GNN→Transformer ensembles on 50,743 windows and 6,243 quakes from 19 live stations, "
     "with chronological splits and event-clustered bootstrap CIs.",
     "Built and deployed a <strong>real-time SeedLink pipeline</strong> that detects, picks, locates (≥ 3 stations, negative evidence) and sizes "
-    "quakes, then sends two-stage FCM alerts. On a replay of 10 held-out days: <strong>93% of confirmed events real (chance 0%), 0 false "
-    "pushes</strong>, median location error 2.5 km.",
+    "quakes, then sends two-stage FCM alerts. On a replay of 80 held-out days: <strong>145 push alerts, every one a real quake</strong> "
+    "(chance baseline 0%), median location error 3–4 km, and 83% of isolated M3+ quakes caught.",
 ])}"""
 
     if full:
@@ -1703,12 +1811,14 @@ archived days is the acceptance test.</p>
 {flow([("Stream", "19 SeedLink stations", False), ("Detect", "CNN→Transformer, every 2 s", True),
        ("Locate", "≥ 3 picks, no silent nearer station", True), ("Size", "CNN→GNN→Transformer ensemble", False),
        ("Alert", "two-stage FCM push", False)], dark=True)}
-{table(["Replay of 10 held-out days", "Result"],
-       [["Confirmed events that were real quakes", "<span class='win'>93%</span> (chance baseline 0%)"],
-        ["Push alerts / false", "<span class='win'>5 / 0</span>"],
-        ["Median location error", "<span class='win'>2.5 km</span>"],
-        ["Pushed magnitudes vs. catalogue", "within 0.13"]])}
-<p>It is also a production ML system: <strong>QuakeOps</strong> tracks every training run in MLflow, only promotes a
+{table(["Replay of 80 held-out days", "Result"],
+       [["Push alerts", "<span class='win'>145, every one a real quake</span> (chance baseline 0%)"],
+        ["Confirmed events that were real", "86% on busy days, 79% on random days (chance 4% / 0%)"],
+        ["Median location error", "<span class='win'>3–4 km</span>"],
+        ["Pushed magnitudes vs. catalogue", "MAE 0.12"],
+        ["Isolated M3+ quakes caught", "83% with 3+ sensors online"]])}
+<p>It also estimates the <strong>shaking at each user's home</strong> (MMI), validated on USGS "Did You Feel It?" reports
+(94% within one intensity level), and it is a production ML system: <strong>QuakeOps</strong> tracks every training run in MLflow, only promotes a
 retrained model through a six-rule statistical + replay gate, and checks the live stream for drift every day.</p>
 <p>The case study covers <a href="{rel}projects/seismicsocal/#live">the live pipeline</a>, the
 <a href="{rel}projects/seismicsocal/#replay">replay acceptance test</a> and <a href="{rel}projects/seismicsocal/#quakeops">QuakeOps</a>.</p>

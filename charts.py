@@ -281,20 +281,20 @@ def alert_timeline(width=640, height=170):
         return L + pw * t / 60
 
     out = [f"<svg viewBox='0 0 {width} {height}' role='img' aria-label='Alert timeline after a quake begins'>",
-           _t(0, 14, "When each message arrives (median seconds after the quake begins, replayed days)", 12, weight="700"),
+           _t(0, 14, "When each message arrives (median seconds after the quake begins, 80 replayed days)", 12, weight="700"),
            f"<line x1='{L}' x2='{L + pw}' y1='{y}' y2='{y}' stroke='{SOFT}' stroke-width='1.5'/>"]
     for t in range(0, 61, 10):
         out.append(f"<line x1='{X(t):.1f}' x2='{X(t):.1f}' y1='{y}' y2='{y + 5}' stroke='{SOFT}'/>")
         out.append(_t(X(t), y + 18, f"{t} s", 10, "middle", fill=SOFT))
-    out.append(f"<rect x='{X(25):.1f}' y='{y - 7}' width='{X(55) - X(25):.1f}' height='14' fill='{GRID}' opacity='.7'/>")
+    out.append(f"<rect x='{X(25):.1f}' y='{y - 7}' width='{X(50) - X(25):.1f}' height='14' fill='{GRID}' opacity='.7'/>")
     marks = [(0, "Origin", "quake begins", BASE, "up"),
-             (25.9, "Fast", "first notice, 2 s of P", MID, "up"),
-             (33.4, "Standard", "first notice, 4 s of P", OURS, "down"),
-             (55, "Confirmed", "full size, or retraction", OURS, "up")]
+             (25, "Fast", "first notice, 2 s of P", MID, "up"),
+             (31, "Standard", "first notice, 4 s of P", OURS, "down"),
+             (50, "Confirmed", "full size, or retraction", OURS, "up")]
     for t, name, sub, color, side in marks:
         x = X(t)
         out.append(f"<circle cx='{x:.1f}' cy='{y}' r='6' fill='{color}' stroke='#fff' stroke-width='2'/>")
-        anchor = "start" if t == 0 else ("end" if t >= 55 else "middle")
+        anchor = "start" if t == 0 else ("end" if t >= 50 else "middle")
         if side == "up":
             out.append(_t(x, y - 30, name, 11.5, anchor, "700", OURS if color == OURS else INK))
             out.append(_t(x, y - 16, sub, 10, anchor, fill=SOFT))
@@ -333,8 +333,8 @@ def seismic_system(width=680, height=330):
     box(352, 24, 160, 62, "SeedLink", ["19 stations, real time", "per-station buffers", "data-quality gate"])
     box(532, 24, 148, 62, "pipeline.py", ["detect → pick → locate", "→ quick check → size", "→ decide (data time)"], True)
     box(352, 106, 160, 62, "server.py (API)", ["supervises the daemon", "/api/status /ca /health", "push registration"])
-    box(532, 106, 148, 62, "FCM push", ["two-stage alerts", "station subscriptions", "shadow mode switch"])
-    box(352, 188, 160, 54, "Web + Android", ["React + Vite, Capacitor", "coverage map, /health"])
+    box(532, 106, 148, 62, "FCM push", ["two-stage alerts", "+ home shaking (MMI)", "shadow mode switch"])
+    box(352, 188, 160, 54, "Web + Android", ["React, Capacitor, native", "MMI computed on device"])
     box(532, 188, 148, 54, "Nightly crosscheck", ["live log vs USGS,", "+1 h chance baseline"])
     # QuakeOps band
     out.append(_t(0, 270, "QUAKEOPS · MLOps loop", 10.5, weight="700", fill=SOFT))
