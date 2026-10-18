@@ -1,9 +1,11 @@
 // Page bootstrap: nav behaviour, the Ask card, the live map, the Trends band (and its optional dashboard), the
-// Forecast explorer and Findings.
+// Forecast explorer, Findings and Station closures.
 
 import { initAsk } from "./ask.js";
 import { formatDate } from "./chart.js";
+import { initClosures } from "./closures.js";
 import { initFindings } from "./findings.js";
+import { initBoard, initCounts, initHeroLive, initMascotHello, initMascotHop, initReveal, initScrollSpy, initTheme } from "./fx.js";
 import { initForecast } from "./forecast.js";
 import { initMap } from "./map/map.js";
 import { getKpis, initDashboard, initTrends } from "./trends.js";
@@ -89,6 +91,13 @@ askPanel.querySelector("[data-ask-close]").addEventListener("click", closeAsk);
 askPanel.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeAsk();
 });
+// "/" anywhere outside a field opens Ask (the launcher's tooltip says so)
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest("input, textarea, select, [contenteditable]")) return;
+  e.preventDefault();
+  if (askPanel.hidden) openAsk(document.querySelector(".ask-launcher"));
+});
 
 initAsk(askPanel, document.querySelector("[data-ask-result]"), document.querySelector("[data-ask-history]"));
 initMap(document.querySelector("[data-map]"));
@@ -96,6 +105,17 @@ initTrends(document.querySelector("[data-trends]"));
 initDashboard(document.querySelector("[data-dashboard]"));
 initForecast(document.querySelector("[data-forecast]"));
 initFindings(document.querySelector("[data-findings]"));
+initClosures(document.querySelector("[data-closures]"));
+
+// motion: live hero numbers, count-ups, sections rising in, the nav's current section, the mascot's hello
+initTheme(document.querySelector("[data-theme-toggle]"));
+initCounts();
+initBoard(document.querySelector("[data-board]"));
+initHeroLive(document.querySelector("[data-hero-live]"));
+initReveal();
+initScrollSpy();
+initMascotHello(document.querySelector(".ask-launcher"));
+initMascotHop(document.querySelector("[data-mascot-hop]"));
 
 // footer "Data through <date>" (DESIGN.md §7), from the KPIs the Trends band loaded; left out without them
 getKpis().then(

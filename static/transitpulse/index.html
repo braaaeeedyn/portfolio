@@ -24,12 +24,19 @@
     <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="data/network.json" as="fetch" crossorigin />
+    <script>
+      // the saved theme before paint, so a dark page never flashes white
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("tp-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      } catch (e) {}
+    </script>
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/map.css" />
     <link rel="stylesheet" href="css/charts.css" />
+    <link rel="stylesheet" href="css/fx.css" />
     <script type="module" src="js/main.js"></script>
   </head>
   <body>
@@ -48,6 +55,8 @@
       <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></symbol>
       <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
       <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01" /><path d="M3 12h.01" /><path d="M3 19h.01" /><path d="M8 5h13" /><path d="M8 12h13" /><path d="M8 19h13" /></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol>
       <symbol id="i-send" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></symbol>
       <!-- the Ask mascot: a friendly train front with its own colours (not currentColor), so it reads on ink and on white -->
       <symbol id="i-mascot" viewBox="0 0 48 48">
@@ -75,9 +84,13 @@
             <li><a href="#trends">Trends</a></li>
             <li><a href="#forecast">Forecast</a></li>
             <li><a href="#findings">Findings</a></li>
+            <li><a href="#closures">Closures</a></li>
             <li><a href="#about">About</a></li>
           </ul>
         </nav>
+        <button class="icon-btn icon-btn--plain nav__theme" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark mode">
+          <svg class="icon icon--sun" aria-hidden="true"><use href="#i-sun" /></svg><svg class="icon icon--moon" aria-hidden="true"><use href="#i-moon" /></svg>
+        </button>
         <button class="btn btn--primary nav__cta-full" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false">Ask a question</button>
         <button class="icon-btn nav__cta-icon" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false" aria-label="Ask a question">
           <svg class="icon" aria-hidden="true"><use href="#i-search" /></svg>
@@ -86,6 +99,7 @@
           <svg class="icon" aria-hidden="true"><use href="#i-menu" /></svg>
         </button>
       </div>
+      <div class="pulse-stripe" aria-hidden="true"></div>
     </header>
 
     <div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="Menu" hidden data-menu>
@@ -101,6 +115,7 @@
           <li><a href="#trends">Trends</a></li>
           <li><a href="#forecast">Forecast</a></li>
           <li><a href="#findings">Findings</a></li>
+          <li><a href="#closures">Closures</a></li>
           <li><a href="#about">About</a></li>
         </ul>
         <button class="btn btn--primary" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false">Ask a question</button>
@@ -113,21 +128,36 @@
         <div class="container hero__grid">
           <div class="hero__copy">
             <p class="eyebrow">Bay Area transit, in numbers</p>
-            <h1 id="hero-title">See the Bay Area move</h1>
+            <h1 id="hero-title">See the Bay Area <span class="hl">move</span></h1>
             <p class="lead">
               Every BART train on one map, years of BART and Bay Wheels ridership, and an analyst you can ask in plain
               English.
             </p>
+            <ul class="hero__live" data-hero-live aria-label="Right now">
+              <li><span class="hero__live-dot" aria-hidden="true"></span><span class="num" data-live-trains>—</span> trains moving</li>
+              <li><span class="num" data-live-recovery>—</span> of 2019 ridership</li>
+              <li>Data through <strong data-live-through>—</strong></li>
+            </ul>
             <div class="hero__actions">
               <button class="btn btn--primary" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false">Ask TransitPulse</button>
               <a class="btn btn--subtle" href="#map">See the live map</a>
             </div>
           </div>
+
+          <!-- a departure board of the next arrivals anywhere on the system, fed by the map (web/js/fx.js) -->
+          <aside class="board" data-board aria-label="Next arrivals" hidden>
+            <div class="board__head">
+              <span class="board__title">Arriving next</span>
+              <span class="board__clock"><span class="board__dot" aria-hidden="true"></span><span data-board-clock>—</span></span>
+            </div>
+            <ol class="board__rows" data-board-rows></ol>
+            <p class="board__foot">From BART's timetable · <a href="#map">see them on the map</a></p>
+          </aside>
         </div>
       </section>
 
       <!-- Live map -->
-      <section class="band" id="map" aria-labelledby="map-title">
+      <section class="band" id="map" data-accent="blue" aria-labelledby="map-title">
         <div class="container">
           <div class="section-head">
             <p class="eyebrow">Live map</p>
@@ -203,12 +233,30 @@
             <ul class="legend" data-map-legend aria-label="Lines"></ul>
             <p class="caption">Scheduled positions from BART's published timetable. Times in Pacific time.</p>
           </div>
+
+          <!-- what if stations close? (web/js/map/whatif.js): the picked stations leave the map; trains run through -->
+          <div class="card whatif" data-whatif>
+            <div class="whatif__head">
+              <h3>What if stations close?</h3>
+              <p>
+                Close stations from BART's list and watch the map change. They disappear from the map, and the same trains
+                keep their timetable but run through them without stopping. <a href="#closures">Why these stations?</a>
+              </p>
+            </div>
+            <div class="chip-row" role="group" aria-label="Closure scenarios">
+              <button type="button" class="chip" data-whatif-preset="none" aria-pressed="true">Today's map</button>
+              <button type="button" class="chip" data-whatif-preset="first10" aria-pressed="false">Close the first 10</button>
+              <button type="button" class="chip" data-whatif-preset="all15" aria-pressed="false">Close all 15</button>
+            </div>
+            <div class="chip-row whatif__stations" role="group" aria-label="Close a station" data-whatif-stations></div>
+            <p class="whatif__status" aria-live="polite" data-whatif-status>Today's map: all 50 stations open.</p>
+          </div>
           <p class="visually-hidden" aria-live="polite" data-map-summary></p>
         </div>
       </section>
 
       <!-- KPIs + trends (web/js/trends.js; the skeletons below have the loaded content's size) -->
-      <section class="band" id="trends" aria-labelledby="trends-title">
+      <section class="band" id="trends" data-accent="green" aria-labelledby="trends-title">
         <div class="container">
           <div class="section-head">
             <p class="eyebrow">Trends</p>
@@ -254,7 +302,7 @@
         </div>
       </section>
 
-      <section class="band" id="forecast" aria-labelledby="forecast-title">
+      <section class="band" id="forecast" data-accent="orange" aria-labelledby="forecast-title">
         <div class="container">
           <div class="section-head">
             <p class="eyebrow">Forecast</p>
@@ -278,6 +326,7 @@
                 <button class="chip" type="button" aria-pressed="false" data-fc-chip="POWL">Powell St</button>
                 <button class="chip" type="button" aria-pressed="false" data-fc-chip="12TH">12th St Oakland</button>
                 <button class="chip" type="button" aria-pressed="false" data-fc-chip="MCAR">MacArthur</button>
+                <button class="chip chip--dice" type="button" data-fc-random>🎲 Surprise me</button>
               </div>
             </div>
             <div class="forecast__result" aria-live="polite" data-fc-result></div>
@@ -286,7 +335,7 @@
       </section>
 
       <!-- Findings: the ink band -->
-      <section class="band band--ink on-ink" id="findings" aria-labelledby="findings-title">
+      <section class="band band--ink on-ink" id="findings" data-accent="yellow" aria-labelledby="findings-title">
         <div class="container">
           <div class="section-head">
             <p class="eyebrow" style="color: var(--color-mute-on-ink)">Findings</p>
@@ -311,8 +360,112 @@
         </div>
       </section>
 
+      <!-- Station closures: the notes are static, so they show without data; web/js/closures.js fills [data-closures]
+           from GET /api/closures (the skeletons stand in for the loaded summary, rules and station cards) -->
+      <section class="band" id="closures" data-accent="beige" aria-labelledby="closures-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Station closures</p>
+            <h2 id="closures-title">Which BART stations could close, and what the ridership says</h2>
+            <p>BART's own ridership data for each station named so far: how many people use it, how well it is recovering, and how far away the next open station is.</p>
+          </div>
+          <div class="closures__context">
+            <p>
+              The Connect Bay Area measure (SB 63), a regional sales tax for transit, is on the November 3, 2026 ballot in
+              Alameda, Contra Costa, San Francisco, San Mateo and Santa Clara counties. On February 26, 2026 the BART board
+              adopted an Alternative Service Plan, 8–1. It applies only if the measure fails and no other money is found,
+              and from July 2027 it allows up to 15 station closures.
+            </p>
+            <p data-closures-status>
+              The stations below are the ones named in BART staff's February 2026 presentation, as reported by the press.
+              The list isn't final: the board still has to vote on which stations or segments would close.
+            </p>
+            <p data-closures-neutral>
+              TransitPulse doesn't take a position on the measure. The verdicts below weigh ridership, recovery and distance;
+              they can't see cost, fairness or what riders would do instead.
+            </p>
+          </div>
+          <div class="card closures__cost" data-closures-cost>
+            <h3>What closing would cost</h3>
+            <p data-closures-cost-data hidden></p>
+            <ul>
+              <li>
+                <strong>Traffic.</strong> When a 35-day strike stopped Los Angeles transit in 2003, peak-hour delays on the
+                freeways rose 47%, most on the roads running alongside busy transit lines (Anderson, American Economic
+                Review, 2014).
+              </li>
+              <li>
+                <strong>The Bay Bridge.</strong> During the 2013 BART strike, travel times and traffic on the Bay Bridge nearly
+                doubled on the worst day, and roads alongside BART were as bad as the worst day of a normal week, though
+                freeways across the region changed little (Moylan, Foti and Skabardonis, 2016).
+              </li>
+              <li>
+                <strong>Lost work time.</strong> The Bay Area Council Economic Institute, a business group, put the 2013
+                strike's cost at about $73 million a day, counting lost productivity only.
+              </li>
+            </ul>
+            <p class="caption">
+              Those were shutdowns of a whole system. Closing 15 stations would be smaller, and none of these studies measured
+              station closures.
+            </p>
+          </div>
+          <div class="closures" data-closures aria-busy="true" aria-live="polite">
+            <div class="grid-auto" data-closures-summary>
+              <div class="stat-tile" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--stat"></span><span class="skeleton skeleton--body"></span></div>
+              <div class="stat-tile" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--stat"></span><span class="skeleton skeleton--body"></span></div>
+              <div class="stat-tile" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--stat"></span><span class="skeleton skeleton--body"></span></div>
+            </div>
+            <div class="card closures__rules" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span></div>
+            <div class="closures__cards">
+              <div class="card closure-card" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span></div>
+              <div class="card closure-card" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span></div>
+              <div class="card closure-card" aria-hidden="true"><span class="skeleton skeleton--label"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span><span class="skeleton skeleton--body"></span></div>
+            </div>
+          </div>
+          <div class="closures__notes">
+            <div class="card card--soft" data-closures-caveats>
+              <h3>What the data can't see</h3>
+              <ul>
+                <li>What each station costs to run, and what closing it would save.</li>
+                <li>Who rides: income, disability and access to a car.</li>
+                <li>Parking, bus and shuttle links at each station.</li>
+                <li>Transfers to other systems, such as Caltrain at Millbrae and air travellers at Oakland International Airport.</li>
+                <li>Whether riders would switch to another station or stop riding.</li>
+              </ul>
+              <p data-closures-sfo>
+                San Francisco International Airport isn't on the list as reported, and the sources don't say how it would be
+                served if the stations around it closed. This page counts it as still open, so it is the nearest open station
+                for San Bruno and Millbrae. If it lost service along with the stations around it, both would meet the Distance
+                rule and their case to keep would be stronger.
+              </p>
+              <p>Distances are straight lines, not the trip by road or rail.</p>
+              <p><a href="https://github.com/braaaeeedyn/transitpulse/blob/main/docs/STATION_CLOSURES.md">Read the write-up</a></p>
+            </div>
+            <div class="card card--soft" data-closures-sources>
+              <h3>Sources</h3>
+              <ul>
+                <li><a href="https://www.cbsnews.com/sanfrancisco/news/bart-could-close-15-stations-lay-off-1200-without-sales-tax-measure/">BART could close 15 stations, lay off 1,200 without sales tax measure</a>, CBS News Bay Area, Feb 9, 2026</li>
+                <li><a href="https://www.cbsnews.com/sanfrancisco/news/bart-board-approves-station-closures-if-2026-sales-tax-measure-rejected/">BART board approves plan to close stations if voters reject sales tax measure</a>, CBS News Bay Area, Feb 2026</li>
+                <li><a href="https://www.bart.gov/node/44936">BART Board to discuss and adopt an Alternative Service Plan</a>, BART, Feb 26, 2026</li>
+                <li><a href="https://www.bart.gov/sites/default/files/2026-02/Proposed%20Alternative%20Service%20Framework%20from%20Feb%2012%202026.pdf">Proposed Alternative Service Framework (PDF)</a>, BART, Feb 12, 2026</li>
+                <li><a href="https://sfstandard.com/2026/02/26/bart-doomsday-scenario-less-doomy/">BART won't close stations in January after vote</a>, The San Francisco Standard, Feb 26, 2026</li>
+                <li><a href="https://www.kron4.com/news/bay-area/these-are-the-bart-stations-that-could-close-under-transit-systems-worst-case-scenario/">These are the BART stations that could close under the worst-case scenario</a>, KRON4, 2026</li>
+                <li><a href="https://news.medill.northwestern.edu/chicago/several-stations-on-chopping-block-as-bart-heads-for-financial-cliff/">Several stations on chopping block as BART heads for financial cliff</a>, Medill Reports, Feb 18, 2026</li>
+                <li><a href="https://localnewsmatters.org/2026/07/02/connect-bay-area-transit-tax-ballot-november-2026/">Connect Bay Area transit tax certified for the November 2026 ballot</a>, Local News Matters, Jul 2, 2026</li>
+                <li><a href="https://stanforddaily.com/2026/10/07/bay-area-to-vote-on-transit-measure/">Bay Area to vote on transit measure</a>, The Stanford Daily, Oct 7, 2026</li>
+                <li><a href="https://antiochherald.com/2026/02/bart-board-votes-8-1-to-close-up-to-15-stations-if-proposed-nov-tax-measure-fails/">BART board votes 8-1 to close up to 15 stations if proposed Nov. tax measure fails</a>, Antioch Herald, Feb 2026</li>
+                <li><a href="https://www.nber.org/papers/w18757">Subways, Strikes, and Slowdowns: The Impacts of Public Transit on Traffic Congestion</a>, Michael L. Anderson, American Economic Review, 2014</li>
+                <li><a href="https://doi.org/10.1080/03081060.2015.1127539">Observed and simulated traffic impacts from the 2013 Bay Area Rapid Transit strike</a>, Moylan, Foti and Skabardonis, Transportation Planning and Technology, 2016</li>
+                <li><a href="https://www.cbsnews.com/sanfrancisco/news/bart-strike-economic-impact-put-at-73-million-no-new-talks-set">BART strike economic impact put at $73 million</a>, CBS News Bay Area, Jul 2013</li>
+              </ul>
+            </div>
+          </div>
+          <p class="caption closures__source">Ridership: BART hourly origin-destination ridership reports, service weekdays. Data provided by BART.</p>
+        </div>
+      </section>
+
       <!-- About / how it's built -->
-      <section class="band" id="about" aria-labelledby="about-title">
+      <section class="band" id="about" data-accent="red" aria-labelledby="about-title">
         <div class="container">
           <div class="section-head">
             <p class="eyebrow">About</p>
@@ -351,6 +504,10 @@
 
     <footer class="footer">
       <div class="container">
+        <div class="footer__hello">
+          <button class="mascot-btn" type="button" aria-label="Say hi to the mascot" data-mascot-hop><svg class="mascot mascot--lg" aria-hidden="true"><use href="#i-mascot" /></svg></button>
+          <p>Thanks for riding along. The map, the numbers and the analyst all come from BART's own published data.</p>
+        </div>
         <div class="footer__grid">
           <div>
             <h2>Data sources</h2>
@@ -367,6 +524,7 @@
               <li><a href="https://github.com/braaaeeedyn/transitpulse">Source on GitHub</a></li>
               <li><a href="https://github.com/braaaeeedyn/transitpulse/blob/main/docs/FINDINGS.md">eBART study write-up</a></li>
               <li><a href="https://github.com/braaaeeedyn/transitpulse/blob/main/docs/AB_TEST.md">Ask A/B test write-up</a></li>
+              <li><a href="https://github.com/braaaeeedyn/transitpulse/blob/main/docs/STATION_CLOSURES.md">Station closures write-up</a></li>
               <li><a href="styleguide.html">Style guide</a></li>
             </ul>
           </div>
@@ -386,9 +544,10 @@
     </footer>
 
     <!-- Ask TransitPulse: a launcher in the corner opens a side panel (full screen on phones) -->
-    <button class="ask-launcher" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false">
+    <button class="ask-launcher" type="button" data-ask-open aria-controls="ask-panel" aria-expanded="false" title="Ask TransitPulse (press /)">
       <svg class="mascot" aria-hidden="true"><use href="#i-mascot" /></svg>
       <span class="ask-launcher__label">Ask TransitPulse</span>
+      <span class="ask-launcher__bubble" aria-hidden="true">Ask me anything about BART</span>
     </button>
 
     <div class="ask-panel" id="ask-panel" role="dialog" aria-labelledby="ask-panel-title" hidden data-ask>

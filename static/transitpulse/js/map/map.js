@@ -8,13 +8,15 @@ import { apiUrl } from "../util/api.js";
 import { formatClock, formatDay, pacificParts, shiftDay } from "../util/time.js";
 import { makeView } from "./geometry.js";
 import { renderNetwork, setActiveStation } from "./network.js";
-import { isOutsideTimetable, nextDeparture, timetableRange, trainsAt } from "./schedule.js";
+import { closedStops, isOutsideTimetable, nextDeparture, timetableRange, trainsAt } from "./schedule.js";
 import { drawTrains, hitTrain, placeTrain, trainSize } from "./trains.js";
+import { initWhatIf } from "./whatif.js";
 
 const SCRUB_MIN = 240; // 4:00 AM
 const SCRUB_MAX = 1590; // 2:30 AM next day
 const ZOOMS = [1, 1.5, 2.25, 3.4, 5];
 const SUMMARY_EVERY_MS = 60_000;
+const BOARD_EVERY_MS = 10_000; // the hero's departure board
 const LIST_EVERY_MS = 5_000;
 const REDUCED_MOTION_EVERY_MS = 30_000;
 
@@ -68,13 +70,23 @@ export async function initMap(root) {
   const lineName = Object.fromEntries(network.lines.map((l) => [l.id, l.name]));
   const days = {}; // per-service-day trip cache for schedule.trainsAt
 
+  // each legend entry is a toggle: one line's trains and track in colour, the rest faded (click again to clear)
   legend.replaceChildren(
     ...network.lines.map((l) => {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="swatch" style="background:var(--line-${l.id})"></span>${l.name} <span class="text-body">· ${l.desc}</span>`;
+      li.innerHTML = `<button type="button" class="legend__toggle" data-legend-line="${l.id}" aria-pressed="false"><span class="swatch" style="background:var(--line-${l.id})"></span><span>${l.name} <span class="text-body">· ${l.desc}</span></span></button>`;
       return li;
     }),
   );
+  legend.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-legend-line]");
+    if (!b) return;
+    state.focusLine = state.focusLine === b.dataset.legendLine ? null : b.dataset.legendLine;
+    for (const x of legend.querySelectorAll("[data-legend-line]")) x.setAttribute("aria-pressed", String(x.dataset.legendLine === state.focusLine));
+    if (state.focusLine) root.dataset.focusLine = state.focusLine;
+    else delete root.dataset.focusLine;
+    draw(true);
+  });
 
   // --- state -----------------------------------------------------------------------------------------
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -88,7 +100,9 @@ export async function initMap(root) {
     selected: null, // {type: "train", trip} | {type: "station", index}
     view: "map",
     visible: true,
+    closed: new Set(), // "what if" picker: station indices closed (hidden; trains pass through)
   };
+  let skip = null; // closedStops(schedule, state.closed)
 
   let view;
   let geom;
@@ -99,6 +113,7 @@ export async function initMap(root) {
   let lastDraw = 0;
   let lastList = 0;
   let lastSummary = 0;
+  let lastBoard = 0;
   let busiest = ""; // the screen-reader summary's busiest-station sentence, from the Trends band's /api/kpis
   let tooltipHTML = "";
   let raf = 0;
@@ -154,7 +169,9 @@ export async function initMap(root) {
     scrub.setAttribute("aria-valuetext", formatClock(t.minutes));
     clockTime.textContent = formatClock(t.minutes);
     clockDate.textContent = ` · ${formatDay(t.minutes >= 1440 ? shiftDay(t.ymd, 1).ymd : t.ymd)}`;
-    clockStatus.textContent = state.live ? "Live schedule" : state.playing ? `Replay ${state.speed}×` : "Paused";
+    clockStatus.textContent =
+      (state.live ? "Live schedule" : state.playing ? `Replay ${state.speed}×` : "Paused") +
+      (state.closed.size ? ` · what if: ${state.closed.size} closed` : "");
   }
 
   // --- sizing ----------------------------------------------------------------------------------------
@@ -177,7 +194,7 @@ export async function initMap(root) {
       center: state.center,
       padPx: controlsInset(),
     });
-    geom = renderNetwork(svg, data, view);
+    geom = renderNetwork(svg, data, view, state.closed);
     size = trainSize(rect.width);
     stage.classList.toggle("is-zoomed", state.zoomIdx > 0);
     zoomOut.disabled = state.zoomIdx === 0;
@@ -189,7 +206,7 @@ export async function initMap(root) {
   // --- frame -----------------------------------------------------------------------------------------
   function computeTrains() {
     const t = now();
-    const trains = trainsAt(schedule, days, t.ymd, t.weekday, t.minutes);
+    const trains = trainsAt(schedule, days, t.ymd, t.weekday, t.minutes, skip);
     placed = trains.map((tr) => ({ ...tr, ...placeTrain(tr, schedule, geom), trip: tr.entry.trip }));
     return t;
   }
@@ -203,6 +220,7 @@ export async function initMap(root) {
       ink,
       canvasColor,
       selectedTrip: state.selected?.type === "train" ? state.selected.trip : null,
+      focusLine: state.focusLine ?? null,
       dpr,
       w: view.w,
       h: view.h,
@@ -217,6 +235,10 @@ export async function initMap(root) {
     if (force || ms - lastSummary > SUMMARY_EVERY_MS) {
       updateSummary(t);
       lastSummary = ms;
+    }
+    if (force || ms - lastBoard > BOARD_EVERY_MS) {
+      publishBoard(t);
+      lastBoard = ms;
     }
     syncControls();
   }
@@ -318,17 +340,27 @@ export async function initMap(root) {
     return `<div class="tooltip__title">${swatch(pattern.line)}${lineName[pattern.line]} to ${dest}</div><div>${second}</div>`;
   }
 
+  const hourLabel = (h) => (h === 0 ? "12 AM" : h < 12 ? `${h} AM` : h === 12 ? "12 PM" : `${h - 12} PM`);
+
   function stationHTML(i) {
     const s = network.stations[i];
     const lines = s.lines.map((l) => `${swatch(l)}`).join("");
     const names = s.lines.map((l) => lineName[l].replace(" line", "")).join(", ");
     const sum = stationSummary(s.code);
-    let entries = "";
+    let stats = "";
     if (sum) {
+      // a small station card: the latest day, its recovery, the 28-day weekday average and the peak hour
       const rec = sum.recovery_ratio === null ? "" : ` (${formatPercent(sum.recovery_ratio)} of 2019)`;
-      entries = `<div data-station-entries>Entries on ${formatDate(sum.data_through)}: ${formatNumber(sum.entries)}${rec}</div>`;
+      const cells = [
+        [formatNumber(sum.entries), `entries on ${formatDate(sum.data_through)}`],
+        sum.recovery_ratio === null ? null : [formatPercent(sum.recovery_ratio), "of 2019"],
+        sum.avg_weekday_entries_28d === null ? null : [formatNumber(Math.round(sum.avg_weekday_entries_28d)), "weekday average, 28 days"],
+        sum.peak_hour === null ? null : [hourLabel(sum.peak_hour), `peak hour · ${formatPercent(sum.peak_hour_share)} of entries`],
+      ].filter(Boolean);
+      stats = `<p class="visually-hidden" data-station-entries>Entries on ${formatDate(sum.data_through)}: ${formatNumber(sum.entries)}${rec}</p>
+        <dl class="tooltip__stats">${cells.map(([v, l]) => `<div><dd>${v}</dd><dt>${l}</dt></div>`).join("")}</dl>`;
     }
-    return `<div class="tooltip__title">${s.name}</div><div class="tooltip__title">${lines}<span class="tooltip__muted">${names}</span></div>${entries}<a href="#forecast">See its forecast</a>`;
+    return `<div class="tooltip__title">${s.name}</div><div class="tooltip__title">${lines}<span class="tooltip__muted">${names}</span></div>${stats}<a class="tooltip__cta" href="#forecast">See its forecast →</a>`;
   }
 
   // Ridership numbers for the station tooltip (GET /api/stations/{code}/summary), fetched once per station
@@ -409,6 +441,7 @@ export async function initMap(root) {
     let best = -1;
     let bestD = radius;
     geom.stations.forEach((s, i) => {
+      if (s.closed) return;
       const d = Math.hypot(s.x - x, s.y - y) - s.halfSpan;
       if (d <= bestD) {
         best = i;
@@ -576,6 +609,27 @@ export async function initMap(root) {
     );
   }
 
+  // --- departure board: the six soonest arrivals, for the hero (tp:arrivals) -----------------------------
+  function publishBoard(t) {
+    const rows = placed
+      .filter((tr) => tr.next !== null)
+      .map((tr) => {
+        const pattern = schedule.patterns[tr.entry.pattern];
+        return {
+          line: pattern.line,
+          lineName: lineName[pattern.line],
+          dest: network.stations[pattern.stops[pattern.stops.length - 1]].short,
+          next: network.stations[pattern.stops[tr.next]].short,
+          mins: Math.max(0, Math.ceil(tr.nextAt - (t.minutes + tr.dayOffset))),
+        };
+      })
+      .sort((a, b) => a.mins - b.mins || a.next.localeCompare(b.next))
+      .slice(0, 6);
+    document.dispatchEvent(
+      new CustomEvent("tp:arrivals", { detail: { rows, clock: formatClock(t.minutes), live: state.live, closed: state.closed.size } }),
+    );
+  }
+
   // --- screen-reader summary -------------------------------------------------------------------------
   function updateSummary(t) {
     const lines = new Set(placed.map((p) => p.line));
@@ -586,8 +640,20 @@ export async function initMap(root) {
     summary.textContent += busiest;
   }
 
+  // --- what if: close stations from BART's list; the same trains run through them -------------------
+  initWhatIf(document.querySelector("[data-whatif]"), network.stations, (codes) => {
+    state.closed = new Set(codes.map((c) => network.stations.findIndex((s) => s.code === c)).filter((i) => i >= 0));
+    skip = closedStops(schedule, state.closed);
+    if (state.selected?.type === "station" && state.closed.has(state.selected.index)) clearSelection();
+    layout();
+  });
+
   // --- lifecycle -------------------------------------------------------------------------------------
   readColors();
+  document.addEventListener("tp:theme", () => {
+    readColors();
+    draw(true);
+  });
   new ResizeObserver(() => layout()).observe(stage);
   new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting && !document.hidden)).observe(stage);
   document.addEventListener("visibilitychange", () => setVisible(!document.hidden));

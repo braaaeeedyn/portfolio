@@ -1,0 +1,792 @@
+/* Motion and delight (redesign round 1). Everything here is decoration: the page reads the same without it, and
+   prefers-reduced-motion turns the movement off. */
+
+/* --- the pulse stripe: the six BART line colours under the nav, with a light sweeping along like a train -------- */
+.pulse-stripe {
+  position: relative;
+  height: 0.25rem;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    var(--line-yellow) 0 16.66%,
+    var(--line-orange) 16.66% 33.33%,
+    var(--line-red) 33.33% 50%,
+    var(--line-green) 50% 66.66%,
+    var(--line-blue) 66.66% 83.33%,
+    var(--line-beige) 83.33% 100%
+  );
+}
+
+.pulse-stripe::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -20%;
+  width: 20%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  animation: pulse-sweep 6s linear infinite;
+}
+
+@keyframes pulse-sweep {
+  to {
+    transform: translateX(600%);
+  }
+}
+
+/* --- hero live strip ------------------------------------------------------------------------------------------- */
+.hero__live {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-2xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-body);
+}
+
+.hero__live li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.hero__live .num {
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: var(--type-display-md);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero__live-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  align-self: center;
+  border-radius: var(--radius-pill);
+  background: var(--line-green);
+  animation: live-pulse 2s var(--ease-standard) infinite;
+}
+
+/* --- sections rise in as they scroll into view (the class is added by JS, so nothing moves without it) ----------
+   A slide only, no fade: text mid-fade reads as low-contrast to axe (tests/web/a11y.spec.js). */
+.reveal {
+  transform: translateY(1.75rem);
+  transition: transform 640ms var(--ease-standard);
+}
+
+.reveal.is-in {
+  transform: none;
+}
+
+/* --- nav: the section on screen ------------------------------------------------------------------------------- */
+.nav__links a[aria-current="true"] {
+  box-shadow: inset 0 -2px 0 var(--color-ink);
+  border-radius: 0;
+}
+
+/* --- the mascot bobs and says hello once ------------------------------------------------------------------------ */
+.ask-launcher .mascot {
+  animation: mascot-bob 3.2s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.ask-launcher__bubble {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-sm));
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-size: var(--type-body-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  transform: translateY(0.375rem);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+  pointer-events: none;
+}
+
+.ask-launcher.has-bubble .ask-launcher__bubble {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-stripe::after,
+  .hero__live-dot,
+  .ask-launcher .mascot {
+    animation: none;
+  }
+  .reveal {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --- round 2: legend toggles, the dice chip ---------------------------------------------------- */
+.legend__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: calc(-1 * var(--space-xs)) 0 calc(-1 * var(--space-xs)) calc(-1 * var(--space-sm));
+  padding: var(--space-xs) var(--space-sm);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.legend__toggle .swatch {
+  flex: none;
+}
+
+.legend__toggle:hover,
+.legend__toggle[aria-pressed="true"] {
+  background: var(--color-canvas-soft);
+}
+
+.legend__toggle[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+}
+
+/* one line in focus: the other tracks fade (their trains are drawn grey by trains.js) */
+.map-card[data-focus-line] .map-track--line {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.map-card[data-focus-line="yellow"] .map-track--line:not([data-line="yellow"]),
+.map-card[data-focus-line="orange"] .map-track--line:not([data-line="orange"]),
+.map-card[data-focus-line="red"] .map-track--line:not([data-line="red"]),
+.map-card[data-focus-line="green"] .map-track--line:not([data-line="green"]),
+.map-card[data-focus-line="blue"] .map-track--line:not([data-line="blue"]),
+.map-card[data-focus-line="beige"] .map-track--line:not([data-line="beige"]) {
+  opacity: 0.15;
+}
+
+.chip--dice {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+.chip--dice:hover {
+  background: var(--color-ink-elevated);
+}
+
+/* --- round 3: station card, section accents, the hero highlight, dark-mode toggle ----------------------------- */
+.tooltip:has(.tooltip__stats) {
+  max-width: 20rem;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.tooltip__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm) var(--space-md);
+  margin: var(--space-sm) 0 0;
+}
+
+.tooltip__stats div {
+  display: grid;
+}
+
+.tooltip__stats dd {
+  margin: 0;
+  font-size: var(--type-body-md);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+}
+
+.tooltip__stats dt {
+  font-size: var(--type-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-mute-on-ink);
+}
+
+.tooltip__cta {
+  margin-top: var(--space-sm);
+  font-weight: 500;
+}
+
+/* a line-colour dot before each section's eyebrow */
+[data-accent="blue"] {
+  --accent: var(--line-blue);
+}
+[data-accent="green"] {
+  --accent: var(--line-green);
+}
+[data-accent="orange"] {
+  --accent: var(--line-orange);
+}
+[data-accent="yellow"] {
+  --accent: var(--line-yellow);
+}
+[data-accent="red"] {
+  --accent: var(--line-red);
+}
+
+[data-accent] .section-head .eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-right: var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  vertical-align: -1px;
+}
+
+/* the Findings band opens with the line colours */
+.band--ink {
+  border-top: 0.25rem solid transparent;
+  border-image: linear-gradient(
+      90deg,
+      var(--line-yellow) 0 16.66%,
+      var(--line-orange) 16.66% 33.33%,
+      var(--line-red) 33.33% 50%,
+      var(--line-green) 50% 66.66%,
+      var(--line-blue) 66.66% 83.33%,
+      var(--line-beige) 83.33% 100%
+    )
+    1;
+}
+
+/* the headline's last word sits on a stripe of the line colours */
+.hero .hl {
+  background: linear-gradient(90deg, var(--line-yellow), var(--line-orange), var(--line-red), var(--line-green), var(--line-blue));
+  background-repeat: no-repeat;
+  background-size: 100% 0.18em;
+  background-position: 0 92%;
+}
+
+/* the nav's theme toggle shows the mode you'd switch to */
+.nav__theme .icon--sun,
+:root[data-theme="dark"] .nav__theme .icon--moon {
+  display: none;
+}
+:root[data-theme="dark"] .nav__theme .icon--sun {
+  display: block;
+}
+
+/* the mascot keeps its own colours; on the (now white) launcher its outline needs a little help */
+:root[data-theme="dark"] .ask-launcher .mascot {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6));
+}
+
+/* --- round 4: the departure board and the footer's mascot ----------------------------------------------------- */
+.board {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-xl);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.board__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-md);
+}
+
+.board__title {
+  font-size: var(--type-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-mute-on-ink);
+}
+
+.board__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--type-body-sm);
+  color: var(--color-mute-on-ink);
+}
+
+.board__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--line-green);
+  animation: live-pulse 2s var(--ease-standard) infinite;
+}
+
+.board__rows {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.board__row {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: 2.5rem;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  animation: board-in 420ms var(--ease-standard) both;
+}
+
+.board__row:last-child {
+  border-bottom: 0;
+}
+
+.board__row .swatch {
+  width: 1.25rem;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.board__dest {
+  display: grid;
+  min-width: 0;
+  line-height: var(--lh-tight);
+}
+
+.board__dest strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board__to {
+  font-size: var(--type-caption);
+  color: var(--color-mute-on-ink);
+}
+
+.board__eta {
+  font-weight: 700;
+  font-size: var(--type-body-md);
+}
+
+.board__foot {
+  font-size: var(--type-caption);
+  color: var(--color-mute-on-ink);
+}
+
+.board__foot a {
+  color: inherit;
+}
+
+@keyframes board-in {
+  from {
+    transform: translateX(-8px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.footer__hello {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  max-width: 35rem;
+  margin-bottom: var(--space-4xl);
+  font-size: var(--type-body-md);
+}
+
+.mascot--lg {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board__dot,
+  .board__row {
+    animation: none;
+  }
+}
+
+/* --- round 5: chart readout, forecast badges, the mascot's hop ------------------------------------------------- */
+.chart__hover-rule {
+  stroke: var(--color-mute);
+  stroke-dasharray: 3 3;
+}
+
+.chart__hover-dot {
+  fill: var(--color-canvas);
+  stroke: var(--color-ink);
+  stroke-width: 2;
+}
+
+.chart__readout {
+  position: absolute;
+  top: var(--space-sm);
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-size: var(--type-body-sm);
+  line-height: var(--lh-body-sm);
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--shadow-3);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.chart__readout-title {
+  font-weight: 500;
+}
+
+.chart__readout-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  color: var(--color-mute-on-ink);
+}
+
+.chart__readout-row strong {
+  color: var(--color-on-ink);
+}
+
+.chart {
+  touch-action: pan-y;
+}
+
+.forecast__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  min-height: 1.75rem;
+  margin-top: var(--space-sm);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 1.75rem;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas-soft);
+  font-size: var(--type-body-sm);
+  color: var(--color-body);
+}
+
+.badge strong {
+  color: var(--color-ink);
+}
+
+.badge::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.badge--busy::before {
+  background: var(--line-red);
+}
+
+.badge--quiet::before {
+  background: var(--line-blue);
+}
+
+.mascot-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+}
+
+.mascot-btn.is-hopping .mascot {
+  animation: mascot-hop 600ms var(--ease-standard);
+}
+
+@keyframes mascot-hop {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateY(-14px) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(0) rotate(4deg);
+  }
+}
+
+/* --- station closures band (v1.1.2): context notes, summary tiles, rules, station cards, the verdict pill ------- */
+[data-accent="beige"] {
+  --accent: var(--line-beige);
+}
+
+.closures__context {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+.closures {
+  display: grid;
+  gap: var(--space-grid);
+}
+
+.closures__cost {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-grid);
+  border-left: 0.25rem solid var(--accent);
+}
+
+.closures__cost ul {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding-left: var(--space-xl);
+}
+
+.closures__tile-text {
+  font-size: var(--type-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--color-body);
+}
+
+.closures__rules {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.closures__rule-list {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding-left: var(--space-xl);
+}
+
+.closures__verdicts {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.closures__verdicts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.closures__group {
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.closures__group > p {
+  color: var(--color-body);
+}
+
+.closures__cards {
+  display: grid;
+  gap: var(--space-grid);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+}
+
+.closure-card {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* the loading cards hold roughly a loaded card's height */
+.closures__cards > .closure-card[aria-hidden="true"] {
+  min-height: 26.25rem;
+}
+
+.closure-card__head {
+  display: grid;
+  gap: var(--space-xxs);
+}
+
+.closure-card h4 {
+  font-size: var(--type-display-sm);
+  font-weight: 700;
+  line-height: var(--lh-display-sm);
+  letter-spacing: var(--tracking-display-sm);
+}
+
+.closure-card__segment,
+.closure-card__label,
+.closure-card__facts dt {
+  font-size: var(--type-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--color-body);
+}
+
+.closure-card__facts {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.closure-card__facts dd {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.closure-card__dests,
+.closure-card__rules {
+  display: grid;
+  gap: var(--space-xxs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--type-body-sm);
+  line-height: var(--lh-body-sm);
+}
+
+.closure-card__dests li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.closure-card__share {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.closure-card__rules {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-hairline);
+}
+
+.closure-card__mark {
+  display: inline-block;
+  width: 1.25em;
+}
+
+/* the verdict, never colour alone and never green/red (DESIGN.md §2): ink for strong, outlined for mixed, soft for weak */
+.verdict-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-self: start;
+  min-height: 1.75rem;
+  padding: 0 var(--space-md);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  font-size: var(--type-body-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.verdict-pill--strong {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.verdict-pill--mixed {
+  background: var(--color-canvas);
+}
+
+.verdict-pill--weak {
+  border-color: transparent;
+  background: var(--color-canvas-soft);
+}
+
+.closures__notes {
+  display: grid;
+  gap: var(--space-grid);
+  margin-top: var(--space-grid);
+}
+
+@media (min-width: 768px) {
+  .closures__notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.closures__notes .card {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  overflow-wrap: anywhere;
+}
+
+.closures__notes ul {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding-left: var(--space-xl);
+}
+
+.closures__source {
+  margin-top: var(--space-md);
+}
+
+/* --- what if stations close? (under the live map) ------------------------------------------------------------ */
+.whatif {
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-grid);
+  border-left: 0.25rem solid var(--accent);
+}
+
+.whatif__head {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.whatif__head p,
+.whatif__status {
+  color: var(--color-body);
+}
+
+/* a closed station reads as crossed out, in words too: aria-pressed="true" means closed */
+.whatif__station[aria-pressed="true"] {
+  text-decoration: line-through;
+}
+
+.whatif__status {
+  font-size: var(--type-body-sm);
+  line-height: var(--lh-body-sm);
+  min-height: calc(2 * var(--type-body-sm) * var(--lh-body-sm));
+}
+
+/* --- dark mode keeps the ink surfaces dark --------------------------------------------------------------------
+   The Findings band, the footer, the departure board and the chart readout are "ink" surfaces: black with white
+   text in light mode. Inverted in dark mode they became white blocks on a black page, so there they turn a dark grey
+   with white text (the on-ink colours are re-pointed inside them only). */
+:root[data-theme="dark"] :is(.band--ink, .card--ink, .footer, .board, .chart__readout) {
+  --color-on-ink: #ffffff;
+  --color-mute-on-ink: #9b9b9b; /* 6.2:1 on the dark grey */
+  --color-ink-elevated: #2e2e2e;
+  background: var(--color-canvas-soft);
+}
+
+:root[data-theme="dark"] .chart__readout {
+  box-shadow: 0 0 0 1px var(--color-hairline), var(--shadow-3);
+}
