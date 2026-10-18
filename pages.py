@@ -586,27 +586,27 @@ ROLES = [
      "Ship LLM features that are grounded, measurable and hard to break.",
      [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
       ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
-      ("experience/kigumi-group/", "Kigumi Group", "fixed recurring GPT / image-model pipeline failures")]),
+      ("projects/transitpulse/", "TransitPulse", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
     ("ML", "Machine Learning Engineer",
      "Train models that beat a real baseline, then run them in production.",
      [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
-      ("projects/academy-of-testers/", "Academy of Testers", "BKT + IRT adaptive engine as pure, testable code")]),
+      ("projects/transitpulse/", "TransitPulse", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
     ("DS", "Data Scientist",
      "Design honest experiments and find out what the data can support.",
      [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
-      ("projects/seismicsocal/", "SeismicSoCal", "chronological splits, clustered-bootstrap CIs, precision vs. chance")]),
+      ("projects/transitpulse/", "TransitPulse", "pre-registered difference-in-differences with placebo intervals")]),
     ("DE", "Data Engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
-     [("projects/bearlm/", "BearLM", "ETL over PDF / md / ipynb, ~10K records with retry/backoff"),
-      ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas pipelines over years of cache logs")]),
+     [("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),
+      ("projects/transitpulse/", "TransitPulse", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
+      ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job")]),
     ("DA", "Data Analyst",
      "Turn raw logs and metrics into clear charts and decisions.",
      [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "seasonality, change-points and peaks in Matplotlib / Seaborn / Plotly"),
       ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
-      ("projects/bearlm/", "BearLM", "SQLite usage analytics and weakest-area reporting")]),
+      ("projects/transitpulse/", "TransitPulse", "dbt KPI marts + the BART station-closures analysis with stated rules and sources")]),
     ("RES", "AI / ML Researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
      [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
@@ -657,6 +657,10 @@ def home(ctx):
          "Live quake detection on 19 stations: CNN→Transformer + GNN, two-stage alerts, MLOps."),
         ("projects/bearlm/", "field-red", "BearLM", "fully local RAG",
          "Zero-cost cited Q&amp;A over ~10K Berkeley CS/DS chunks. recall@1 56% → 82%."),
+        ("projects/transitpulse/", "field-sky", "Transit<br>Pulse", "braedynthompson.com/transitpulse",
+         "68M BART trips on BigQuery, a live train map, forecasts 48% better than naive, a pre-registered causal study and a guarded SQL agent."),
+        ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
+         "641 live stations through Kafka, Spark Streaming and Iceberg, plus Debezium CDC."),
     ]
     feat_html = "".join(
         f"<a class='feat halftone' href='{rel}{href}'><div class='feat-thumb {field}'>"
@@ -703,6 +707,7 @@ tuning models that had nothing left to find.</p>"""
         ("ML &amp; deep learning", "PyTorch, scikit-learn, XGBoost, CNN / Transformer / GNN, PatchTST, neuralforecast"),
         ("LLMs &amp; retrieval", "RAG, LangChain, Ollama, Llama 3.1, embeddings, BM25 + vector hybrid search, rerankers, RAGAS"),
         ("Data", "Pandas, ETL pipelines, EDA, rolling CV, Matplotlib, Seaborn, Plotly, SQL"),
+        ("Data engineering", "Spark (batch + Structured Streaming), Kafka, Iceberg, dbt, BigQuery, Airflow, Trino, Debezium, Terraform"),
         ("Backend", "Python, FastAPI, Java / Spring Boot, PostgreSQL, Flyway, SQLite, Chroma"),
         ("Frontend", "React, TypeScript, Vite, Tailwind, Capacitor (Android), hand-built SVG"),
         ("Ops &amp; MLOps", "MLflow, Dagster, Evidently, GitHub Actions, Docker, systemd, Caddy, Oracle Cloud, FCM push"),
@@ -725,7 +730,7 @@ The fastest way to reach me is email.</p>
 
     main_html = (
         panel("roles", "Roles I'm targeting", roles_section(rel, ctx["resume"]), num=f"{len(ROLES):02d}", body_cls="panel-body")
-        + panel("projects", "Featured projects", f"<div class='featured'>{feat_html}</div>", num="03",
+        + panel("projects", "Featured projects", f"<div class='featured'>{feat_html}</div>", num=f"{len(feats):02d}",
                 body_cls="panel-body")
         + panel("experience", "Experience", exp_html, cls="platinum", num=f"{len(exp):02d}", body_cls="panel-body tight")
         + panel("about", "About", about)
@@ -1448,7 +1453,7 @@ answer time of about 6 s on an 8 GB RTX 4060.</p>
         + panel("grounding", "Anti-hallucination", grounding, num="03")
         + panel("etl", "Ingestion pipeline &amp; architecture", etl, num="04")
         + panel("product", "The product", product, num="05")
-        + pager(rel, ("projects/seismicsocal/", "SeismicSoCal"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
+        + pager(rel, ("projects/seismicsocal/", "SeismicSoCal"), ("projects/transitpulse/", "TransitPulse")))
 
     rail = (
         rail_btns([("GH", "Source code", ctx["github"] + "/bearlm")])
@@ -1466,6 +1471,467 @@ answer time of about 6 s on an 8 GB RTX 4060.</p>
         + info("What is — recall@k?",
                "<p>The share of questions where the true source chunk appears in the top <i>k</i> retrieved results. "
                "recall@1 = 0.82 means the first passage BearLM reads is the right one 82% of the time.</p>"))
+    return h, layout(main_html, rail)
+
+
+# ============================================================================ TRANSITPULSE
+
+
+def transitpulse(ctx):
+    rel = ctx["rel"]
+    gh = ctx["github"] + "/transitpulse"
+    doc = gh + "/blob/main/docs/"
+    live = rel + "transitpulse/"
+    h = hero(
+        "field-sky", "PROJECT 04 · DATA PLATFORM · CAUSAL INFERENCE · AI AGENT · LIVE", "Transit<br>Pulse",
+        "A Bay Area transit analytics platform: eight years of BART and Bay Wheels ridership cleaned with PySpark, "
+        "modelled with dbt on BigQuery and orchestrated by Dagster; a 14-day forecast for every station; a "
+        "pre-registered causal study of the eBART extension; an analysis of the 15 stations BART may close; and an "
+        "AI analyst that answers questions by writing guarded SQL. The site draws every BART train from the timetable.",
+        ["68M BART trips", "26M bike trips", "Dagster · Spark · dbt · BigQuery", "LangGraph + Gemini"],
+        C.mini_bars([("naive", 548.5 / 600, False), ("LightGBM", 283.1 / 600, True)],
+                    title="station forecast MAE · entries / day", fmt=lambda v: f"{v * 600:.0f}"),
+        go(live, "Open the live site") + go(gh, "Source on GitHub", True))
+
+    overview = f"""
+{stats([("67.8M", "BART trip rows", "hourly origin-destination, 2018–2025, 4.2 GB"),
+        ("48%", "lower forecast error", "MAE 283 vs 549, seasonal naive"),
+        ("27 → 50%", "agent accuracy", "pre-registered A/B, McNemar p = 0.004"),
+        ("+4.2%", "eBART net riders", "95% placebo interval +1.6% to +7.1%")])}
+<hr class="dotted">
+<p class="lede">How far has BART ridership come back, where is it heading next week, did the newest extension bring
+new riders, and which stations can the system least afford to close? TransitPulse answers all four from one
+warehouse, and lets anyone ask their own question in plain English.</p>
+<p>Public BART and Bay Wheels data lands in <strong>BigQuery</strong> through a <strong>Dagster</strong> pipeline that
+runs itself on a free Oracle VM. <strong>PySpark</strong> cleans the raw trip files, <strong>dbt</strong> models them into
+a star schema with 84 data tests, and a <strong>LightGBM</strong> model forecasts every station two weeks out. A
+<strong>FastAPI</strong> service on <strong>Cloud Run</strong> serves the numbers and a <strong>LangGraph</strong>
+text-to-SQL agent to a hand-built site that is live <a href="{live}">on this domain</a>. The whole thing runs at
+$0, inside every service's free tier.</p>
+{bullets([
+    "Built a scheduled Dagster pipeline (PySpark + dbt on BigQuery) over <strong>67.8M</strong> BART trip rows and "
+    "<strong>26.0M</strong> Bay Wheels trips: an SCD2 station dimension, partitioned and clustered facts, "
+    "<strong>17 dbt models</strong> and <strong>84 data tests</strong>, with one definition per KPI feeding the site and "
+    "the agent.",
+    "Forecast daily entries at all 50 stations 14 days ahead with global LightGBM quantile models, cutting MAE "
+    "<strong>48%</strong> against a seasonal-naive baseline (283 vs 549) under walk-forward validation with bootstrap "
+    "CIs, and calibrated the band with split-conformal prediction, reporting its 73% coverage honestly.",
+    "Shipped a guarded text-to-SQL agent (sqlglot AST checks, a read-only service account, BigQuery dry runs, byte "
+    "budgets) and proved its retrieval step in a <strong>pre-registered A/B test</strong> with a power analysis: "
+    "execution accuracy <strong>27% → 50%</strong> on 66 gold-SQL questions, exact McNemar p = 0.004.",
+    "Ran a <strong>pre-registered</strong> difference-in-differences study of the 2018 eBART extension against 34 "
+    "control stations with placebo inference validated on synthetic data: the line gained about <strong>+4.2%</strong> "
+    "while the three old stations lost <strong>23.9%</strong>, and a post-hoc trend check says the gain may be trend.",
+    "Analysed the <strong>15 BART stations</strong> named for possible closure with four stated ridership rules, "
+    "checked the press's claims against the warehouse, and let visitors close them on the live map.",
+])}
+<p class="note"><strong>Not built, and said so:</strong> the Looker Studio and Power BI reports (a build guide, DAX
+measures and a check week are ready) and a QLoRA text-to-SQL fine-tune, deferred. The live agent runs Gemini, which
+hasn't been scored on the full eval set; the 50% is a local Llama 3.1 8B.</p>"""
+
+    platform = f"""
+{flow([("Ingest", "BART OD files, GTFS and Bay Wheels zips → GCS; a sensor re-downloads a year when its Last-Modified changes", False),
+       ("Clean", "PySpark tags every bad row with a drop reason and writes partitioned Parquet + an audit; Bay Wheels through DuckDB", False),
+       ("Model", "dbt: staging → SCD2 snapshot → dims / facts → KPI marts in BigQuery, 84 tests", True),
+       ("Forecast", "weekly LightGBM retrain writes forecasts + a run log with every metric and CI", False),
+       ("Serve", "FastAPI on Cloud Run reads the marts with a 100 MB per-query cap", False)])}
+<h3>Cleaning that explains itself</h3>
+<p>The Spark job reads the headerless BART files with an explicit schema and <em>permissive</em> corrupt-record
+handling, then tags each row as kept or dropped for one reason: malformed, bad date or hour, bad station code,
+non-positive trips, or a duplicate (the latest source file wins). Kept rows get weekday and US-holiday flags and are
+written as Parquet partitioned by year and month, replacing only the months present, with an audit of rows in, rows
+out and drops per reason. Bay Wheels arrives as irregularly named monthly zips in two schemas (Ford GoBike and Lyft);
+a DuckDB step normalises both into one, with its own drop reasons (bad timestamps, trips over 24 hours, coordinates
+outside the Bay Area, trips outside their file's month). Raw files are never edited; downloads are skipped when ETag
+and size match a manifest.</p>
+<h3>One definition per number</h3>
+<p>Every KPI (recovery vs 2019, rolling 28-day entries, year-over-year change, peak-hour share, busiest station) is
+computed once in a dbt mart, and the site and the agent read those columns instead of re-deriving them. Recovery
+compares each service weekday with the same ISO week of ISO year 2019, paired with its ISO year, so the turn of the
+year never compares January with December. The hourly fact is incremental: it re-processes the last 35 days plus any
+date not yet loaded, so a back-filled year is picked up. A singular test checks that every staged trip date reaches
+it, and the station dimension is an SCD2 snapshot, so renames and openings are tracked over time.</p>
+{table(["", "2019", "2025"],
+       [["Average daily BART entries", "324,958", "149,335"],
+        ["Service-weekday recovery vs 2019", "1.00", "0.43"],
+        ["Bay Wheels trips", "2,506,867", "4,395,116"],
+        ["Bikes per 1,000 BART entries", "21.1", "80.6"]], num_cols=(1, 2))}
+<p>Bikes recovered where trains didn't: in 2025 Bay Wheels ran at 127–210% of its 2019 monthly level, BART at 43–48%.
+The busiest station on most 2025 days was Embarcadero, and the busiest weekday hour at the top five stations is 5 PM.</p>
+<h3>Orchestration on a shared free VM</h3>
+{tiles([("Assets with lineage", "Yearly partitions for BART and Bay Wheels, every dbt model and snapshot as an asset, and the forecast downstream of the station fact."),
+        ("Sensors and schedules", "BART is checked every 6 hours and reloaded when its file changes; dbt rebuilds after every ingest; Bay Wheels reloads on the 7th, a full rebuild runs on the 6th, the forecast retrains every Monday."),
+        ("Oracle VM", "Dagster daemon and UI as systemd units on the 2-core box it shares with SeismicSoCal, with memory caps and a lower OOM priority so the quake detector keeps priority."),
+        ("Same models, two warehouses", "dbt builds on DuckDB locally and BigQuery in production from the same SQL; BigQuery facts are partitioned by date and clustered by station, with a bytes-billed cap per query.")])}"""
+
+    forecast = f"""
+<p>One global <strong>LightGBM</strong> model per quantile (p10, p50, p90) forecasts every station from 1 to 14 days
+ahead. Each training row is a station, a forecast origin and a horizon, and every feature uses only data up to the
+origin: the last value, the previous day and 7-day mean, the seasonal-naive value and the last four same weekdays,
+28-day volatility, the horizon, the target's weekday, month and holiday flags, and the station itself. Values are
+scaled by each station's 28-day level, so one model fits Embarcadero and the quietest suburban stop alike.</p>
+{fig(C.hbars([("MAE", [("lgb", 283.1), ("naive", 548.5)]), ("RMSE", [("lgb", 642.6), ("naive", 1246.7)])],
+             1300, lambda v: f"{v:,.0f}", {"lgb": ("LightGBM", C.OURS), "naive": ("Seasonal naive", C.BASE)},
+             "Back-test error, daily entries per station (lower is better)", ticks=[0, 400, 800, 1200]),
+     "Walk-forward back-test: 12 origins every 14 days, the first 6 for calibration and the last 6 for testing, pooled over 50 stations and 14 horizons. MAE 283 [216, 365] against 549 [417, 698] for the seasonal-naive baseline; the improvement's 95% bootstrap interval (paired over stations) is 200 to 340 entries a day.")}
+<h3>An error band that says how often it holds</h3>
+<p>The band is calibrated with rolling <strong>split-conformal</strong> prediction on conformalised quantile scores:
+each test fold widens the p10–p90 band using only the folds before it, so a fold never calibrates itself. It held the
+actual value on <strong>73%</strong> of back-test days against an 80% target (raw p10–p90: 70.5%; the Christmas fold
+alone is 44%). So the site calls it the "calibrated model range", never the "80% range", and its source line says the
+band is narrower than it should be. That wording is chosen by the API from the run's own coverage numbers, and the
+label switches to "80% range" only when a back-test earns it.</p>
+{tip("Every retrain appends a row to a run log: MAE, RMSE, coverage, each with its CI, plus per-fold metrics.", prop="scholar")}"""
+
+    causal = f"""
+<p class="lede">Did the 2018 eBART extension to Antioch bring new riders to BART, or just move existing ones to the
+new stations?</p>
+<p>The trick is the unit. A rider who used to drive to Pittsburg/Bay Point and now boards at Antioch leaves the
+<em>corridor total</em> unchanged; a rider new to BART raises it. So the study measures both the three old stations
+and the whole Concord → Antioch line summed into one unit, against 34 BART stations far from the line, with station
+and week fixed effects on log weekly entries.</p>
+{table(["Estimate", "Effect", "95% placebo interval"],
+       [["Whole line, Concord → Antioch", "<strong>+4.2%</strong> (about 505 entries / day)", "+1.6% to +7.1%"],
+        ["Pittsburg/Bay Point, North Concord, Concord", "<strong>−23.9%</strong>", "−25.8% to −21.8%"],
+        ["Per station: Pittsburg/Bay Point · North Concord · Concord", "−40.1% · −23.1% · −4.3%", "each excludes 0"],
+        ["Rest of the yellow line (spillover check)", "+0.5%", "−1.7% to +3.0%"],
+        ["Whole line, net of the pre-opening trend (post-hoc)", "+1.0%", "−2.4% to +4.2%"]])}
+{image(rel, "transitpulse-event-study-weekly.png",
+       " Weekly event study, 4-week bins with 95% placebo bands. The old stations drop 20% in the first month and "
+       "keep sliding to about −27% after a year. The whole line sits +4–5% above the controls in the first half-year, "
+       "then +1–3%; only 3 of the 23 post bins have a band that excludes 0.", label="Figure",
+       alt="Two event-study charts: the legacy stations fall about 25 percent after the opening; the corridor rises a few percent")}
+<h3>Pre-registered before any result was seen</h3>
+{tiles([("Fixed design", "Station sets, windows, bins, the seed, the verdict rule and the caution rule are in a hashed JSON file committed before any treated-vs-control number was computed."),
+        ("Placebo inference", "Treatment is reassigned to all 5,984 sets of 3 control stations. The real line is more extreme than all but 3 of them (RI p = 0.0007); the old stations beat every placebo."),
+        ("Validated on synthetic data first", "A 200-simulation study checked interval coverage under null, moved and new scenarios. It caught a too-narrow corridor interval (0.84), fixed by one dated amendment before any real estimate: 0.925 after."),
+        ("Robustness and falsification", "Exits instead of entries, 16 suburban-only controls and a monthly 2016–2020 series all agree in sign; a fake opening date in the pre-period finds nothing.")])}
+{image(rel, "transitpulse-event-study-monthly.png",
+       " Monthly event study from BART's average-weekday workbooks, 2016–2020. Both series rise against the controls "
+       "through the pre-period, from about −6% in early 2016 to 0 at the reference bin, which is the drift the "
+       "post-hoc trend adjustment carries forward.", label="Figure",
+       alt="Monthly event study showing the corridor drifting upward against the controls before the opening")}
+{chat([("detective", "So eBART brought new riders?"),
+       ("scholar", "By the rule fixed in advance, yes: +4.2% with an interval above zero. But a quarter of the old stations' riders just moved."),
+       ("detective", "And that upward drift before the opening?"),
+       ("scholar", "Carry it forward and the gain is about +1% with an interval containing zero. The verdict stays, because the rule came first; the write-up says both.")])}
+<p class="note"><strong>Reported honestly:</strong> the gain is largest in the first year and fades to +1–3% after;
+the trend-adjusted estimate was chosen after the results and is labelled post-hoc; there are only 3 treated stations;
+the daily files begin in 2018, so the weekly pre-period is 20 weeks; and the window stops in February 2020. Cluster-robust
+intervals are reported too, but with 3 treated clusters they under-cover on synthetic data (0.79–0.83), so the placebo
+intervals are the headline.</p>"""
+
+    agent = f"""
+<p>Ask TransitPulse is a <strong>LangGraph</strong> graph: a router (keyword pre-filters for data-changing requests,
+prompt injection and secrets; plain data questions skip the model), SQL generation against a schema card of the mart
+tables with <strong>5 retrieved example queries</strong> and one repair retry, a forecast tool, and an answer that
+cites the SQL it ran. The page streams the steps over server-sent events (thinking → SQL → rows → answer), offers
+"Show SQL" and "Copy SQL", keeps the last five answers across a reload, and refuses off-topic questions with
+suggestions. It has been live on <strong>Gemini</strong> since 2026-10-16, with Ollama locally.</p>
+<h3>Guardrails, in layers</h3>
+{tiles([("sqlglot AST check", "Exactly one SELECT, a table allowlist (the marts only, never the 68M-row hourly fact), no DDL / DML, file readers or INFORMATION_SCHEMA; LIMIT added or clamped to 200."),
+        ("Read-only identity", "The service account can only read the marts and ml datasets; BigQuery dry-runs every query and refuses anything over 1 GB, then runs it with that as the billing cap and a 20 s job timeout."),
+        ("Budgets", "10 questions per IP per minute and a 10 GB daily byte budget; a Gemini quota error ends the stream with a clear message instead of a 500."),
+        ("Evaluated, not vibes", "66 in-scope questions with gold SQL scored by execution accuracy (the result rows must match), plus 10 off-topic questions that must be refused; an oracle run scores 1.0 by construction.")])}
+<h3>A/B test: do retrieved examples help?</h3>
+{fig(C.hbars([("All 66 questions", [("a", 0.27), ("b", 0.50)]), ("KPI (15)", [("a", 0.27), ("b", 0.53)]),
+              ("Station (17)", [("a", 0.47), ("b", 0.47)]), ("Trend (15)", [("a", 0.07), ("b", 0.40)]),
+              ("Bikes (11)", [("a", 0.18), ("b", 0.36)]), ("OD flows (6)", [("a", 0.0), ("b", 0.67)]),
+              ("Forecast (6)", [("a", 0.50), ("b", 0.50)])],
+             1.0, lambda v: f"{v:.0%}", {"a": ("Arm A: no examples", C.BASE), "b": ("Arm B: 5 retrieved examples", C.OURS)},
+             "Execution accuracy by question tag, llama3.1:8b", ticks=[0, 0.25, 0.5, 0.75, 1.0]),
+     "Arm B adds five BM25-retrieved question → gold-SQL pairs to the SQL prompt only (leave-one-out in the eval). It helped most where a question needs a specific mart or join: trend, origin-destination and KPI questions. Station questions were flat: B fixed four and broke four.")}
+<p>The design was written down first: the question set and scorer frozen by hash, temperature 0, exact two-sided
+<strong>McNemar's test</strong> on the discordant pairs, a paired bootstrap CI over questions, and a three-part decision
+rule (p &lt; 0.05, B ahead, refusal accuracy ≥ 0.9). Arm A ran, then a <strong>power analysis</strong> simulated from its
+accuracy (minimum detectable improvement +14 points at 80% power), and only then arm B.</p>
+{table(["", "Arm A", "Arm B"],
+       [["Execution accuracy (66 questions)", "18 / 66 = 27%", "33 / 66 = 50%"],
+        ["Refusal accuracy (10 off-topic)", "10 / 10", "10 / 10"],
+        ["Guardrail rejections", "0", "0"],
+        ["Latency p50 / p95", "2.46 s / 6.71 s", "1.74 s / 4.71 s"],
+        ["Discordant pairs", "5 (A right, B wrong)", "20 (A wrong, B right)"]], num_cols=(1, 2))}
+<p><strong>Decision: ship B.</strong> +22.7 points, 95% CI +9.1 to +36.4, McNemar p = 0.004, all three conditions
+met, so five examples became the default. B's prompt is 34% longer but not slower, because fewer queries failed. A
+<code>--check</code> command recomputes every number in the write-up from the committed summaries and fails if any
+differs.</p>
+<p class="note"><strong>Reported honestly:</strong> the pool is the eval set's own questions, so for 8 of the 20
+questions B fixed, the top example was a near-twin; the lift for unfamiliar questions will be smaller. The test used a
+local 8B model, and the live Gemini agent hasn't been scored on the full set. A fine-tuned arm C (QLoRA) is deferred,
+with the harness ready for it.</p>"""
+
+    closures = f"""
+<p class="lede">If the Connect Bay Area measure fails on November 3, 2026, BART's adopted plan allows up to 15 station
+closures from July 2027. The press named the 15 from a February 2026 staff presentation. What does the ridership say
+about each one?</p>
+<p>The list lives in one dbt seed; three marts compute each station's 2025 service-weekday trips, rank from the fewest,
+recovery vs 2019, change on 2024, the nearest station that would still be open (haversine, assuming all 15 close) and
+its top three destinations. Four rules, each a point for keeping the station, are stated in one place in the API and
+shown on the page as text, so anyone can check a verdict by eye against the rounded numbers it displays.</p>
+{tiles([("Riders", "Ranked above the 10 least-used stations: BART staff's own cut."),
+        ("Recovery", "At or above BART's systemwide 43% of 2019 weekday trips."),
+        ("Distance", "The nearest open station is 3.0 miles or more away in a straight line."),
+        ("Growing", "Weekday trips in 2025 are up on 2024. Added after the first three at the owner's request, and the write-up says so.")])}
+{table(["Station", "Weekday trips", "% of 2019", "Nearest open station", "Rules met", "Case to keep"],
+       [["Oakland International Airport", "1,085", "41%", "San Leandro, 2.9 mi", "none", "weak"],
+        ["Pittsburg Center", "1,121", "46%", "Concord, 8.2 mi", "3", "strong"],
+        ["North Concord / Martinez", "1,382", "34%", "Concord, 2.1 mi", "1", "weak"],
+        ["Warm Springs / South Fremont", "2,443", "28%", "Fremont, 4.3 mi", "2", "mixed"],
+        ["Castro Valley", "2,549", "45%", "Hayward, 1.6 mi", "2", "mixed"],
+        ["West Dublin / Pleasanton", "2,573", "37%", "Hayward, 8.9 mi", "2", "mixed"],
+        ["Orinda", "2,761", "47%", "Lafayette, 3.4 mi", "3", "strong"],
+        ["South San Francisco", "2,839", "41%", "Daly City, 3.2 mi", "2", "mixed"],
+        ["South Hayward", "2,959", "49%", "Hayward, 2.9 mi", "2", "mixed"],
+        ["San Bruno", "3,114", "43%", "SFO Airport, 2.0 mi", "3", "strong"],
+        ["Colma", "3,340", "38%", "Daly City, 1.5 mi", "2", "mixed"],
+        ["Antioch", "3,704", "61%", "Concord, 13.6 mi", "4", "strong"],
+        ["Millbrae", "3,830", "31%", "SFO Airport, 1.1 mi", "2", "mixed"],
+        ["Pittsburg / Bay Point", "4,572", "58%", "Concord, 5.6 mi", "4", "strong"],
+        ["Dublin / Pleasanton", "6,240", "38%", "Union City, 10.0 mi", "3", "strong"]], num_cols=(1, 2, 4))}
+<p>Case to keep: <strong>strong 6, mixed 7, weak 2</strong>. The two stations meeting all four rules are the last two
+on the Yellow line's eastern end, Antioch and Pittsburg/Bay Point: busier than the bottom 10, recovering better than
+BART overall, growing, and 13.6 and 5.6 miles from Concord once the whole segment closes. Fourteen of the 15 carried
+more trips in 2025 than in 2024; the airport station is the exception.</p>
+<h3>Checking the press against the warehouse</h3>
+{bullets([
+    "<strong>\"The 10 lowest-ridership stations.\"</strong> 9 of the first 10 are among the 10 least-used in 2025. "
+    "San Bruno is 12th from the bottom, and Milpitas, 5th, isn't on the list. The write-up doesn't guess why.",
+    "<strong>\"About 12% of ridership.\"</strong> 12.6% of 2025 service-weekday trips start or end at the first 10 "
+    "(a trip between two listed stations counts once); 24.1% at all 15, about 42,500 trips a day.",
+    "<strong>\"South San Francisco, 1,538 weekday riders.\"</strong> The warehouse's 2025 average is 1,409 exits, a "
+    "ratio of 0.92 to BART's January 2026 figure, inside the range set in advance for revisiting the measure.",
+])}
+<p class="note"><strong>What the data can't see, and the page says so:</strong> what each station costs to run, who
+rides it, parking and bus links, Caltrain transfers at Millbrae, whether riders would switch or stop riding, and how
+SFO would be served (it isn't on the list, so it counts as open, which alone decides San Bruno's and Millbrae's
+Distance rule; the write-up shows both outcomes). Close calls at a rounding edge are reported, not moved. The page
+takes no position on the measure, cites 13 sources, and will need revisiting after the vote.</p>"""
+
+    site = f"""
+{image(rel, "transitpulse-desktop.png",
+       " The top of the live page at 1440 px: the hero with its live strip and departure board, the live map with "
+       "trains on every line at 8:00 AM, and the what-if card that closes BART's listed stations.", label="Screenshot",
+       alt="TransitPulse desktop page: hero with a departure board, a map of the Bay Area with trains on six BART lines, and a what-if stations card")}
+<h3>Every train, from the timetable, in the browser</h3>
+<p>The map needs no API. A build step turns BART's GTFS feed into 88 KB of JSON: 50 stations, 51 track edges with
+their lines in lane order, 11 service calendars, 34 stop patterns and 3,762 trips in minutes. For the current Pacific
+time the browser picks the services running that day (weekday rules plus holiday exceptions, including the previous
+day's after-midnight trips) and interpolates each trip between its departure and next arrival, dwelling at stations.
+Shared track is drawn as parallel lanes; trains are canvas pills in their line's lane; labels are placed greedily and
+dropped when they would collide. There is a Now button, a time scrubber, 10× and 60× replay, a list view, a legend that
+filters lines, and tapping a station loads its forecast without scrolling. Positions are scheduled, not live, and the
+page says so.</p>
+{tiles([("What if stations close?", "Presets close the first 10 or all 15 listed stations, or one at a time. Closed stations lose their marker; the same trips keep their timetable at every open station and run through the closed ones without stopping, re-timed across the hops."),
+        ("Departure board", "The six soonest arrivals anywhere, published by the map every 10 seconds, with a live strip counting trains moving now and recovery vs 2019."),
+        ("Trends and forecast", "KPI tiles with ⓘ definitions, ridership since 2019 and bikes vs trains as a share of 2019 with crosshair readouts, and a station picker (combobox, or tap the map) for the 14-day forecast and its band."),
+        ("Findings and closures", "The eBART verdict with hedged wording per outcome and two event-study charts, every number read from the study's JSON; one card per at-risk station with a verdict pill, never green or red.")])}
+{image(rel, "transitpulse-phone.png",
+       " The live map band at 390 px: a 1:1 map, nine hub labels, controls stacked under it. Sizing is fluid from "
+       "320 px phones to 2560 px screens, and the whole page has a dark mode.", label="Screenshot",
+       alt="TransitPulse on a phone: the BART map with trains and the time controls below it", phone=True)}
+<p>Vanilla ES modules, no framework, design tokens that mirror a versioned design document, and a style guide page
+that renders every token and component in both themes. axe finds 0 contrast violations in light and dark mode at 390
+and 1440 px; Lighthouse mobile scores 98 / 100 / 100 (performance / accessibility / best practices, LCP 2.3 s, CLS 0).
+Reduced-motion users get positions every 30 s with no animation; a polite live region announces the train count once
+a minute; every control is 44 px on touch.</p>"""
+
+    shipping = f"""
+{flow([("Push to main", "GitHub Actions: ruff, pytest, Spark, browser, container and Terraform jobs", False),
+       ("Build", "multi-stage, non-root image, 119 MB compressed, smoke-tested before it is pushed", False),
+       ("Deploy", "keyless: Workload Identity Federation pinned to this repo's main branch", True),
+       ("Cloud Run", "us-west1, 0–2 instances, 512 MiB, scales to zero", False),
+       ("Pages", "the static site is exported into this domain and calls the API across origins", False)])}
+<p>Everything in GCP is <strong>Terraform</strong>: BigQuery datasets, the GCS bucket, Artifact Registry, Cloud Run,
+the service accounts and their least-privilege roles, the Workload Identity pool, and $1 and $5 budget alerts as
+code. The agent's Gemini key lives in Secret Manager and reaches the service only when the agent is enabled. CI is
+the only thing that can deploy: no service-account keys in GitHub, and the OIDC condition accepts only this repository
+on <code>main</code>.</p>
+{table(["Users", "Requests / s", "Forecast p95", "KPIs p95", "Ask p95"],
+       [["1", "1.2", "62 ms", "540 ms", "870 ms"], ["10", "11.8", "8 ms", "11 ms", "58 ms"],
+        ["25", "29.7", "14 ms", "22 ms", "140 ms"]], num_cols=(0, 1, 2, 3, 4))}
+<p>Locust against the API on this PC with a fixture warehouse and the LLM mocked (so it measures the code, not
+Gemini): 0 failures, and the 1-user p95s are the cold cache. On Cloud Run the first request after scaling to zero takes
+about 4.4 s to the first byte and warm requests 0.09–0.17 s; the map shows immediately because it needs no API. Tests:
+179 pytest, 52 node and 75 Playwright tests (axe contrast in both themes), 84 dbt data tests, container smoke tests, a
+compose smoke test, and reproducibility checks that recompute the A/B, the causal study and the trend adjustment
+from committed inputs. Expected cost: $0.</p>
+{tip("make up starts the site, the API and the agent on an Ollama container with one command.", prop="builder")}"""
+
+    main_html = (
+        panel("overview", "Overview", overview, num="01")
+        + panel("platform", "Data platform", platform, num="02")
+        + panel("forecast", "Station forecasts", forecast, num="03")
+        + panel("causal", "Causal study: eBART", causal, num="04")
+        + panel("agent", "Ask TransitPulse: a guarded text-to-SQL agent", agent, num="05")
+        + panel("closures", "Which stations can BART afford to close?", closures, num="06")
+        + panel("site", "The website", site, num="07")
+        + panel("shipping", "Shipping", shipping, num="08")
+        + pager(rel, ("projects/bearlm/", "BearLM"), ("projects/dockwatch/", "DockWatch")))
+
+    rail = (
+        rail_btns([("WWW", "Live site", live), ("GH", "Source code", gh),
+                   ("DOC", "eBART write-up", doc + "FINDINGS.md"), ("DOC", "A/B test write-up", doc + "AB_TEST.md"),
+                   ("DOC", "Station closures write-up", doc + "STATION_CLOSURES.md")])
+        + panel("toc-tp", "On this page", toc([("overview", "Overview"), ("platform", "Data platform"),
+                                              ("forecast", "Forecasts"), ("causal", "Causal study"),
+                                              ("agent", "Ask agent &amp; A/B"), ("closures", "Station closures"),
+                                              ("site", "Website"), ("shipping", "Shipping")]), body_cls="panel-body tight")
+        + panel("spec-tp", "Spec sheet", spec([("Data", "BART OD + GTFS, Bay Wheels"), ("BART rows", "67,770,440"),
+                                                ("Bike trips", "25,989,969"), ("Warehouse", "BigQuery (dev: DuckDB)"),
+                                                ("dbt", "17 models · 84 tests"), ("Forecast", "50 stations × 14 days"),
+                                                ("Agent", "LangGraph · Gemini 3.5 Flash-Lite"),
+                                                ("Pipeline host", "Oracle VM · systemd"), ("API", "Cloud Run · us-west1"),
+                                                ("Cost", "$0, free tiers")]),
+                body_cls="panel-body tight")
+        + panel("stack-tp", "Stack", chips(["Python", "Dagster", "PySpark", "dbt", "BigQuery", "DuckDB", "LightGBM",
+                                            "statsmodels", "FastAPI", "LangGraph", "Gemini", "Ollama", "sqlglot",
+                                            "Cloud Run", "Terraform", "Docker", "GitHub Actions", "Locust",
+                                            "Playwright", "axe", "Vanilla JS"]),
+                body_cls="panel-body tight")
+        + info("What is — difference-in-differences?",
+               "<p>Compare how the treated stations changed after the opening with how the control stations changed "
+               "over the same weeks. The difference of those two differences removes anything that hit every station, "
+               "like a system-wide ridership slump.</p>")
+        + info("What is — a placebo interval?",
+               "<p>Pretend a random set of control stations got the extension and re-run the study, thousands of times. "
+               "The spread of those fake effects shows how big an effect pure noise can produce.</p>")
+        + info("What is — split-conformal calibration?",
+               "<p>Score how far past the model's band the truth fell on earlier weeks, then widen the band by the "
+               "80th-percentile score. Done on folds the model hasn't seen, it makes the band's coverage honest.</p>")
+        + info("What is — McNemar's test?",
+               "<p>When two methods answer the same questions, only the questions they disagree on carry information. "
+               "McNemar's test asks whether one method wins those disagreements more often than a coin flip would.</p>"))
+    return h, layout(main_html, rail)
+
+
+# ============================================================================ DOCKWATCH
+
+
+def dockwatch(ctx):
+    rel = ctx["rel"]
+    gh = ctx["github"] + "/dockwatch"
+    h = hero(
+        "field-indigo", "PROJECT 05 · STREAMING · LAKEHOUSE", "DockWatch",
+        "A real-time bike-share lakehouse: live Bay Wheels station status streams through Kafka and Spark Structured "
+        "Streaming into Apache Iceberg, an operations database is replicated by change data capture, and a live map "
+        "flags every empty or full dock.",
+        ["641 stations", "every 60 s", "Kafka · Spark · Iceberg · Debezium"],
+        C.mini_bars([("before", 405 / 420, False), ("after", 4 / 420 + .02, True)],
+                    title="silver files · one compaction run", fmt=lambda v: "405" if v > .5 else "4"),
+        go(gh, "Source on GitHub", True))
+
+    overview = f"""
+{stats([("641", "stations streamed", "Bay Wheels GBFS, every 60 s"),
+        ("0", "gaps or duplicates", "every Kafka offset in bronze exactly once"),
+        ("3,049", "CDC events matched", "row counts + checksums, Postgres = Iceberg"),
+        ("405 → 4", "files after compaction", "rows unchanged")])}
+<hr class="dotted">
+<p class="lede">Which docks are empty right now, how long have they been empty, and what did the operations team do
+about it? DockWatch answers from one lakehouse that takes both a live stream and a transactional database.</p>
+<p>A producer polls Bay Wheels' public <strong>GBFS</strong> feed and publishes one message per station to
+<strong>Kafka</strong> (Redpanda), keyed by station so each station's updates stay in order. A <strong>Spark Structured
+Streaming</strong> job writes bronze, silver and 5-minute tables to <strong>Apache Iceberg</strong> on S3-compatible
+storage and turns empty and full stretches into episodes and alerts. A seeded simulator runs a Postgres operations
+database (vans, rebalancing jobs, repair tickets), and <strong>Debezium</strong> replicates every change into Iceberg.
+<strong>Airflow</strong> and <strong>Trino</strong> keep the tables healthy.</p>
+{bullets([
+    "Built a streaming pipeline (Kafka → Spark Structured Streaming → Iceberg) over 641 live stations with an "
+    "idempotent producer, a dead-letter topic, and a consistency check proving <strong>every Kafka offset lands in "
+    "bronze exactly once</strong> with 0 gaps and 0 silver duplicates.",
+    "Replicated a constrained Postgres operations schema into Iceberg with <strong>Debezium CDC</strong> and Spark "
+    "<code>MERGE INTO</code>, LSN-ordered with deletes and live column adds: all <strong>3,049</strong> change events "
+    "match on row counts and checksums, and a full replay changes nothing.",
+    "Orchestrated Iceberg maintenance with Airflow and Trino (compaction, snapshot expiry, orphan cleanup) with retries "
+    "and alerts, cutting the silver table from <strong>405 files to 4</strong> with row counts verified unchanged.",
+])}
+{tip("Kafka is keyed by station, so one station's updates are never reordered.")}"""
+
+    stream = f"""
+{flow([("Poll", "GBFS 2.3 every 60 s; re-discovers feeds on a 404; raw snapshots archived to S3", False),
+       ("Kafka", "station_status (6 partitions, keyed by station), compacted station info, a dead-letter topic", False),
+       ("Bronze", "every Kafka record with its offset and raw JSON", False),
+       ("Silver", "cleaned, de-duplicated, with a station state + 5-minute availability windows", True),
+       ("Episodes", "MERGE INTO episodes; raised / resolved alerts back to Kafka", True)])}
+<h3>One state rule, tested three ways</h3>
+<p>Each station is <em>offline</em>, <em>empty</em>, <em>full</em>, <em>low</em>, <em>high</em> or <em>ok</em>, first
+match wins. The rule is plain Python with unit tests; the Spark version is tested to give the same answers, and the
+"Replay a day" exporter reuses the Python rule without a JVM. Empty or full opens an episode, and an alert fires after
+15 minutes.</p>
+<h3>Proving the lake is right</h3>
+<p><code>verify-lake</code> checks the tables against Kafka itself: every offset in bronze exactly once, no gaps, no
+silver duplicates, silver no more than 5 minutes behind bronze, and a fresh commit on every table. It exits non-zero on
+any failure, and compaction commits don't count as fresh, so maintenance can't make a stopped stream look healthy. A
+spot check matched 10 of 10 stations against the public feed for the same snapshot.</p>
+{table(["Iceberg table", "Partition", "Rows"],
+       [["bronze.station_status", "day", "989,753"], ["silver.station_status", "day", "989,753"],
+        ["silver.availability_5m", "day", "202,182"], ["silver.station_episodes", "day", "1,855"]], num_cols=(2,))}"""
+
+    cdc = f"""
+<p>The operations database is a real OLTP schema: stations, docks, vans, rebalancing jobs and maintenance tickets,
+with foreign keys, <code>CHECK</code> constraints (a finished job must record bikes moved; an assigned job needs a van),
+<code>updated_at</code> triggers and partial indexes on the two hottest queries, which go from a ~15 ms sequential scan
+to an index scan of ~0.02–0.04 ms on 200,000 rows.</p>
+{flow([("Postgres", "logical replication slot + publication on the five tables", False),
+       ("Debezium", "Kafka Connect streams every insert, update and delete", False),
+       ("Kafka", "one topic per table, kept forever so a rebuild never misses a row", False),
+       ("MERGE INTO", "Spark keeps the newest event per key by LSN; deletes; new columns added", True)])}
+<h3>An exact, repeatable check</h3>
+<p>A seeded simulator turns alerts into operations: a job opens after 20 minutes empty, closes when the alert
+resolves, and some are cancelled and deleted. One command resets everything, simulates 1,500 minutes (adding a column
+halfway), applies the changes and compares Postgres with Iceberg table by table: <strong>3,049 events, all five tables
+equal</strong> on rows and checksums in about 85 s, including the 55 values of the column added mid-run. Re-applying
+every event from the start changes nothing.</p>
+{chat([("detective", "What if the replication slot falls behind while Connect is off?"),
+       ("referee", "Postgres caps it at 1 GB of WAL, Connect refuses to start on a lost slot, and an hourly Airflow job catches it up."),
+       ("detective", "So it fails loudly instead of quietly. Good.")])}"""
+
+    ops = f"""
+{fig(C.hbars([("bronze status", [("b", 71), ("a", 4)]), ("silver status", [("b", 405), ("a", 4)]),
+              ("5-min windows", [("b", 39), ("a", 4)]), ("episodes", [("b", 4), ("a", 4)])],
+             420, lambda v: f"{v:,.0f}", {"b": ("Before", C.BASE), "a": ("After", C.OURS)},
+             "Data files per table, one iceberg_maintenance run", ticks=[0, 100, 200, 300, 400]),
+     "Streaming writes at least one small file per minute. One Airflow run compacts each day partition to one file, expires old snapshots (silver 95 → 19) and removes orphan files, and fails the table if its row count changes.")}
+{tiles([("iceberg_maintenance", "Daily: optimize, expire snapshots and remove orphans on all 9 tables through Trino; one metrics row per table per run."),
+        ("cdc_slot_keepalive", "Hourly: starts Connect, nudges one row so Debezium confirms its position, then stops it (77.7 MiB retained → 56 bytes in 43 s)."),
+        ("partition_evolution_demo", "Evolves a lab copy from daily to hourly partitions in place, with no rewrite, and reports files per partition spec."),
+        ("Retries &amp; alerts", "Three retries with exponential backoff, SLA misses, and one alert line per failure (SNS on AWS).")])}
+<h3>Built for a laptop, ready for AWS</h3>
+<p>The whole stack runs in Docker Compose with an S3-compatible store and an Iceberg REST catalog backed by Postgres.
+Spark, Kafka Connect and Trino each need 1–2 GB, so guards in the task runner refuse to start one heavy JVM beside
+another. The code switches to AWS (S3, Glue, Athena) by configuration, and the Terraform for that account is written and validated, not yet applied.</p>
+<h3>The live map</h3>
+<p>A static site reads exported JSON every 60 s: a per-region SVG map with markers by state, KPI tiles, a sortable list,
+and an alerts rail of open and recently resolved alerts that keeps focus and scroll across refreshes. A freshness pill
+goes Delayed and then Paused when the pipeline stops, and "Replay a day" plays an archived day at 10×. CI runs ruff,
+98 host tests, 8 Spark tests, Terraform checks and 49 Playwright tests (with axe accessibility checks) with retries
+off, so a flaky test shows up red.</p>"""
+
+    main_html = (
+        panel("overview", "Overview", overview, num="01")
+        + panel("stream", "Streaming into Iceberg", stream, num="02")
+        + panel("cdc", "Change data capture", cdc, num="03")
+        + panel("ops", "Orchestration &amp; the site", ops, num="04")
+        + pager(rel, ("projects/transitpulse/", "TransitPulse"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
+
+    rail = (
+        rail_btns([("GH", "Source code", gh)])
+        + panel("toc-dw", "On this page", toc([("overview", "Overview"), ("stream", "Streaming"), ("cdc", "CDC"),
+                                              ("ops", "Orchestration &amp; site")]), body_cls="panel-body tight")
+        + panel("spec-dw", "Spec sheet", spec([("Source", "Bay Wheels GBFS 2.3"), ("Stations", "641"),
+                                                ("Poll", "every 60 s"), ("Kafka", "Redpanda · 6 partitions"),
+                                                ("Table format", "Apache Iceberg (v2)"), ("CDC", "Debezium 2.7 · pgoutput"),
+                                                ("Batch", "Airflow 2.11 · Trino 483"), ("Runs on", "Docker Compose")]),
+                body_cls="panel-body tight")
+        + panel("stack-dw", "Stack", chips(["Python", "Kafka (Redpanda)", "Spark Structured Streaming", "Apache Iceberg",
+                                            "PostgreSQL", "Debezium", "Kafka Connect", "Airflow", "Trino", "Terraform",
+                                            "AWS (S3 · Glue · Athena)", "Docker", "GitHub Actions", "Playwright", "axe"]),
+                body_cls="panel-body tight")
+        + info("What is — change data capture?",
+               "<p>Instead of copying a database table every night, read the database's own change log and stream each "
+               "insert, update and delete as it happens. The copy stays current, and deletes aren't lost.</p>")
+        + info("What is — Apache Iceberg?",
+               "<p>A table format for files in object storage. It adds what a database gives you: atomic commits, "
+               "schema and partition changes without rewrites, and snapshots you can query or roll back.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -1672,7 +2138,7 @@ and fixing patch length and stride for each lookback.</p>"""
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
-        + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/cbu-research/", "CBU Research")))
+        + pager(rel, ("projects/dockwatch/", "DockWatch"), ("experience/cbu-research/", "CBU Research")))
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
@@ -2079,6 +2545,12 @@ ALL = [
     {"path": "projects/bearlm", "key": "bearlm", "render": bearlm,
      "title": "BearLM · Braedyn Thompson",
      "description": "Fully local hybrid-search RAG over Berkeley CS/DS courses: recall@1 56% to 82%, RAGAS faithfulness 0.55 to 0.83."},
+    {"path": "projects/transitpulse", "key": "transitpulse", "render": transitpulse,
+     "title": "TransitPulse · Braedyn Thompson",
+     "description": "Bay Area transit analytics: Dagster + PySpark + dbt on BigQuery over 68M BART trips, LightGBM station forecasts 48% better than naive, a pre-registered eBART causal study, a guarded text-to-SQL agent proven in an A/B test, and a live map of every scheduled BART train."},
+    {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,
+     "title": "DockWatch · Braedyn Thompson",
+     "description": "Real-time bike-share lakehouse: Bay Wheels GBFS through Kafka and Spark Structured Streaming into Iceberg, Debezium CDC from Postgres, Airflow + Trino maintenance."},
     {"path": "experience/lawrence-berkeley-lab", "key": "lawrence-berkeley-lab", "render": lbnl,
      "title": "Berkeley Lab Internship · Braedyn Thompson",
      "description": "PatchTST forecasting of XCache traffic at ESnet: rolling cross-validation, hypothesis tests on why peaks are missed, and regime-aware lookback selection."},

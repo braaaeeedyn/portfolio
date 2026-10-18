@@ -38,6 +38,8 @@ PROJECTS = [
     ("academy-of-testers", "Academy of Testers"),
     ("seismicsocal", "SeismicSoCal"),
     ("bearlm", "BearLM"),
+    ("transitpulse", "TransitPulse"),
+    ("dockwatch", "DockWatch"),
 ]
 EXPERIENCE = [
     ("lawrence-berkeley-lab", "Berkeley Lab"),
