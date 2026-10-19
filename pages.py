@@ -599,7 +599,7 @@ ROLES = [
       ("projects/transitpulse/", "TransitPulse", "pre-registered difference-in-differences with placebo intervals")]),
     ("DE", "Data Engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
-     [("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),
+     [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
       ("projects/transitpulse/", "TransitPulse", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job")]),
     ("DA", "Data Analyst",
@@ -659,8 +659,9 @@ def home(ctx):
          "Zero-cost cited Q&amp;A over ~10K Berkeley CS/DS chunks. recall@1 56% → 82%."),
         ("projects/transitpulse/", "field-sky", "Transit<br>Pulse", "braedynthompson.com/transitpulse",
          "68M BART trips on BigQuery, a live train map, forecasts 48% better than naive, a pre-registered causal study and a guarded SQL agent."),
-        ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
-         "641 live stations through Kafka, Spark Streaming and Iceberg, plus Debezium CDC."),
+        # DockWatch hidden for now:
+        # ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
+        #  "641 live stations through Kafka, Spark Streaming and Iceberg, plus Debezium CDC."),
     ]
     feat_html = "".join(
         f"<a class='feat halftone' href='{rel}{href}'><div class='feat-thumb {field}'>"
@@ -1766,7 +1767,7 @@ from committed inputs. Expected cost: $0.</p>
         + panel("closures", "Which stations can BART afford to close?", closures, num="06")
         + panel("site", "The website", site, num="07")
         + panel("shipping", "Shipping", shipping, num="08")
-        + pager(rel, ("projects/bearlm/", "BearLM"), ("projects/dockwatch/", "DockWatch")))
+        + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))  # DockWatch hidden
 
     rail = (
         rail_btns([("WWW", "Live site", live), ("GH", "Source code", gh),
@@ -2138,7 +2139,7 @@ and fixing patch length and stride for each lookback.</p>"""
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
-        + pager(rel, ("projects/dockwatch/", "DockWatch"), ("experience/cbu-research/", "CBU Research")))
+        + pager(rel, ("projects/transitpulse/", "TransitPulse"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
@@ -2548,9 +2549,10 @@ ALL = [
     {"path": "projects/transitpulse", "key": "transitpulse", "render": transitpulse,
      "title": "TransitPulse · Braedyn Thompson",
      "description": "Bay Area transit analytics: Dagster + PySpark + dbt on BigQuery over 68M BART trips, LightGBM station forecasts 48% better than naive, a pre-registered eBART causal study, a guarded text-to-SQL agent proven in an A/B test, and a live map of every scheduled BART train."},
-    {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,
-     "title": "DockWatch · Braedyn Thompson",
-     "description": "Real-time bike-share lakehouse: Bay Wheels GBFS through Kafka and Spark Structured Streaming into Iceberg, Debezium CDC from Postgres, Airflow + Trino maintenance."},
+    # DockWatch hidden for now (not in use); restore this entry plus the nav, home, role and pager links marked "DockWatch hidden".
+    # {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,
+    #  "title": "DockWatch · Braedyn Thompson",
+    #  "description": "Real-time bike-share lakehouse: Bay Wheels GBFS through Kafka and Spark Structured Streaming into Iceberg, Debezium CDC from Postgres, Airflow + Trino maintenance."},
     {"path": "experience/lawrence-berkeley-lab", "key": "lawrence-berkeley-lab", "render": lbnl,
      "title": "Berkeley Lab Internship · Braedyn Thompson",
      "description": "PatchTST forecasting of XCache traffic at ESnet: rolling cross-validation, hypothesis tests on why peaks are missed, and regime-aware lookback selection."},

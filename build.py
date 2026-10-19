@@ -39,7 +39,7 @@ PROJECTS = [
     ("seismicsocal", "SeismicSoCal"),
     ("bearlm", "BearLM"),
     ("transitpulse", "TransitPulse"),
-    ("dockwatch", "DockWatch"),
+    # ("dockwatch", "DockWatch"),  # hidden for now; see the DockWatch notes in pages.py
 ]
 EXPERIENCE = [
     ("lawrence-berkeley-lab", "Berkeley Lab"),
