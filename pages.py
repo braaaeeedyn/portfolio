@@ -670,6 +670,9 @@ def home(ctx):
         for href, field, name, url, s in feats)
 
     exp = [
+        ("experience/aperiohub/", "AH", "AperioHub Advisory",
+         "Research Mentor, AI &amp; ML (part-time) · one-to-one, project-based research engagement with a high school student.",
+         "OCT 2026 – NOW"),
         ("experience/lawrence-berkeley-lab/", "LBL", "Lawrence Berkeley National Laboratory",
          "Data Science &amp; ML Research Intern · PatchTST forecasting of XCache traffic, up to 24% lower RMSE than persistence.",
          "SEP 2026 – NOW"),
@@ -743,6 +746,7 @@ The fastest way to reach me is email.</p>
         + panel("education", "Education", education, body_cls="panel-body tight")
         + panel("timeline", "Timeline", """
 <ul class="timeline">
+<li><span class="when">OCT 2026</span>AperioHub · Research Mentor, AI &amp; ML (part-time)</li>
 <li><span class="when">SEP 2026</span>Berkeley Lab · Data Science &amp; ML Research Intern</li>
 <li><span class="when">AUG 2026</span>BearLM · Data &amp; AI Engineer</li>
 <li><span class="when">MAY 2026</span>CBU · ML Research Intern (SeismicSoCal)</li>
@@ -2513,7 +2517,7 @@ that talks to external services. That's also where the pipeline bugs were.</p>
         panel("overview", "Overview", overview, num="01")
         + panel("pipeline", "Fixing the AI assistant pipeline", pipeline, num="02")
         + panel("testing", "From 90% to 98% coverage", testing, num="03")
-        + pager(rel, ("experience/numistoken/", "NumIsToken"), ("index.html", "Back to home")))
+        + pager(rel, ("experience/numistoken/", "NumIsToken"), ("experience/aperiohub/", "AperioHub")))
 
     rail = (
         rail_btns([("WWW", "KiguLab", "https://kigulab.com"), ("KG", "The Kigumi Group", "https://www.kigumigroup.com")])
@@ -2528,6 +2532,90 @@ that talks to external services. That's also where the pipeline bugs were.</p>
         + info("What is — code coverage?",
                "<p>The share of the codebase that runs during the test suite. It doesn't prove the code is correct, "
                "but code no test runs is code nobody has checked.</p>"))
+    return h, layout(main_html, rail)
+
+
+# ============================================================================ APERIOHUB
+
+def aperiohub(ctx):
+    rel = ctx["rel"]
+    h = hero(
+        "field-lavender", "PART-TIME · MENTORING · AI &amp; ML", "AperioHub",
+        "Research Mentor in AI &amp; Machine Learning for AperioHub Advisory: a one-to-one, project-based research "
+        "engagement with a motivated high school student, online, built to end in a concrete, defensible result.",
+        ["Oct 2026 – Present", "Remote · Singapore HQ · US–Asia", "Mentoring · Research methods · AI/ML"],
+        C.session_loop())
+
+    overview = f"""
+{stats([("1:1", "Mentoring format", "one student, one mentor"),
+        ("8–10", "Sessions", "~1 hour each, weekly, online"),
+        ("5", "Research directions", "ML systems · neural nets · open data · LLMs · AI ethics"),
+        ("1", "Deliverable", "a concrete, defensible research output")])}
+<hr class="dotted">
+<p class="lede">A research project is only as good as the questions you learned to ask along the way.</p>
+<p><strong>AperioHub Advisory</strong> (Singapore, UAE and India) runs project-based experiential learning for students and
+early-career professionals alongside its consultancy work. As a <strong>Research Mentor</strong> I guide one high school
+student through a focused research direction in AI and machine learning, from choosing a question to defending the result.</p>
+{bullets([
+    "Mentor a high school student <strong>one-to-one</strong> through a structured <strong>8–10 session</strong> AI/ML research engagement "
+    "(online, roughly one hour a week, scheduled across US and Asia time zones): each session <strong>reviews progress</strong>, "
+    "<strong>introduces one new concept or direction</strong> and <strong>assigns a focused task</strong>, so the student ends with a "
+    "<strong>concrete, defensible output</strong> rather than a tour of the field.",
+])}
+{tip("The direction is chosen with the student in the first sessions; it isn't fixed yet.")}
+{tiles([
+    ("ML systems &amp; model evaluation", "pick a baseline worth beating, hold out data the model never saw, report the gap with its uncertainty"),
+    ("Neural networks", "build a small model from the ground up, then ask what it actually learned and where it fails"),
+    ("Applied AI on open datasets", "a real public dataset, a real question, and the cleaning and leakage checks that come with it"),
+    ("Large language models", "evaluate rather than admire: prompts, retrieval and grounding, measured on a fixed question set"),
+    ("AI ethics &amp; bias analysis", "measure a bias claim on data, with a method that someone else could re-run"),
+])}"""
+
+    session = f"""
+<p>Every session runs the same loop, which is what makes the engagement a research project rather than a series of lessons:</p>
+{flow([("Review", "what was done since last time, and what it showed", False),
+       ("Introduce", "one new concept or a change of direction, no more", True),
+       ("Assign", "a focused task to finish before the next session", False)])}
+<p>Sessions are recorded and <strong>AI-assisted notes</strong> are generated automatically, so the student has a reference for
+each session and a running record of the whole project, including the dead ends.</p>
+{chat([("scholar", "What does the student walk away with at the end?"),
+       ("explorer", "A question they chose, a method they can explain, a result they can defend, and the record of how they got there."),
+       ("scholar", "So the write-up is the proof, not the slides."),
+       ("explorer", "Right. Honest limits included.")])}"""
+
+    bring = f"""
+<p>I teach the loop I use in my own work: a reproducible pipeline, a baseline worth beating, evaluation on data the model
+has never seen, and an honest write-up of the limits.</p>
+<ul>
+<li><strong>Baselines and held-out tests</strong>: every <a href="{rel}projects/seismicsocal/">SeismicSoCal</a> claim sits next to a
+classical baseline, a confidence interval and a replay of real days.</li>
+<li><strong>Pre-registration</strong>: the <a href="{rel}projects/transitpulse/">TransitPulse</a> causal study and the agent A/B test were
+written down before any result was seen.</li>
+<li><strong>Knowing when the answer is a ceiling</strong>: at <a href="{rel}experience/cbu-research/">CBU</a> the useful result was that the
+data, not the model, was the limit.</li>
+<li><strong>Explaining models from the inside</strong>: the <a href="{rel}experience/lawrence-berkeley-lab/">PatchTST explainer</a> and the
+<a href="{rel}projects/academy-of-testers/">adaptive-engine</a> write-ups are the kind of plain-language method sections I ask for.</li>
+</ul>"""
+
+    main_html = (
+        panel("overview", "Overview", overview, num="01")
+        + panel("session", "How a session runs", session, num="02")
+        + panel("bring", "What I bring to it", bring, num="03")
+        + pager(rel, ("experience/kigumi-group/", "Kigumi Group"), ("index.html", "Back to home")))
+
+    rail = (
+        panel("toc-ah", "On this page", toc([("overview", "Overview"), ("session", "How a session runs"),
+                                              ("bring", "What I bring")]), body_cls="panel-body tight")
+        + panel("spec-ah", "Spec sheet", spec([("Org", "AperioHub Advisory"), ("Role", "Research Mentor · AI &amp; ML"),
+                                                ("Type", "Part-time, project-based"), ("Dates", "Oct 2026 – Present"),
+                                                ("Format", "Online, one-to-one"), ("Cadence", "~1 h / week, 8–10 weeks"),
+                                                ("Student", "High school")]),
+                body_cls="panel-body tight")
+        + panel("stack-ah", "Topics", chips(["Model evaluation", "Neural networks", "Open datasets", "LLMs",
+                                             "AI ethics &amp; bias", "Research methods", "Technical writing"]), body_cls="panel-body tight")
+        + info("What is — a defensible output?",
+               "<p>A result the student can explain and stand behind: the question, the data, the method, the number, "
+               "and what it does not show. Someone else should be able to re-run it.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -2562,6 +2650,9 @@ ALL = [
     {"path": "experience/numistoken", "key": "numistoken", "render": numis,
      "title": "NumIsToken Internship · Braedyn Thompson",
      "description": "Resumable redemptions via History and Detail services, a product serialization tool with barcode labels, and ~85% faster redemption actions."},
+    {"path": "experience/aperiohub", "key": "aperiohub", "render": aperiohub,
+     "title": "AperioHub Research Mentor · Braedyn Thompson",
+     "description": "Part-time Research Mentor in AI & Machine Learning: a one-to-one, project-based research engagement with a high school student over 8–10 online sessions."},
     {"path": "experience/kigumi-group", "key": "kigumi-group", "render": kigumi,
      "title": "Kigumi Group Internship · Braedyn Thompson",
      "description": "Backend SWE intern on KiguLab: test coverage 90% to 98% and fixed recurring GPT / image-model pipeline failures."},

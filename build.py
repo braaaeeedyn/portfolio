@@ -46,6 +46,7 @@ EXPERIENCE = [
     ("cbu-research", "CBU Research"),
     ("numistoken", "NumIsToken"),
     ("kigumi-group", "Kigumi Group"),
+    ("aperiohub", "AperioHub"),
 ]
 
 FONTS = ("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Silkscreen"

@@ -590,3 +590,29 @@ def ai_pipeline(width=640, height=250):
     out.append(_t(0, 232, "2  Malformed query formulation sent bad requests to the GPT and image models", 10.5, weight="700", fill=INK))
     out.append("</svg>")
     return "".join(out)
+
+# ----------------------------------------------------------------------------- AperioHub
+
+def session_loop(width=420, height=170, n=10):
+    """Hero screen: the 8-10 session engagement as numbered tiles, plus the three-step loop each session runs."""
+    lab, dim, hot = "#9fbee7", "#4a5070", "#9fbee7"
+    bw, gap = 28, 8
+    x0 = (width - (n * bw + (n - 1) * gap)) / 2
+    out = [f"<svg viewBox='0 0 {width} {height}' role='img' aria-label='8 to 10 one-hour online sessions; each one reviews progress, introduces a concept and assigns a task'>",
+           _t(width / 2, 16, "8–10 sessions · ~1 h each · weekly · online", 11, "middle", "700", lab)]
+    for i in range(n):
+        x = x0 + i * (bw + gap)
+        fill = hot if i < 8 else dim
+        out.append(f"<rect class='vbar' x='{x:.0f}' y='34' width='{bw}' height='{bw}' rx='2' fill='{fill}'/>")
+        out.append(f"<text x='{x + bw / 2:.0f}' y='54' font-family='VT323, monospace' font-size='18' text-anchor='middle' fill='#21242e'>{i + 1}</text>")
+    steps = ["REVIEW PROGRESS", "NEW CONCEPT", "FOCUSED TASK"]
+    sw = (width - 40) / 3
+    for i, s in enumerate(steps):
+        x = 20 + i * sw
+        out.append(f"<rect x='{x + 4:.0f}' y='96' width='{sw - 8:.0f}' height='34' rx='2' fill='none' stroke='{dim}'/>")
+        out.append(_t(x + sw / 2, 118, s, 10, "middle", "700", lab))
+        if i < 2:
+            out.append(_t(x + sw - 1, 118, "›", 16, "middle", "700", "#7a8aba"))
+    out.append(_t(width / 2, 156, "every session recorded, with AI-assisted notes", 10, "middle", "400", "#7a8aba"))
+    out.append("</svg>")
+    return "".join(out)
