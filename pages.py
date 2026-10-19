@@ -606,7 +606,8 @@ ROLES = [
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
       ("projects/transitpulse/", "TransitPulse", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
-      ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job")]),
+      ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
+      ("projects/bearlm/", "BearLM", "ETL over PDF / Markdown / notebooks: chunked, batch-embedded with retry into Chroma, BM25 and SQLite")]),
     ("RES", "AI / ML Researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
      [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
