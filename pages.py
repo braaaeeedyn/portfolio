@@ -4,6 +4,7 @@ Image slots: slot("aot-radar", ...) renders a frame that loads assets/img/slots/
 if it exists, otherwise a labelled placeholder. Drop screenshots in with those names and rebuild is
 not even needed.
 """
+from functools import partial
 from pathlib import Path
 
 import charts as C
@@ -580,44 +581,55 @@ def layout(main_html, rail_html):
 
 # ============================================================================ HOME
 
-# Roles I'm targeting, each backed by the work that shows the skill. (href, where, proof)
+# Roles I'm targeting, each backed by the work that shows the skill. (ico, role, slug, pitch, [(href, where, proof)])
+# The slug is the role page's URL (roles/<slug>/); ROLE_PAGES below holds each page's content.
 ROLES = [
-    ("AI", "AI Engineer",
-     "Ship LLM features that are grounded, measurable and hard to break.",
-     [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
-      ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
-      ("projects/transitpulse/", "TransitPulse", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
-    ("ML", "Machine Learning Engineer",
-     "Train models that beat a real baseline, then run them in production.",
-     [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
-      ("projects/transitpulse/", "TransitPulse", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
-    ("OPS", "MLOps Engineer",
-     "Make models retrain, promote and monitor themselves, with the gates written down.",
-     [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
-      ("projects/transitpulse/", "TransitPulse", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
-    ("DS", "Data Scientist",
+    ("DA", "Data Analyst", "data-analyst",
+     "Turn raw logs and metrics into clear charts and decisions.",
+     [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
+      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
+      ("projects/transitpulse/", "TransitPulse", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules")]),
+    ("DS", "Data Scientist", "data-scientist",
      "Design honest experiments and find out what the data can support.",
      [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
       ("projects/transitpulse/", "TransitPulse", "pre-registered difference-in-differences with placebo intervals")]),
-    ("DE", "Data Engineer",
+    ("DE", "Data Engineer", "data-engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
       ("projects/transitpulse/", "TransitPulse", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
       ("projects/bearlm/", "BearLM", "ETL over PDF / Markdown / notebooks: chunked, batch-embedded with retry into Chroma, BM25 and SQLite")]),
-    ("RES", "AI / ML Researcher",
+    ("OPS", "MLOps Engineer", "mlops-engineer",
+     "Make models retrain, promote and monitor themselves, with the gates written down.",
+     [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
+      ("projects/transitpulse/", "TransitPulse", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
+    ("RES", "AI / ML Researcher", "ai-ml-researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
      [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST + showing peaks aren't predictable from history alone"),
       ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test")]),
+    ("ML", "Machine Learning Engineer", "machine-learning-engineer",
+     "Train models that beat a real baseline, then run them in production.",
+     [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
+      ("projects/transitpulse/", "TransitPulse", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
+    ("AI", "AI Engineer", "ai-engineer",
+     "Ship LLM features that are grounded, measurable and hard to break.",
+     [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
+      ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
+      ("projects/transitpulse/", "TransitPulse", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
+    ("AE", "Analytics Engineer", "analytics-engineer",
+     "Model raw data into tested tables that every report reads the same way.",
+     [("projects/transitpulse/", "TransitPulse", "dbt on BigQuery: 17 models, 84 data tests, an SCD2 station dimension, one definition per KPI"),
+      ("projects/academy-of-testers/", "Academy of Testers", "question bank kept as reviewable JSON, with an idempotent normalizer and a generated Flyway seed"),
+      ("projects/bearlm/", "BearLM", "SQLite usage analytics: most-cited courses, unanswered questions, the course that needs the most help")]),
 ]
 
 def roles_section(rel, resume):
     cards = []
-    for ico, role, pitch, proofs in ROLES:
+    for ico, role, slug, pitch, proofs in ROLES:
         cv = (f"<a class='role-cv' href='{rel}{resume}' target='_blank' rel='noopener' "
               f"title='Open my r&eacute;sum&eacute;'>PDF &darr;</a>")
         links = "".join(
@@ -625,7 +637,8 @@ def roles_section(rel, resume):
             f"<span class='proof-what'>{what}</span></span><span class='arrow-chip'></span></a>"
             for href, where, what in proofs)
         cards.append(f"<article class='role'><header class='role-head halftone'><span class='role-ico'>{ico}</span>"
-                     f"<h3>{role}</h3>{cv}</header><p class='role-pitch'>{pitch}</p>"
+                     f"<h3>{role}</h3><span class='role-acts'><a class='role-cv' href='{rel}roles/{slug}/'>"
+                     f"See the work &rarr;</a>{cv}</span></header><p class='role-pitch'>{pitch}</p>"
                      f"<div class='proofs'><span class='proof-label'>Shown in</span>{links}</div></article>")
     return ("<p class='roles-intro'>The roles below are where I want to work next. Each one links to the projects "
             "and internships that show the skills it needs.</p>"
@@ -2620,6 +2633,721 @@ data, not the model, was the limit.</li>
     return h, layout(main_html, rail)
 
 
+# ============================================================================ ROLE PAGES
+# One page per card in ROLES, at roles/<slug>/. Content is data (ROLE_PAGES); role_page() renders it.
+# A work panel's id is the slug of the case study it condenses, and every fact on a role page must already be on
+# that public case study (re-run .loop/checks.py after edits). No mascots here: these pages are for recruiters.
+
+WORK = {"academy-of-testers": ("projects/academy-of-testers/", "Academy of Testers"),
+        "seismicsocal": ("projects/seismicsocal/", "SeismicSoCal"), "bearlm": ("projects/bearlm/", "BearLM"),
+        "transitpulse": ("projects/transitpulse/", "TransitPulse"),
+        "lawrence-berkeley-lab": ("experience/lawrence-berkeley-lab/", "Berkeley Lab"),
+        "cbu-research": ("experience/cbu-research/", "CBU Research"), "numistoken": ("experience/numistoken/", "NumIsToken"),
+        "kigumi-group": ("experience/kigumi-group/", "Kigumi Group"), "aperiohub": ("experience/aperiohub/", "AperioHub")}
+
+# Summaries reused across pages (each page adds its own angle in the second sentence).
+_TP = "A Bay Area transit analytics platform I built end to end."
+_SEIS = "A live earthquake detection system on 19 seismometers across Southern California"
+_LBNL = ("Data Science &amp; ML Research Intern at Lawrence Berkeley National Laboratory (ESnet), Sep 2026 – present, "
+         "forecasting traffic at the regional data caches that serve CMS physicists")
+_CBU = "ML Research Intern at California Baptist University, May 2026 – present.<br>"  # own line: FEA text carries no dates
+_AOT = "A full-stack AP/SAT study platform I built as ML &amp; AI Software Developer (Jan 2023 – Jun 2026)."
+_BLM = "A fully local Q&amp;A assistant over UC Berkeley CS and Data Science courses."
+
+# slug -> hero field, tags, LCD art rows (value, label), meta description, skill map rows (skill, [panel ids], proof),
+# and work panels (panel id, angle, summary, stat tiles, bullets), in page order.
+ROLE_PAGES = {
+    "data-analyst": {
+        "field": "field-sky", "tags": ["SQL &middot; dbt", "Pandas", "A/B tests", "Causal inference"],
+        "art": [("84", "dbt data tests per build"), ("48%", "less forecast error than naive"),
+                ("+4.2%", "eBART riders, placebo-tested"), ("-23%", "essay grading error")],
+        "description": "Data analyst work across my projects and internships: dbt KPI marts, exploratory analysis, "
+                       "forecasts checked against baselines, A/B tests, causal inference and error analysis.",
+        "skills": [
+            ("SQL and data modelling", ["transitpulse"], "17 dbt models on BigQuery: a star schema, an SCD2 station dimension and KPI marts"),
+            ("Cleaning and KPI definitions", ["transitpulse"], "every dropped row gets one reason and an audit; each KPI is computed once"),
+            ("Exploratory analysis", ["lawrence-berkeley-lab"], "Pandas EDA that found right-skewed peaks, change-points, and calm vs. erratic eras"),
+            ("Forecasting against baselines", ["lawrence-berkeley-lab", "transitpulse"], "persistence beaten on every variable; station MAE 48% below seasonal naive"),
+            ("Experiments and A/B tests", ["transitpulse", "academy-of-testers"], "a pre-registered A/B test with McNemar's test; an essay grader A/B-tested against official scores"),
+            ("Rare-event error analysis", ["seismicsocal"], "precision next to a chance baseline; every missed M3+ quake sorted by cause"),
+            ("Diagnosing a data limit", ["cbu-research"], "a paired clean-vs-noisy comparison that showed a data ceiling, not a model one"),
+            ("Building a gold-label benchmark", ["bearlm"], "questions written from real chunks, each with an exact answer key"),
+            ("Measuring a fix", ["numistoken", "kigumi-group"], "load time ~2–3 s → ~300 ms; coverage 90% → 98%"),
+            ("Teaching the method", ["aperiohub"], "baselines, held-out data and leakage checks, taught one to one")],
+        "work": [
+            ("transitpulse", "warehouse, KPIs and decisions",
+             _TP + " Eight years of BART and Bay Wheels ridership sit in one BigQuery warehouse, and the questions it answers "
+             "are an analyst's: how far has ridership come back, did a new extension add riders, and which stations can BART "
+             "least afford to close?",
+             [("67.8M", "BART trip rows", "2018–2025, cleaned and audited"), ("84", "dbt data tests", "one definition per KPI"),
+              ("0.43", "Weekday recovery vs 2019", "bikes ran at 127–210%"), ("15", "Stations scored", "on four stated rules")],
+             ["Cleaned the raw trip files with PySpark so every dropped row carries exactly one reason (bad date, bad station "
+              "code, duplicate and so on), with an audit of rows in, rows out and drops per reason. DuckDB merged Bay Wheels' "
+              "two source schemas into one.",
+              "Defined each KPI once in a dbt mart (recovery vs 2019, rolling 28-day entries, year-over-year change, peak-hour "
+              "share, busiest station), so the site and the SQL agent read the same columns instead of re-deriving them.",
+              "Showed what the data says: in 2025 weekday BART ridership was at 43% of 2019, while Bay Wheels ran at 127–210% "
+              "of its 2019 monthly level, so bikes per 1,000 BART entries rose from 21.1 to 80.6.",
+              "Scored the 15 stations BART may close on four rules shown as text (strong 6, mixed 7, weak 2) and checked the "
+              "press against the warehouse: “about 12%” of ridership is 12.6%, and South San Francisco's "
+              "“1,538 weekday riders” is 1,409 exits. Close calls at a rounding edge are reported, not moved.",
+              "Measured the eBART extension with difference-in-differences: compare how the line changed after opening with "
+              "how 34 far-away stations changed over the same weeks. The line gained +4.2%; a post-hoc trend check says +1.0%, "
+              "and I report both."]),
+            ("lawrence-berkeley-lab", "exploring and forecasting cache traffic",
+             _LBNL + ". Exploration came first, and it shaped every later decision.",
+             [("24<small>%</small>", "Lower RMSE than persistence", "best case; every variable beaten"),
+              ("3", "Regional caches", "explored and modelled separately"),
+              ("5", "Loss functions tested", "same spikes missed by all")],
+             ["Built reproducible Pandas pipelines that load, clean, resample and plot every site the same way and rerun end "
+              "to end on new data.",
+              "Let the exploration shape the modelling: accesses always equal hits plus misses, the sites behave differently, "
+              "peaks are right-skewed (most days ordinary, a few extreme), and change-points shift the level over time.",
+              "Looked past the headline RMSE. The first model beat both baselines on most variables but smoothed straight "
+              "through every spike, so from then on I judged each experiment on both average error and peaks.",
+              "Chose the lookback with rolling-origin cross-validation (train on the past, forecast the next block, slide "
+              "forward) and scored persistence on the identical windows, so every comparison is like for like.",
+              "Tested two explanations for the missed peaks and rejected both: the signal isn't in past traffic. I present "
+              "each week's result to the group."]),
+            ("cbu-research", "finding a data ceiling",
+             _CBU + "A model predicting a structure's stiffness from its measured shape (an inverse-FEA problem) was stuck at "
+             "R² ≈ 0.10 on one target, holding up the team's IEEE paper. I set out to find out whether tuning could help at all.",
+             [("7", "Models benchmarked", "one shared ceiling"), ("~0.10", "R² ceiling", "a data limit, not a model limit")],
+             ["Made the evaluation trustworthy before comparing anything: scalers fit on the training fold only, every score "
+              "out-of-fold, each target checked against a predict-the-mean baseline, and the overfitting gap reported.",
+              "Benchmarked seven model configurations under the same cross-validation. All of them landed on the same ceiling "
+              "for the hard target, while the easier targets were predicted well by every one.",
+              "Ran the decisive comparison: the same models trained on clean and on noisy data, side by side. The target was "
+              "recoverable from clean data and lost once realistic noise was added, so no amount of tuning could bring it back.",
+              "Swept the noise level to find where each target stops being predictable, which tells the team how precise the "
+              "measurements need to be. They moved from model tuning to fixing the inputs."]),
+            ("seismicsocal", "measuring a rare-event system honestly",
+             _SEIS + ", built during my CBU internship. Before trusting it, I replayed 80 archived days it never trained on and "
+             "accounted for every alert and every miss.",
+             [("145", "Replay push alerts", "every one a real quake"),
+              ("86<small>%</small>", "Confirmed events that were real", "busy days; chance 4%"),
+              ("83<small>%</small>", "Isolated M3+ caught", "with 3+ sensors online")],
+             ["Reported every precision next to a chance baseline: shift each declared event by an hour and score it again. "
+              "Real detections stop matching the catalogue; coincidences in a busy catalogue don't.",
+              "Broke the catch rate down by size (9% at M1–1.5 up to 68% at M3+) and by situation: 83% of isolated M3+ "
+              "quakes against 60% inside rapid sequences.",
+              "Classified all 58 missed M3+ quakes: 27 came back-to-back with another quake, 16 had fewer than 3 stations with "
+              "data, 7 were seen but not confirmed and 8 weren't seen. That aimed the fix at swarms.",
+              "Tuned for swarms on validation days only (32 configurations, adoption rule fixed in advance), then scored once "
+              "on the held-out days: M3+ catch rose from 71% to 78% with no duplicates.",
+              "Checked the home-shaking estimate against what people reported feeling: 94% within one intensity level on 28 "
+              "held-out quakes."]),
+            ("academy-of-testers", "AI checked against official scores",
+             _AOT + " Its RAG essay grader is judged against the scores College Board actually gave.",
+             [("-23<small>%</small>", "Grading error (MAE)", "vs. a naive LLM grader"),
+              ("0.62", "QWK vs. official scores", "English, n = 39"), ("87<small>%</small>", "Within one point", "up from 77%")],
+             ["Ran a real A/B: each typed College Board sample response graded twice, by a baseline with no rubric or "
+              "retrieval and by the grounded grader. Test essays come from 2023/2024 and the retrieval corpus from 2025, so "
+              "nothing leaks.",
+              "Used metrics built for ordered scores: mean absolute error, exact and within-one agreement, and quadratic "
+              "weighted kappa (QWK), which measures agreement beyond chance and counts a miss by two points four times as "
+              "much as a miss by one.",
+              "Kept APUSH as the honest check, a subject the grader was never tuned on: error still fell 22%. The samples are "
+              "small (39 + 8), which I state next to the results, and the config was frozen after the run.",
+              "Diagnosed score compression: nearest-neighbour retrieval returned mostly mid-band essays, so grades drifted to "
+              "the middle. Stratifying the retrieved pool by score band fixed most of it."]),
+            ("bearlm", "measuring retrieval with exact answer keys",
+             _BLM + " Every answer cites the exact PDF page, and I built a benchmark so each retrieval change could be measured.",
+             [("50", "Benchmark questions", "exact gold labels"), ("0.82", "recall@1", "from 0.56 dense-only"),
+              ("0.84", "MRR", "from 0.70")],
+             ["Generated the benchmark from real corpus chunks: each question is written from one chunk, so that chunk's ID is "
+              "the exact answer key. recall@k then asks a precise question: is the true source in the top k results?",
+              "Measured each retrieval stage on it: recall@1 went from 0.56 with dense vectors alone to 0.60 with hybrid "
+              "keyword search, then 0.82 with a reranker.",
+              "Stated the weak spot: the RAGAS answer-quality runs are small (n = 6) with a local judge, so the retrieval "
+              "ablation is the stronger evidence.",
+              "Logged usage to SQLite for an analytics page: questions asked, most-cited courses, answered vs. no-source "
+              "counts, and the course that needs the most help."]),
+            ("numistoken", "measuring before fixing",
+             "Full-Stack Software Engineering Intern at NumIsToken, Sep 2025 – Jun 2026, on the backend behind token redemptions.",
+             [("-85<small>%</small>", "Redemption load time", "~2–3 s → ~300 ms"),
+              ("0", "Unrecoverable stuck redemptions", "a failure class removed")],
+             ["Profiled the redemption lifecycle APIs before changing anything. The two to three seconds per action weren't "
+              "real work: the same lookups and checks were repeated across a single request.",
+              "Removed the redundant calls and measured again: about 300 ms per action, roughly 85% faster.",
+              "Persisted every step of a redemption behind History and Detail services, so an interrupted one can be found and "
+              "resumed from its last confirmed state without acting twice on the same payment."]),
+            ("kigumi-group", "root-causing recurring failures",
+             "Backend Software Engineer Intern in Hong Kong, Jun – Sep 2025, on KiguLab, a digital wellbeing and AI-ethics "
+             "curriculum for ages 8–21.",
+             [("98<small>%</small>", "Code coverage", "up from 90%"),
+              ("2", "Failure classes separated", "connections &middot; query formulation")],
+             ["Started from AI assistant failures that looked random from outside: the same question would work once and "
+              "fail the next time.",
+              "Separated them by targeted debugging into two classes with different fixes: unstable backend connections, and "
+              "malformed queries sent to the GPT and image models.",
+              "Measured coverage before and after (90% to 98%, so the untested code shrank by 80%) and pinned each diagnosed "
+              "failure with a test."]),
+            ("aperiohub", "teaching the analysis habits",
+             "Part-time Research Mentor in AI &amp; ML at AperioHub Advisory, Oct 2026 – present, guiding one high school "
+             "student through a research project.",
+             [("8–10", "Sessions", "~1 hour each, weekly"),
+              ("1", "Deliverable", "a concrete, defensible research output")],
+             ["The student picks one of five directions in the first sessions; whichever it is, I teach the habits "
+              "I use in my own analysis.",
+              "Every claim needs a baseline worth beating, data the model never saw, and the gap reported with its "
+              "uncertainty. On an open dataset that starts with the cleaning and leakage checks; on a bias question, "
+              "with a method someone else could re-run.",
+              "Each session reviews what the last task showed, introduces one new idea and assigns one focused task. "
+              "Recorded sessions and AI-assisted notes keep the project's full record, dead ends included."]),
+        ]},
+
+    "data-scientist": {
+        "field": "field-indigo", "tags": ["Experiment design", "Causal inference", "Forecasting", "Uncertainty"],
+        "art": [("+4.2%", "eBART riders, pre-registered"), ("0.004", "A/B result, McNemar p"),
+                ("~0.10", "R² data ceiling at CBU"), ("0.9998", "detection ROC-AUC")],
+        "description": "Data science across my projects and internships: pre-registered causal studies and A/B tests, "
+                       "forecasts with honest uncertainty, leak-free validation and hypothesis tests.",
+        "skills": [
+            ("Causal inference", ["transitpulse"], "pre-registered difference-in-differences against 34 control stations, with placebo intervals"),
+            ("A/B testing and power", ["transitpulse"], "a power analysis before arm B ran; exact McNemar p = 0.004"),
+            ("Forecast uncertainty", ["transitpulse"], "quantile LightGBM with a split-conformal band; 73% coverage reported against an 80% target"),
+            ("Validation without leakage", ["lawrence-berkeley-lab", "seismicsocal"], "rolling-origin CV; chronological splits; thresholds frozen on validation days"),
+            ("Hypothesis testing", ["lawrence-berkeley-lab"], "two explanations for missed peaks (five losses, percentile forecasts), both rejected"),
+            ("Identifiability", ["cbu-research"], "a paired clean-vs-noisy design and a noise sweep"),
+            ("Confidence intervals", ["seismicsocal"], "event-clustered bootstrap; a 10-seed study separates seed from sampling variance"),
+            ("Probabilistic models", ["academy-of-testers"], "BKT + IRT over 8 skills; the essay grader scored by QWK")],
+        "work": [
+            ("transitpulse", "causal study, A/B test, forecasts",
+             _TP + " Three of its questions needed real statistics: did the eBART extension bring new riders, do retrieved "
+             "examples make the SQL agent better, and how sure is a two-week forecast?",
+             [("+4.2%", "eBART net riders", "placebo interval +1.6% to +7.1%"),
+              ("27 → 50%", "Agent accuracy", "McNemar p = 0.004"),
+              ("48<small>%</small>", "Lower forecast error", "MAE 283 vs 549"),
+              ("73<small>%</small>", "Band coverage", "against an 80% target")],
+             ["Chose the unit with care. A rider who switches from Pittsburg/Bay Point to Antioch leaves the line's total "
+              "unchanged; a new rider raises it. So the study compares the whole line and the three old stations with 34 "
+              "far-away stations, with station and week fixed effects on log weekly entries: +4.2% for the line, −23.9% for "
+              "the old stations.",
+              "Led with placebo inference: reassign the extension to all 5,984 sets of 3 control stations and see how often "
+              "noise alone looks this big (RI p = 0.0007). Intervals from clustered standard errors are reported "
+              "too, but with only 3 treated stations they under-cover on synthetic data, so the placebo intervals are "
+              "the headline.",
+              "Pre-registered the design in a hashed file, then validated it on 200 simulations, which caught a too-narrow "
+              "interval (coverage 0.84, fixed to 0.925 by one dated amendment). The post-hoc trend check gives +1.0% and is "
+              "labelled post-hoc.",
+              "Ran the agent A/B by the book: a frozen question set, a power analysis after arm A (+14 points detectable at "
+              "80% power), a three-part decision rule, then arm B. It won by +22.7 points (95% CI +9.1 to +36.4); near-twin "
+              "examples in the pool mean unfamiliar questions will gain less, and the write-up says so.",
+              "Back-tested the forecasts walk-forward with a paired bootstrap CI on the improvement (200 to 340 entries a "
+              "day), and named the band a “calibrated model range” because it held 73%, not 80%."]),
+            ("lawrence-berkeley-lab", "forecasting and testing why peaks are missed",
+             _LBNL + ". I test how predictable that traffic really is, peaks included.",
+             [("24<small>%</small>", "Lower RMSE than persistence", "every variable and horizon"),
+              ("5", "Losses tested", "MAE to MSE, same spikes missed"),
+              ("100", "Day lookback", "beat every 3-day setup on RMSE")],
+             ["Compared PatchTST with persistence and linear regression on a chronological hold-out, never a random split, "
+              "which would leak the future.",
+              "Noticed RMSE hid the real failure: the model tracked the everyday level but smoothed through every spike, so "
+              "I scored each experiment on both average error and peaks.",
+              "Picked the lookback with rolling-origin cross-validation, then checked it wasn't luck: on RMSE every 100-day "
+              "configuration beat every 3-day one, and re-runs across 5 seeds barely moved.",
+              "Turned the missed peaks into two hypotheses (the loss is to blame; forecast high on purpose) and rejected both. "
+              "The information isn't in past traffic, so the team's question became what signal would make peaks predictable.",
+              "Split one cache's history into a calm and an erratic era: calm traffic rewards longer history, erratic traffic "
+              "the last few days. The answer is to detect the regime and use the model tuned for it."]),
+            ("cbu-research", "proving a data ceiling",
+             _CBU + "A model predicting a structure's stiffness from its measured shape (an inverse finite-element problem) was "
+             "stuck at R² ≈ 0.10 on one target. I tested whether any model could do better.",
+             [("7", "Model configurations", "same cross-validation"), ("~0.10", "R² ceiling", "a data limit, not a model limit")],
+             ["Audited the evaluation first (leak-free scaling, out-of-fold scores, a predict-the-mean baseline, the overfitting "
+              "gap) and dropped the chained setup, which passed noise from one target to the next.",
+              "Benchmarked seven configurations, from a baseline random forest to boosted and ExtraTrees ensembles and PCA "
+              "pipelines. All hit the same ceiling on the hard target.",
+              "Isolated noise as the one variable with a paired clean-vs-noisy design: the target was recoverable from clean "
+              "data and gone once realistic noise was added.",
+              "Ruled out the obvious bottlenecks: bypassing PCA and training on only the cleanest inputs didn't rescue it.",
+              "Trained on clean simulations and tested on noisy measurements, then swept the noise level to get an "
+              "identifiability curve. For the hard target the useful output is a quantile prediction interval, not a "
+              "misleading point estimate."]),
+            ("seismicsocal", "deep vs. classical, with honest intervals",
+             _SEIS + ", built during my CBU internship. Each model is measured against the classic seismology method it "
+             "replaces.",
+             [("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"), ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
+              ("94<small>%</small>", "Within one MMI level", "28 held-out quakes")],
+             ["Split every dataset chronologically (70/15/15), the 2,062 hard negatives of real live-stream noise included, "
+              "so the test set is genuinely the future.",
+              "Bootstrapped confidence intervals by event, so a quake's correlated station windows resample together. The deep "
+              "and classical intervals don't overlap.",
+              "Ran a nearest-station ablation: with only the closest station, magnitude R² falls to 0.808, worse than the "
+              "classic formula. The fusion across stations is the skill.",
+              "Separated seed variance from sampling variance with a 10-seed study. Ensembling added only +0.003, inside the "
+              "sampling CI, so the live system keeps 5 seeds.",
+              "Fitted the shaking-intensity offset on the older 29 quakes and scored it once on the newer 28 (1,892 report "
+              "cells). The ground-type term gave no measurable gain, and I report that too."]),
+            ("academy-of-testers", "modelling what a student knows",
+             _AOT + " Its adaptive SAT engine estimates what each student knows and picks the question that will tell it the most.",
+             [("8", "Skills modelled per student", "BKT + IRT"), ("0.62", "QWK vs. official scores", "from 0.590"),
+              ("22<small>%</small>", "Lower error on held-out APUSH", "never tuned on")],
+             ["Tracked mastery with Bayesian Knowledge Tracing and damped each step (25% of a gain, 50% of a loss), so one "
+              "lucky guess can't fake mastery; a guard makes sure a wrong answer never raises a skill.",
+              "Chose the next question with IRT: each item's 3PL Fisher information at the student's ability, blended with the "
+              "skill gap and recency, then sampled from the top 5 with a softmax.",
+              "Modelled forgetting as exponential decay toward a 0.20 floor (λ = 0.0112/day, so the part above the floor "
+              "halves in about 62 days).",
+              "Designed the essay-grader A/B so nothing leaks: test essays from 2023/2024, the retrieval corpus from 2025.",
+              "Withheld difficulty until after submission, because knowing it changes how students answer and would "
+              "contaminate the data used to recalibrate it."]),
+        ]},
+
+    "data-engineer": {
+        "field": "field-teal", "tags": ["Dagster", "PySpark &middot; dbt", "BigQuery", "Streaming"],
+        "art": [("67.8M", "BART trip rows in BigQuery"), ("84", "dbt data tests per build"), ("19", "live seismic streams"),
+                ("10.4K", "chunks per BearLM rebuild")],
+        "description": "Data engineering across my projects: a Dagster, PySpark and dbt pipeline into BigQuery, a live "
+                       "seismic streaming pipeline, and an ETL that feeds hybrid search.",
+        "skills": [
+            ("Orchestration", ["transitpulse"], "Dagster assets with lineage, sensors and schedules on a shared free VM"),
+            ("Batch cleaning", ["transitpulse"], "PySpark with an explicit schema: every dropped row gets a reason, plus an audit of rows in and out"),
+            ("Data modelling", ["transitpulse"], "dbt from staging to an SCD2 station snapshot, facts, dimensions and KPI marts"),
+            ("Data quality", ["transitpulse", "seismicsocal"], "84 dbt data tests on every build; a live quality gate that rejects gap-fill zeros, stuck runs and clipping"),
+            ("Warehouse cost control", ["transitpulse"], "facts partitioned by date and clustered by station, with a bytes-billed cap per query"),
+            ("Streaming ingestion", ["seismicsocal"], "19 SeedLink streams in 300 s rolling buffers, processed on waveform time"),
+            ("ETL with retries", ["bearlm"], "batched embedding with retry and exponential backoff into Chroma, BM25 and SQLite"),
+            ("Infrastructure as code", ["transitpulse"], "Terraform for every GCP resource; CI is the only thing that can deploy")],
+        "work": [
+            ("transitpulse", "a batch pipeline into BigQuery",
+             _TP + " Public BART and Bay Wheels data lands in BigQuery through a Dagster pipeline that runs itself on a free "
+             "Oracle VM.",
+             [("67.8M", "BART trip rows", "hourly origin-destination, 2018–2025"), ("26.0M", "Bay Wheels trips", "two source schemas"),
+              ("17", "dbt models", "84 data tests"), ("$0", "To run", "inside every free tier")],
+             ["Ingested BART origin-destination files, GTFS and Bay Wheels zips into GCS. A Dagster sensor re-downloads a year "
+              "only when its Last-Modified changes, and a manifest skips files whose ETag and size already match.",
+              "Cleaned with <strong>PySpark</strong>: an explicit schema, permissive corrupt-record handling, one drop reason "
+              "per bad row, and Parquet partitioned by year and month. DuckDB merged Bay Wheels' Ford GoBike and Lyft schemas "
+              "into one.",
+              "Modelled with <strong>dbt</strong>: staging, an SCD2 station snapshot, dimensions and facts, then KPI marts. The "
+              "hourly fact is incremental (the last 35 days plus any date not yet loaded), and a singular test checks that "
+              "every staged trip date reaches it.",
+              "Ran the same SQL on DuckDB locally and BigQuery in production, with facts partitioned by date, clustered by "
+              "station and capped on bytes billed.",
+              "Hosted Dagster's daemon and UI as systemd units on a 2-core VM shared with SeismicSoCal, with memory caps and a "
+              "lower OOM priority so the quake detector keeps priority. Every GCP resource is Terraform."]),
+            ("seismicsocal", "a live streaming pipeline",
+             _SEIS + ". Its data side is a 24/7 SeedLink stream and a dataset builder over 26 years of catalogue and waveform data.",
+             [("19", "Live SeedLink streams", "300 s rolling buffers"), ("50,743", "Detection windows", "USGS + SCEDC, 2000–2026"),
+              ("6,243", "Quakes for sizing", "M2.0–7.1")],
+             ["Streamed 19 stations over SeedLink into rolling 3-component buffers and processed everything on waveform time, "
+              "never wall-clock time, so a replay of archived days runs the exact live code.",
+              "Put a quality gate in front of the model that rejects gap-fill zeros, stuck runs, clipping and lone spikes.",
+              "Kept one station list (<code>network.py</code>), imported by the dataset builder, daemon, API, scorer and "
+              "replay. Checkpoints carry it too, so the daemon refuses a model trained on a different network.",
+              "Appended training data monthly without ever changing older months, and split every dataset chronologically."]),
+            ("bearlm", "an ETL pipeline for retrieval",
+             _BLM + " Its ingestion pipeline rebuilds the whole store from mixed source files.",
+             [("10.4K", "Chunks per rebuild", "10 courses"), ("~40 s", "BM25 index build", "pre-warmed at startup"),
+              ("$0", "Per query", "fully local")],
+             ["Extracted PDFs (pdfplumber), Markdown and Jupyter notebooks, some from cloned course repos, and split them by "
+              "token length with course, section, source and chunk_id metadata.",
+              "Batch-embedded with retry and exponential backoff. Thousands of requests to a local server ran into Windows "
+              "socket exhaustion (<code>WSAENOBUFS</code>); batching lets the run finish instead of dying halfway.",
+              "Loaded Chroma vectors, a BM25 index and SQLite for analytics in one pass; the BM25 index is pre-warmed on a "
+              "background thread at startup and cached."]),
+        ]},
+
+    "mlops-engineer": {
+        "field": "field-carbon", "tags": ["MLflow", "Dagster", "Evidently", "Terraform &middot; Cloud Run"],
+        "art": [("6", "rules in the promotion gate"), ("80", "held-out days replayed"), ("84", "dbt tests on every build"),
+                ("$0", "to run, free tiers")],
+        "description": "MLOps across my projects: an MLflow registry with gated champion/challenger promotion, scheduled "
+                       "retraining, drift monitoring, Terraform and keyless CI/CD to Cloud Run.",
+        "skills": [
+            ("Tracking and registry", ["seismicsocal"], "MLflow runs carry the commit, data hash and seeds; the @champion alias marks the live model"),
+            ("Gated promotion", ["seismicsocal"], "six statistical and replay rules; a rule that can't run is logged SKIPPED, never a silent pass"),
+            ("Scheduled retraining", ["seismicsocal", "transitpulse"], "a Dagster retrain job; LightGBM retrains every Monday and writes a run log"),
+            ("Drift monitoring", ["seismicsocal"], "a daily Evidently check per station, with an email after two drifting days"),
+            ("CI/CD", ["seismicsocal", "transitpulse"], "GitHub Actions on every change; keyless Workload Identity Federation to Cloud Run"),
+            ("Infrastructure as code", ["transitpulse"], "Terraform for every GCP resource, budget alerts included"),
+            ("Load and smoke tests", ["transitpulse"], "an image smoke-tested before it's pushed; Locust p95s under load"),
+            ("Selection protocol", ["lawrence-berkeley-lab"], "rolling-origin CV; the test window never picks the model")],
+        "work": [
+            ("seismicsocal", "QuakeOps: models that maintain themselves",
+             _SEIS + ". QuakeOps is its MLOps loop: a retrained model can replace the live one only by proving, statistically "
+             "and on replayed days, that it's at least as good.",
+             [("6", "Promotion-gate rules", "statistical + replay"), ("10", "Replay days per challenger", "champion vs. challenger"),
+              ("30 s", "Drift logging interval", "3 features per station")],
+             ["Built the retrain flow: data appended monthly, the challenger trained and logged to MLflow with its commit, data "
+              "hash and seeds, the champion re-scored on the challenger's unseen test split, then both replayed on 10 held-out "
+              "days. If the gate passes, the @champion alias moves and the VM pulls the model and verifies its sha256.",
+              "Wrote the gate as six rules: beat the classic baseline, stay non-inferior to the champion, pass the replay, "
+              "pass the tests, have clean lineage, and have a reason to switch. A rule that can't be evaluated is logged "
+              "SKIPPED, never a silent pass, and the gate never edits the live thresholds.",
+              "Watched for drift: the daemon logs three scale-free features per station every 30 s, and a daily Evidently job "
+              "marks each station ok, watch or drifting, with an email after two drifting days in a row.",
+              "Deployed with GitHub Actions (ruff, pytest, the daemon selftest, the site build) and a tar deploy to the VM; "
+              "systemd respawns the stream daemon if it drops. Live pushes stay off in shadow mode until confirmed precision on "
+              "live data clearly beats chance.",
+              "Where it stands: the registry, daily pull, drift logging and CI/CD deploys are live, and the gate "
+              "passed a dry run (champion vs. itself). The first monthly retrain hasn't run yet."]),
+            ("transitpulse", "shipping and retraining on GCP",
+             _TP + " Its API and agent run on Cloud Run, its station forecasts retrain every week, and everything in GCP is code.",
+             [("119<small>MB</small>", "Container image", "non-root, smoke-tested"),
+              ("4.4 s", "Cold start to first byte", "warm 0.09–0.17 s"), ("140 ms", "Ask p95 at 25 users", "Locust, LLM mocked")],
+             ["Set up CI on every push to main (ruff, pytest, Spark, browser, container and Terraform jobs) and keyless "
+              "deploys: Workload Identity Federation pinned to the repository's main branch, with no service-account keys "
+              "in GitHub.",
+              "Wrote every GCP resource in Terraform: BigQuery datasets, the bucket, Artifact Registry, Cloud Run, "
+              "least-privilege service accounts, and $1 and $5 budget alerts. The agent's Gemini key lives in Secret Manager.",
+              "Ran the API on Cloud Run with 0–2 instances, scaling to zero, from a multi-stage non-root image that is "
+              "smoke-tested before it's pushed.",
+              "Retrained the LightGBM forecasts every Monday; each run logs MAE, RMSE and coverage with their CIs, and the API "
+              "picks the band's label from that run's own coverage.",
+              "Backed it with tests: 179 pytest, 52 node and 75 Playwright tests, 84 dbt data tests, and reproducibility "
+              "checks that recompute the A/B, the causal study and the trend adjustment from committed inputs."]),
+            ("lawrence-berkeley-lab", "a selection protocol you can trust",
+             _LBNL + ".",
+             [("24<small>%</small>", "Lower RMSE than persistence", "under rolling-origin CV"),
+              ("5", "Seeds re-run", "the choice held")],
+             ["Trained on a chronological hold-out, never a random split, with early stopping on validation loss.",
+              "Selected the lookback with rolling-origin cross-validation: train on the past, forecast the next block, slide "
+              "forward. Persistence was scored on the identical windows, and the test window never picks the model.",
+              "Re-ran the chosen model on 5 random seeds. Its error moved only slightly, so the choice is a stable finding "
+              "rather than a lucky initialisation.",
+              "Kept the pipelines reproducible: every site is loaded, cleaned, resampled and plotted the same way, and the "
+              "whole thing reruns end to end on new data."]),
+        ]},
+
+    "ai-ml-researcher": {
+        "field": "field-ice", "tags": ["Experiment design", "Ablations", "PyTorch", "Pre-registration"],
+        "art": [("~0.10", "R² data ceiling at CBU"), ("24%", "PatchTST vs. persistence (RMSE)"),
+                ("0.808", "R², nearest station only"), ("0.0007", "placebo p, eBART")],
+        "description": "Research across my internships and projects: a data ceiling proven with a paired design, deep "
+                       "versus classical models with ablations, hypothesis tests on failure modes, and pre-registered studies.",
+        "skills": [
+            ("Framing a testable question", ["cbu-research"], "is the R² ≈ 0.10 ceiling a model problem or a data problem?"),
+            ("Baselines from the field", ["seismicsocal", "lawrence-berkeley-lab"], "STA/LTA and amplitude + distance for quakes; persistence for traffic"),
+            ("Ablations", ["seismicsocal"], "nearest-station ablation: magnitude R² 0.951 → 0.808"),
+            ("Hypothesis tests on failure modes", ["lawrence-berkeley-lab"], "five losses and percentile forecasts, both rejected"),
+            ("Variance vs. luck", ["seismicsocal", "lawrence-berkeley-lab"], "a 10-seed study; seed re-runs of the chosen lookback"),
+            ("Pre-registration", ["transitpulse"], "design hashed before any result; a 200-simulation check"),
+            ("Time-series Transformers", ["lawrence-berkeley-lab"], "PatchTST: patches as tokens, RevIN, channel independence"),
+            ("Mentoring research", ["aperiohub"], "one-to-one research that ends in a defensible result")],
+        "work": [
+            ("cbu-research", "a data limit, proven",
+             _CBU + "An inverse-FEA model (predicting a structure's stiffness from its measured shape) was stuck at R² ≈ 0.10 "
+             "on one target, holding up the team's IEEE paper. My question: is that a model problem or a data problem?",
+             [("7", "Model configurations", "one shared ceiling"),
+              ("~0.10", "R² on the hard target", "a data limit, not a model limit")],
+             ["Made the evaluation trustworthy first: leak-free scaling, out-of-fold scores, a predict-the-mean baseline and a "
+              "measured overfitting gap, so a small difference couldn't be an artefact.",
+              "Benchmarked seven configurations with different inductive biases under the same cross-validation. If the model "
+              "were the bottleneck they would disagree; they all hit the same ceiling.",
+              "Ran the decisive experiment, a paired clean-vs-noisy design, then ruled out the obvious bottlenecks (PCA, the "
+              "noisiest inputs) with a bypass and an ablation.",
+              "Tested the realistic deployment, trained on clean simulations and used on noisy measurements, and swept "
+              "injected noise to draw an identifiability curve: how precise the measurements must be for each target to work.",
+              "Wrote it up for the team's IEEE paper. The figures and detailed results are held back until publication, so "
+              "only the method is public."]),
+            ("lawrence-berkeley-lab", "PatchTST and the limits of history",
+             _LBNL + ". I test how far history alone can predict that traffic.",
+             [("24<small>%</small>", "Lower RMSE than persistence", "best case"),
+              ("15", "Tokens from a 128-day window", "16-day patches, 8-day stride"),
+              ("5", "Loss functions tested", "all missed the same spikes")],
+             ["Implemented PatchTST, a Transformer that cuts a series into short patches and treats each one as a token. "
+              "Attention cost grows with the square of the token count, so patching is what makes a long lookback "
+              "affordable. RevIN normalises each window, and the head predicts every future day at once, so errors don't "
+              "compound.",
+              "Kept channel independence and stated its trade-off: each traffic variable goes through the same network "
+              "separately, which multiplies training examples and curbs overfitting, but the model can't know that hits "
+              "plus misses must equal accesses.",
+              "Swept the lookback per horizon with rolling-origin CV: about three months of history did best a day ahead, "
+              "while at 30 days short windows won. A grid on the finalists and re-runs over seeds showed it wasn't luck.",
+              "Tested whether the missed peaks were a training problem (five losses, then forecasts aimed high) and rejected "
+              "it. That changed the team's question from which model predicts peaks to what signal would make them "
+              "predictable.",
+              "Split calm and erratic eras of one cache: the best amount of history depends on the regime."]),
+            ("seismicsocal", "deep vs. classical, then a replay",
+             _SEIS + ". The question I held it to: would this live system have alerted correctly on real days it never saw?",
+             [("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"), ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
+              ("0.808", "R², nearest station only", "the graph fusion is the skill")],
+             ["Designed two architectures: a CNN → Transformer that reads one station's 30 s window to detect, and a CNN → "
+              "GNN → Transformer over the station graph to size, where the CNN reads waveform shape and the graph reads size.",
+              "Bootstrapped confidence intervals by event; the deep and classical intervals don't overlap on either task.",
+              "Checked the detector doesn't depend on where the quake starts: AUC 0.9997 / 0.9999 / 0.9997 with the P-wave "
+              "at 2, 12 or 22 s.",
+              "Ran a 10-seed study: ensembling added +0.003, inside the sampling CI, so the live system keeps 5 seeds.",
+              "Made a replay the acceptance test, with thresholds frozen on validation days and test days scored once. Swarm "
+              "tuning followed a rule fixed in advance and raised M3+ catch from 71% to 78%."]),
+            ("transitpulse", "pre-registered studies",
+             _TP + " It includes a causal study of the eBART extension and an A/B test of its SQL agent, both written down "
+             "before any result was seen.",
+             [("+4.2%", "Pre-registered effect", "placebo interval +1.6% to +7.1%"),
+              ("0.0007", "Randomisation-inference p", "5,984 placebo sets"),
+              ("0.925", "Interval coverage", "after one dated amendment")],
+             ["Committed the design (station sets, windows, bins, the seed, the verdict rule) as a hashed file before "
+              "computing any treated-vs-control number.",
+              "Used placebo inference: give the extension to every set of 3 control stations instead and re-run. The real line "
+              "is more extreme than all but 3 of them.",
+              "Validated the method on 200 simulations first. That caught a too-narrow interval, which one dated amendment "
+              "fixed before any real estimate.",
+              "Stress-tested the finding: exits instead of entries, 16 suburban-only controls and a monthly 2016–2020 series "
+              "agree in sign, and a fake opening date finds nothing. The post-hoc trend check (+1.0%) is reported and "
+              "labelled.",
+              "Ran the agent A/B the same way, with a power analysis before arm B; a <code>--check</code> command recomputes "
+              "every number in the write-up from committed summaries."]),
+            ("aperiohub", "mentoring research",
+             "Part-time Research Mentor in AI &amp; ML at AperioHub Advisory, Oct 2026 – present: a one-to-one, "
+             "project-based research engagement with a high school student.",
+             [("1:1", "Mentoring format", "one student, one mentor"), ("8–10", "Weekly sessions", "~1 hour each, online"),
+              ("5", "Research directions", "evaluation to AI ethics")],
+             ["Every session runs the same loop: review what was done and what it showed, introduce one new concept, assign "
+              "one focused task.",
+              "The direction is chosen with the student from five: model evaluation, neural networks, open datasets, LLMs, "
+              "and AI ethics and bias.",
+              "I teach the habits from my own research: baselines and held-out tests, pre-registration, knowing when the "
+              "answer is a ceiling, and plain-language method write-ups.",
+              "I record each session, and AI-assisted notes keep a running record of the project, dead ends included."]),
+        ]},
+
+    "machine-learning-engineer": {
+        "field": "field-lavender", "tags": ["PyTorch", "LightGBM", "Production ML", "Python &middot; Java"],
+        "art": [("0.9998", "live detector ROC-AUC"), ("0.951", "magnitude R² in production"),
+                ("48%", "below seasonal naive"), ("36", "engine unit tests")],
+        "description": "Machine learning engineering across my projects: deep models serving a live sensor stream, global "
+                       "quantile forecasts retrained weekly, PatchTST in practice, and an adaptive engine in production.",
+        "skills": [
+            ("Deep learning", ["seismicsocal"], "a CNN → Transformer detector and a CNN → GNN → Transformer sizer"),
+            ("Training for live conditions", ["seismicsocal"], "live-noise hard negatives; epicentre, pick and station-drop jitter"),
+            ("Forecasting at scale", ["transitpulse"], "one global LightGBM per quantile, 50 stations, 1 to 14 days ahead"),
+            ("Calibration", ["transitpulse"], "a split-conformal band whose label changes only when a back-test earns it"),
+            ("Time-series Transformers", ["lawrence-berkeley-lab"], "PatchTST in NeuralForecast, lookback chosen by rolling CV"),
+            ("ML in a product", ["academy-of-testers"], "a BKT + IRT engine as pure functions behind Spring Boot"),
+            ("Testing ML code", ["academy-of-testers", "seismicsocal"], "36 JUnit tests; pytest and a daemon selftest in CI"),
+            ("Serving and promotion", ["seismicsocal"], "every 2 s per station on a free ARM VM; a six-rule promotion gate")],
+        "work": [
+            ("seismicsocal", "two models serving a live stream",
+             _SEIS + ". Two PyTorch models run on a free ARM VM, scoring every station every 2 s.",
+             [("0.9998", "Detection ROC-AUC", "7,303 held-out windows"), ("0.951", "Magnitude R²", "937 held-out quakes"),
+              ("0.25<small>%</small>", "False triggers on live noise", "at the live 0.6 threshold")],
+             ["Built the detector as a CNN → Transformer over a 30 s window, with the P-wave anywhere in it and 2,062 hard "
+              "negatives: real live-stream noise that once fooled a detector.",
+              "Built the sizer to separate shape from size: each window is normalised to unit peak so the CNN reads shape, "
+              "while log peak velocity and distance are graph-node features. Two graph-convolution layers (Gaussian distance "
+              "weights, σ = 50 km) and a Transformer across stations feed the head.",
+              "Trained under live conditions: the epicentre jittered by ~8 km, picks by ±0.5 s, and stations dropped at random.",
+              "Kept 5 seeds rather than 10 after a seed study showed ensembling added only +0.003. The same "
+              "<code>pipeline.py</code> runs live and in replay, and checkpoints carry their normalisers and station list.",
+              "Put promotion behind QuakeOps: a retrained model goes live only through MLflow tracking and a six-rule "
+              "statistical + replay gate."]),
+            ("transitpulse", "global quantile forecasts, retrained weekly",
+             _TP + " Its forecast covers every BART station two weeks out, with a band that says how often it holds.",
+             [("48<small>%</small>", "Lower MAE than seasonal naive", "283 vs 549"), ("14", "Days ahead", "all 50 stations"),
+              ("73<small>%</small>", "Band coverage", "against an 80% target")],
+             ["Framed each training row as a station, a forecast origin and a horizon, with features that use only data up to "
+              "the origin. Values are scaled by each station's 28-day level, so one model fits Embarcadero and the quietest "
+              "suburban stop alike.",
+              "Trained one global LightGBM model per quantile (p10, p50, p90) instead of one model per station.",
+              "Back-tested walk-forward over 12 origins: the first 6 for calibration, the last 6 for testing. The improvement's "
+              "95% bootstrap interval is 200 to 340 entries a day.",
+              "Calibrated the band with rolling split-conformal prediction. It held 73% against an 80% target (the Christmas "
+              "fold alone is 44%), so the site calls it a “calibrated model range”, not an 80% range.",
+              "Retrained every Monday with a run log of every metric and CI; FastAPI on Cloud Run serves the forecasts."]),
+            ("lawrence-berkeley-lab", "PatchTST in practice",
+             _LBNL + ".",
+             [("24<small>%</small>", "Lower RMSE than persistence", "every variable and horizon"),
+              ("15", "Tokens from a 128-day window", "16-day patches, 8-day stride")],
+             ["Ran NeuralForecast's PatchTST on PyTorch Lightning with RevIN on and early stopping on validation loss.",
+              "Made the patch follow the lookback: 16-day patches with an 8-day stride once the window is long enough, and "
+              "half the window for very short ones, since a patch can't be longer than its input.",
+              "Standardised each variable, because counts and data volumes live on very different scales.",
+              "Chose the lookback by rolling-origin CV, and tested the loss and percentile forecasts as experiments instead of "
+              "leaving defaults."]),
+            ("academy-of-testers", "an adaptive engine in production",
+             _AOT + " The adaptive SAT engine and the RAG essay grader both run in the live product.",
+             [("8", "Skills per student", "one mastery vector"), ("36", "JUnit tests", "no Spring, no database"),
+              ("-23<small>%</small>", "Grading error", "RAG grader vs. naive LLM")],
+             ["Wrote the engine as pure functions with no Spring, no repositories and no <code>now()</code>: clocks and data "
+              "are passed in, so all of it is testable without a database.",
+              "Damped BKT updates (25% of a gain, 50% of a loss) with a guard so a miss never raises mastery; a miss also "
+              "bleeds into prerequisite skills at κ = 0.35.",
+              "Applied forgetting lazily on read in <code>MasteryService</code>, the only place weights are read, so a stale "
+              "value can't leak out.",
+              "Scored candidate questions as 0.45 × skill gap + 0.40 × Fisher information − 0.15 × recency, then sampled from "
+              "the top 5 with a softmax (τ = 0.15). The client does no model math.",
+              "Ran the essay grader on GPT-4o at temperature 0 with constrained JSON output, grounded in retrieved rubric "
+              "clauses and scored exemplars."]),
+        ]},
+
+    "ai-engineer": {
+        "field": "field-red", "tags": ["RAG", "LangChain &middot; LangGraph", "LLM evaluation", "Guardrails"],
+        "art": [("0.82", "BearLM recall@1, from 0.56"), ("0.83", "RAGAS faithfulness"),
+                ("50%", "SQL agent accuracy, from 27%"), ("-23%", "essay grading error")],
+        "description": "AI engineering across my projects and internships: local hybrid-search RAG that cites or refuses, a "
+                       "guarded text-to-SQL agent proven in an A/B test, a RAG essay grader, and reliable LLM pipelines.",
+        "skills": [
+            ("Hybrid retrieval", ["bearlm"], "BM25 + dense vectors, Reciprocal Rank Fusion, a cross-encoder reranker"),
+            ("Grounding and refusals", ["bearlm", "academy-of-testers"], "a confidence gate and an exact refusal string; Testy's similarity cutoff"),
+            ("Retrieval and answer evaluation", ["bearlm"], "a gold-label benchmark, recall@1 0.56 → 0.82; RAGAS faithfulness 0.55 → 0.83"),
+            ("Agents with tools", ["transitpulse"], "a LangGraph router, SQL generation with retrieved examples, a forecast tool"),
+            ("Guardrails", ["transitpulse"], "sqlglot AST checks, a read-only identity, dry runs, byte budgets"),
+            ("A/B testing an LLM feature", ["transitpulse"], "execution accuracy 27% → 50%, McNemar p = 0.004"),
+            ("RAG in production", ["academy-of-testers"], "score-band retrieval over Postgres vectors, GPT-4o at temperature 0, constrained JSON"),
+            ("Reliable model calls", ["kigumi-group"], "two failure classes fixed; integration tests on the real request path")],
+        "work": [
+            ("bearlm", "local RAG that cites or refuses",
+             _BLM + " Every answer cites the exact PDF page, and it refuses when the material doesn't cover the question.",
+             [("0.82", "recall@1", "from 0.56 dense-only"), ("0.83", "RAGAS faithfulness", "from 0.55"),
+              ("0.97", "Answer relevancy", "from 0.80"), ("$0", "Per query", "fully local")],
+             ["Ran the whole stack on one machine (LangChain, Ollama, Llama 3.1 8B, nomic-embed-text, Chroma), so there are no "
+              "API keys and no cloud bill.",
+              "Combined BM25 for exact terms with dense vectors for paraphrase, fused the two lists with Reciprocal Rank Fusion "
+              "(k = 60), and let a bge cross-encoder reranker pick the best 4 of 15 candidates.",
+              "Gated answers on the reranker's score: chunks below 0.02 are dropped, and if nothing clears the bar BearLM "
+              "returns an exact refusal string instead of guessing. The prompt is context-only at temperature 0, and the UI "
+              "shows the rewritten query when rewriting is on.",
+              "Added clickable page-level citations and Projects: bring your own PDFs, with answers that fall back to the "
+              "course corpus only for the courses you tick.",
+              "Stated the evaluation's limits: the RAGAS runs are small (n = 6) with a local judge, so the 50-question "
+              "retrieval ablation is the stronger evidence."]),
+            ("transitpulse", "a guarded text-to-SQL agent",
+             _TP + " Ask TransitPulse lets anyone question its warehouse in plain English: a LangGraph agent writes the SQL, "
+             "and layers of guardrails decide whether it runs.",
+             [("27 → 50%", "Execution accuracy", "66 gold-SQL questions"), ("10/10", "Off-topic questions refused", "both arms"),
+              ("1 GB", "Dry-run cap per query", "read-only identity")],
+             ["Built the agent as a LangGraph graph: a router that pre-filters data-changing requests, prompt injection and "
+              "secrets; SQL generation against a schema card with 5 retrieved example queries and one repair retry; a "
+              "forecast tool; and an answer that cites the SQL it ran.",
+              "Layered the guardrails: a sqlglot AST check allows exactly one SELECT on an allowlist of mart tables, the "
+              "service account can only read, and BigQuery dry-runs every query and refuses anything over 1 GB.",
+              "Added budgets: 10 questions per IP per minute, a 10 GB daily byte budget, and a clear message instead of a 500 "
+              "when the Gemini quota runs out.",
+              "Proved the retrieval step in a pre-registered A/B test, scored with an exact McNemar's test on the questions "
+              "the two arms disagree on. Arm B won by +22.7 points (p = 0.004), so five examples became the default; near-twin "
+              "examples in the pool mean unfamiliar questions will gain less.",
+              "Streamed each step to the page over server-sent events, with Show SQL and Copy SQL. It's been live on Gemini "
+              "since 2026-10-16; the 50% is a local Llama 3.1 8B, and Gemini hasn't been scored on the full set yet."]),
+            ("academy-of-testers", "a RAG grader and a study assistant",
+             _AOT + " A RAG essay grader and an AI study assistant, Testy, share one retrieval layer.",
+             [("-23<small>%</small>", "Grading error (MAE)", "vs. a naive LLM grader"),
+              ("0.62", "QWK vs. official scores", "English Lang + Lit"), ("1,536", "Dimension embeddings", "cached in memory")],
+             ["Built the grader pipeline: embed the response, retrieve 16 chunks by cosine similarity, stratify them into 9 "
+              "low, mid and high anchors, grade with GPT-4o at temperature 0, and return JSON with per-row points and cited "
+              "ref_ids.",
+              "Diversified by score band because nearest-neighbour retrieval returns mostly mid-band essays, which pulled "
+              "grades toward the middle.",
+              "Kept vectors in Postgres as JSON arrays with a small pure-Java cosine engine instead of a vector database; every "
+              "retrieval is logged with rank and similarity for spot checks.",
+              "Gave Testy a similarity cutoff and made the course a reference, not a limit, so it stays grounded when the "
+              "course covers a question and doesn't refuse reasonable ones when it doesn't.",
+              "Cached each subject's parsed embeddings in memory; when the AI call fails, the student's allowance is refunded "
+              "rather than spent."]),
+            ("kigumi-group", "making an AI assistant reliable",
+             "Backend Software Engineer Intern in Hong Kong, Jun – Sep 2025, on the AI assistant behind KiguLab, a digital "
+             "wellbeing and AI-ethics curriculum for students.",
+             [("98<small>%</small>", "Code coverage", "up from 90%"),
+              ("2", "Failure classes fixed", "connections &middot; query formulation"),
+              ("2", "Model families", "GPT + image generation")],
+             ["Traced the request path: the assistant builds a query from a learner's message and sends it to a GPT model for "
+              "text or an image-generation model for pictures.",
+              "Separated two failure classes that looked alike from outside: unstable backend connections that dropped or "
+              "stalled model calls, and malformed queries that made the models error or answer inconsistently.",
+              "Wrote integration tests on the real request path to the models and unit tests on how queries are formed, so "
+              "connection and request-shape problems show up in testing instead of in front of a student.",
+              "Pinned each diagnosed failure with a test; the new unit and integration tests took "
+              "coverage from 90% to 98%."]),
+        ]},
+
+    "analytics-engineer": {
+        "field": "field-sky", "tags": ["dbt", "SQL", "BigQuery &middot; DuckDB", "Data tests"],
+        "art": [("17", "dbt models"), ("84", "data tests on every build"), ("0.43", "weekday recovery vs 2019"),
+                ("590", "SAT items in one JSON bank")],
+        "description": "Analytics engineering across my projects: layered dbt models with data tests and one definition per "
+                       "KPI, the same SQL on BigQuery and DuckDB, and source-of-truth data kept reviewable.",
+        "skills": [
+            ("Layered dbt models", ["transitpulse"], "staging → SCD2 snapshot → dimensions and facts → KPI marts"),
+            ("Data tests", ["transitpulse"], "84 tests, including a singular test that every staged trip date reaches the hourly fact"),
+            ("Metric definitions", ["transitpulse"], "one definition per KPI, read by both the site and the agent"),
+            ("Incremental models", ["transitpulse"], "the hourly fact re-processes the last 35 days plus any unloaded date"),
+            ("Seeds and stated rules", ["transitpulse"], "the closure list in one dbt seed; four rules stated once and shown as text"),
+            ("Portable, cost-aware SQL", ["transitpulse"], "the same models on DuckDB and BigQuery; partitioned, clustered, bytes capped"),
+            ("Source-of-truth data", ["academy-of-testers"], "a reviewable JSON bank, an idempotent normalizer, a generated Flyway seed"),
+            ("Usage analytics", ["bearlm"], "a SQLite log of questions, cited courses and unanswered questions")],
+        "work": [
+            ("transitpulse", "dbt models with one definition per KPI",
+             _TP + " Its KPIs are defined once in dbt models on BigQuery, and both the site and its SQL agent read those columns.",
+             [("17", "dbt models", "staging to KPI marts"), ("84", "Data tests", "run on every build"),
+              ("0.43", "Weekday recovery vs 2019", "matched by ISO week"),
+              ("12.6<small>%</small>", "Of weekday trips", "at the first 10 listed stations")],
+             ["Layered the models from staging through an SCD2 station snapshot, which keeps each version of a station so "
+              "renames and openings are tracked over time, to dimensions, facts and KPI marts in a star schema.",
+              "Made the hourly fact incremental: it re-processes the last 35 days plus any date not yet loaded, so a "
+              "back-filled year is picked up, and a singular test checks that every staged trip date reaches it.",
+              "Defined each KPI once (recovery vs 2019, rolling 28-day entries, year-over-year change, peak-hour share, "
+              "busiest station). Recovery compares each weekday with the same ISO week of 2019, so the turn of the year never "
+              "compares January with December.",
+              "Modelled the station-closure question from one dbt seed and three marts: each station's 2025 weekday trips, "
+              "rank, recovery, change on 2024, nearest open station by haversine distance and top destinations. Four rules "
+              "are stated once and shown on the site as text.",
+              "Checked the press against the warehouse (“about 12%” of ridership is 12.6%), and kept the same SQL running on "
+              "DuckDB locally and BigQuery in production, partitioned, clustered and capped on bytes billed."]),
+            ("academy-of-testers", "a question bank with one source of truth",
+             _AOT + " Its practice content is data, and the SAT bank has a single reviewable source of truth.",
+             [("590", "SAT Math items", "one reviewable JSON bank"), ("5,160", "AP practice questions", "172 units &middot; 29 subjects"),
+              ("179", "Real 2025 FRQs", "26 subjects, rubric-tagged")],
+             ["Kept the SAT question bank as reviewable JSON: a deterministic, idempotent normalizer turns raw practice tests "
+              "into it, and a generator emits the Flyway seed migration from it.",
+              "Made Flyway migrations the only way the schema changes, and question IDs permanent, because the response "
+              "history references them forever.",
+              "Tagged each FRQ's rubric and exemplar chunks with its prompt id, so grading retrieves that question's own "
+              "rubric and samples.",
+              "Withheld answers and difficulty from the client until after submission, to keep the data used to recalibrate "
+              "difficulty clean. The Mistake Notebook stores only references (source, subject, question id, schedule), never "
+              "question text or answers."]),
+            ("bearlm", "metadata and usage analytics",
+             _BLM + " One ingestion pass gives every chunk the metadata that citations, the benchmark and the analytics key on.",
+             [("10.4K", "Chunks with metadata", "course &middot; section &middot; source &middot; chunk_id"),
+              ("10", "Courses", "one shared corpus"), ("50", "Benchmark questions", "keyed to chunk ids")],
+             ["Split PDFs, Markdown and Jupyter notebooks by token length and tagged each chunk with course, section, source "
+              "and chunk_id. That key drives the page citations, the benchmark's answer key and the analytics.",
+              "Built a SQLite analytics page: questions asked, courses cited, answered vs. no-source counts, the course that "
+              "needs the most help with its hot-spot topics, and generated practice questions for it.",
+              "Loaded Chroma, the BM25 index and SQLite in one ingestion pass, so a rebuild keeps all three in step."]),
+        ]},
+}
+
+
+def _role_art(rows):
+    """The home hero's LCD screen, with up to four (value, label) rows."""
+    lines = "".join(f"<text x='14' y='{66 + 40 * i}' font-size='30'>{v}</text>"
+                    f"<text x='120' y='{66 + 40 * i}' font-size='18' fill='#7a8aba'>{k}</text>" for i, (v, k) in enumerate(rows))
+    return ("<svg viewBox='0 0 420 220' role='img' aria-label='Headline results'>"
+            "<text x='14' y='26' font-family='Silkscreen, monospace' font-size='12' fill='#7a8aba'>SKILL CHECK . . . OK</text>"
+            f"<g font-family='VT323, monospace' fill='#9fbee7'>{lines}</g></svg>")
+
+
+def role_page(slug, ctx):
+    rel = ctx["rel"]
+    slugs = [r[2] for r in ROLES]
+    i = slugs.index(slug)
+    _, role, _, pitch, _ = ROLES[i]
+    d = ROLE_PAGES[slug]
+    h = hero(d["field"], "ROLE I'M TARGETING", role, pitch, d["tags"], _role_art(d["art"]),
+             go("#skills", "Skill map") + go(rel + ctx["resume"], "R&eacute;sum&eacute; (PDF)", True))
+    rows = [[s, ", ".join(f"<a href='#{w}'>{WORK[w][1]}</a>" for w in ws), p] for s, ws, p in d["skills"]]
+    main = panel("skills", "Skill map", "<p>Each row points to the section below that shows it.</p>"
+                 + table(["Skill", "Where", "Proof"], rows), num="01")
+    for n, (w, angle, summary, st, bl) in enumerate(d["work"], 2):
+        href, name = WORK[w]
+        main += panel(w, f"{name} &middot; {angle}", f"<p>{summary}</p>{stats(st)}<hr class='dotted'>{bullets(bl)}"
+                      + rail_btns([("CS", f"Read the full {name} case study", rel + href)]),
+                      cls="role-work", num=f"{n:02d}")
+    home_roles = ("index.html#roles", "All roles")
+    prev = (f"roles/{slugs[i - 1]}/", ROLES[i - 1][1]) if i else home_roles
+    nxt = (f"roles/{slugs[i + 1]}/", ROLES[i + 1][1]) if i + 1 < len(slugs) else home_roles
+    main += pager(rel, prev, nxt)
+    rail = (rail_btns([("CV", "R&eacute;sum&eacute; (PDF)", rel + ctx["resume"])])
+            + panel("toc-role", "On this page", toc([("skills", "Skill map")] + [(w[0], WORK[w[0]][1]) for w in d["work"]]),
+                    body_cls="panel-body tight")
+            + panel("roles-more", "Other roles", rail_btns([(r[0], r[1], rel + f"roles/{r[2]}/") for r in ROLES if r[2] != slug]),
+                    body_cls="panel-body tight"))
+    return h, layout(main, rail)
+
+
 # ============================================================================ registry
 
 ALL = [
@@ -2658,3 +3386,8 @@ ALL = [
      "title": "Kigumi Group Internship · Braedyn Thompson",
      "description": "Backend SWE intern on KiguLab: test coverage 90% to 98% and fixed recurring GPT / image-model pipeline failures."},
 ]
+
+# Role pages go last so the mascot rotation (_prop_i) on every other page never shifts.
+ALL += [{"path": f"roles/{slug}", "key": slug, "render": partial(role_page, slug),
+         "title": f"{role} · Braedyn Thompson", "description": ROLE_PAGES[slug]["description"]}
+        for _, role, slug, _, _ in ROLES]
