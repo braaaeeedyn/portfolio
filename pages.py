@@ -673,6 +673,8 @@ def home(ctx):
          "Zero-cost cited Q&amp;A over ~10K Berkeley CS/DS chunks. recall@1 56% → 82%."),
         ("projects/bayridership/", "field-sky", "Bay<br>Ridership", "braedynthompson.com/bayridership",
          "68M BART trips on BigQuery, a live train map, forecasts 48% better than naive, a pre-registered causal study and a guarded SQL agent."),
+        ("projects/uc-campus-rent/", "field-ice", "UC Campus<br>Rent", "braedynthompson.com/uc-campus-rent",
+         "Rent around eight UC campuses: Airflow, Great Expectations and dbt on Postgres, a gated LightGBM forecast and a causal study of new campus housing."),
         # DockWatch hidden for now:
         # ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
         #  "641 live stations through Kafka, Spark Streaming and Iceberg, plus Debezium CDC."),
@@ -1785,7 +1787,7 @@ from committed inputs. Expected cost: $0.</p>
         + panel("closures", "Which stations can BART afford to close?", closures, num="06")
         + panel("site", "The website", site, num="07")
         + panel("shipping", "Shipping", shipping, num="08")
-        + pager(rel, ("projects/bearlm/", "BearLM"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))  # DockWatch hidden
+        + pager(rel, ("projects/bearlm/", "BearLM"), ("projects/uc-campus-rent/", "UC Campus Rent")))  # DockWatch hidden
 
     rail = (
         rail_btns([("WWW", "Live site", live), ("GH", "Source code", gh),
@@ -1820,6 +1822,233 @@ from committed inputs. Expected cost: $0.</p>
         + info("What is — McNemar's test?",
                "<p>When two methods answer the same questions, only the questions they disagree on carry information. "
                "McNemar's test asks whether one method wins those disagreements more often than a coin flip would.</p>"))
+    return h, layout(main_html, rail)
+
+
+# ============================================================================ UC CAMPUS RENT
+
+def ucrent(ctx):
+    rel = ctx["rel"]
+    live = rel + "uc-campus-rent/"
+    h = hero(
+        "field-ice", "PROJECT 05 · DATA PLATFORM · FORECASTING · CAUSAL INFERENCE · LIVE", "UC Campus<br>Rent",
+        "What it costs to rent near eight UC campuses, and whether new campus housing lowers rent next door. Airflow "
+        "pulls seven public sources into Postgres through Great Expectations checks; dbt builds the marts; a LightGBM "
+        "quantile forecast is promoted only when it beats the current champion; and an event study asks the causal "
+        "question with rules fixed before any real data was seen.",
+        ["8 campuses · 50 ZIP codes", "Airflow · dbt · Postgres", "LightGBM · MLflow", "$0 a month"],
+        C.mini_bars([("Santa Barbara", 4862 / 5000, False), ("Berkeley", 2887 / 5000, True), ("Merced", 1924 / 5000, False)],
+                    title="typical rent near campus · Sep 2026", fmt=lambda v: f"${v * 5000:,.0f}"),
+        go(live, "Open the live site"))
+
+    overview = f"""
+{stats([("8", "UC campuses", "50 ZIP codes in their rings"),
+        ("7", "public sources", "each behind its own data checks"),
+        ("12 mo", "rent forecast", "p10 / p50 / p90 for every ring ZIP code"),
+        ("$0", "a month", "free tiers, with a $1 budget alert as code")])}
+<hr class="dotted">
+<p class="lede">Systemwide tuition is the same at every UC campus, but rent isn't. UC Campus Rent tracks the typical
+rent in the ZIP codes where students live around eight campuses, forecasts it a year ahead, and asks one causal
+question: when a campus opens new housing, does rent next door come down?</p>
+<p>An <strong>Airflow</strong> pipeline on a free Oracle VM downloads seven public sources once a month, checks each
+file with <strong>Great Expectations</strong> and loads it into <strong>Postgres</strong>. <strong>dbt</strong> models
+the raw tables into a monthly mart per campus and an event-study mart. A <strong>LightGBM</strong> quantile forecaster
+retrains when the marts change and is promoted in <strong>MLflow</strong> only if it passes a gate written down in
+advance. The results go out as JSON to a hand-built site that is live <a href="{live}">on this domain</a>, as an Excel
+workbook per campus, and to <strong>BigQuery</strong>.</p>
+{bullets([
+    "Built a monthly <strong>Airflow</strong> pipeline over <strong>seven public sources</strong> (Zillow, HUD, the "
+    "Census Bureau, California HCD, Apartment List and IPEDS) into Postgres: a <strong>Great Expectations</strong> "
+    "suite per source that quarantines a failing file, a manifest of every file loaded, and <strong>61 dbt "
+    "tests</strong> on the models.",
+    "Defined each campus's <strong>ring</strong> of student ZIP codes with one stated rule (within 5 km of campus) "
+    "plus a short, reviewable list of overrides: <strong>50 ZIP codes</strong> across <strong>8 campuses</strong>.",
+    "Forecast rent 12 months ahead for every ring ZIP code as a p10 / p50 / p90 band with LightGBM, behind a "
+    "<strong>pre-registered gate</strong>: a challenger replaces the champion only if its pinball loss on a "
+    "24-month backtest is at least 2% lower and its band covers 70 to 90% of the actual values.",
+    "Ran a <strong>difference-in-differences and an event study</strong> for each campus housing opening against "
+    "three matched control ZIP codes, with the verdict rules written before any real data was loaded.",
+    "Shipped a public site with a page per campus, keyboard-readable SVG charts and a shared cheer counter, and a "
+    "read-only check that the live data files match the pipeline's export <strong>byte for byte</strong>.",
+])}
+<p class="note"><strong>Not built yet, and said so:</strong> the Looker Studio report on the BigQuery copy. The
+forecast's first scheduled month hasn't completed, so this page quotes no realised forecast error. The code is in a
+private repository.</p>"""
+
+    rents = f"""
+<p>Each campus's number is the <strong>median</strong> of Zillow's observed rent index across the ZIP codes in its
+ring that report rent that month. A median, so one very expensive ZIP code can't pull the figure up the way an average
+would; and the count of reporting ZIP codes travels with the number everywhere it is shown, because some rings are
+thin.</p>
+{fig(C.hbars([("UC Santa Barbara", [("r", 4862)]), ("UC Irvine", [("r", 3501)]), ("UCLA", [("r", 3354)]),
+              ("UC San Diego", [("r", 3278)]), ("UC Berkeley", [("r", 2887)]), ("UC Riverside", [("r", 2489)]),
+              ("UC Davis", [("r", 2366)]), ("UC Merced", [("r", 1924)])],
+             5000, lambda v: f"${v:,.0f}", {"r": ("Typical rent near campus, a month", C.OURS)},
+             "Typical rent in each campus's ring, September 2026", ticks=[0, 1000, 2000, 3000, 4000, 5000]),
+     "The ring's median rent in September 2026, the latest month. Santa Barbara's ring costs $2,938 a month more than Merced's, about $35,000 over a year.")}
+{table(["Campus", "Typical rent", "Change in a year", "ZIP codes reporting"],
+       [["UC Santa Barbara", "$4,862", "+2.4%", "1"], ["UC Irvine", "$3,501", "+3.5%", "8"],
+        ["UCLA", "$3,354", "+1.1%", "6"], ["UC San Diego", "$3,278", "+3.6%", "6"],
+        ["UC Berkeley", "$2,887", "+4.0%", "12"], ["UC Riverside", "$2,489", "+2.4%", "3"],
+        ["UC Davis", "$2,366", "+4.8%", "2"], ["UC Merced", "$1,924", "+1.1%", "2"]], num_cols=(1, 2, 3))}
+<h3>The ring: one rule, and a list anyone can review</h3>
+<p>A script reads the Census Bureau's ZIP-code file and each campus's coordinates and keeps the ZIP codes within
+5 km, or the three nearest where a campus has fewer. That rule misses student neighbourhoods a little farther out and
+includes places where students don't rent, so a seed file of overrides adds and drops ZIP codes one line at a time,
+each with its reason. The overrides were fixed before the Census data behind the causal study was loaded, and they
+stay fixed for any campus with a housing opening, so the study's comparison can't be tuned after the fact.</p>
+<p class="note"><strong>Reported honestly:</strong> Santa Barbara's figure rests on one ZIP code and Davis's and
+Merced's on two each. The site shows that count beside every rent. Data Provided by Zillow Group. This product uses
+the Census Bureau Data API but is not endorsed or certified by the Census Bureau. The site is not affiliated with the
+University of California. The city-level sources (permits, completions and Apartment List) cover four of
+the eight campus cities; the other campus pages hide those parts.</p>"""
+
+    platform = f"""
+{flow([("Download", "one Airflow DAG per source, monthly; a file and a manifest row", False),
+       ("Check", "a Great Expectations suite per source; a failing file is quarantined and the run stops", False),
+       ("Load", "typed raw tables in Postgres 16, each file loaded once", False),
+       ("Model", "dbt: staging, a fact per source, a campus mart and an event-study mart, 61 tests", True),
+       ("Forecast and publish", "the gate, then JSON, Excel, BigQuery and the raw archive in GCS", False)])}
+<h3>Seven sources, each on its own terms</h3>
+{table(["Source", "What it adds"],
+       [["Zillow observed rent index and home value index", "rent and home values by ZIP code, monthly"],
+        ["HUD Small Area Fair Market Rents", "the 2-bedroom fair market rent by ZIP code, yearly"],
+        ["Census ACS 5-year", "income and rent by ZIP code area: rent-to-income, and the match for control ZIP codes"],
+        ["Census Building Permits Survey", "housing units permitted by city, monthly"],
+        ["California HCD Annual Progress Reports", "housing completed by city, yearly"],
+        ["Apartment List", "a second, city-level rent estimate to set beside Zillow's"],
+        ["IPEDS", "fall enrollment per campus"]])}
+<p>Not every source may be downloaded by a script. Where a source's terms rule that out, its DAG reads a file the
+owner downloaded in a browser instead of fetching it, and the rest of the path is the same. Every credit line a
+source asks for is part of the published data files, and the check on the published files fails if one is missing.</p>
+<h3>Assets, not a clock, decide what runs</h3>
+<p>Each source's load updates an Airflow asset. A load triggers the dbt build; a finished build triggers the forecast
+and the publish; a promoted model triggers the publish again. So one new Zillow file flows through to the public site
+with no manual step, and a failing source test stops the marts until a person looks.</p>
+{tiles([("Quarantine, don't guess", "A file that fails its suite moves to a quarantine folder and is never loaded. The manifest records what was loaded, quarantined or pruned."),
+        ("Retention", "A daily DAG prunes raw files the models no longer read and lists each one. Raw files are also archived gzipped in a cloud bucket."),
+        ("One task at a time", "The DAGs share one warehouse on a small shared VM, so Airflow runs a single task at a time and every DAG starts paused."),
+        ("The same code locally", "Docker Compose runs Postgres, Airflow and MLflow on a laptop; a soak test runs every DAG on test data, then watches the idle stack for restarts.")])}"""
+
+    forecast = f"""
+<p>One <strong>LightGBM</strong> model per quantile forecasts each ring ZIP code's rent from 1 to 12 months ahead. The
+target is the log ratio of the future rent to the rent at the forecast origin, so one model fits a $1,900 ZIP code and
+a $4,800 one alike. The baseline it has to beat is a seasonal naive forecast with drift: the same month last year,
+scaled by the trailing year's growth.</p>
+<h3>A gate written before the first real run</h3>
+{tiles([("The score", "Mean pinball loss over p10, p50 and p90 on a 24-origin backtest: the 24 months before the latest one, each scored on the months already observed."),
+        ("The rule", "Promote only if the loss is at least 2% below the reference's and the p10 to p90 band covers between 70% and 90% of actual values."),
+        ("The reference", "With no champion, the seasonal naive baseline. With one, the champion as it could have forecast at each origin, so both are out of sample on the same points."),
+        ("The registry", "A promoted run becomes a new version of the registered model in MLflow and takes the alias champion; a discarded run keeps its scores and its reason.")])}
+<p>The first run on real data passed the gate and became champion version 1: forecasts from September 2026 for the 40
+ring ZIP codes that have rent data, 12 months each. After every forecast a monitor compares the newest month's actual
+rents with what the champion predicted and writes a monthly report on error and data drift.</p>
+{tip("The gate lives in one Markdown file, and a test checks that the file states exactly what the code applies.", prop="scholar")}
+<p class="note"><strong>Reported honestly:</strong> the site draws the band as a typical ring ZIP code's range and
+says rent should land inside it "about 8 times in 10". Whether it does is the monitor's job to report once real months
+accumulate; none are quoted here yet.</p>"""
+
+    causal = f"""
+<p class="lede">When a campus opens a large residence hall, do rents in the surrounding ZIP codes fall?</p>
+<p>For each opening the study follows the ring's median rent from 36 months before to 24 months after, against the
+median of <strong>three control ZIP codes</strong> in the same metro, matched on Census median gross rent. It works on
+the log of the ratio between the two, so a shift that hits the whole metro cancels out.</p>
+{tiles([("Difference-in-differences", "The average gap after the opening against the gap before it, with an indicator for the pandemic's remote-instruction months."),
+        ("Event study", "The same model with a column per year from the opening, each against the year before it: the pre-opening years are the test of whether the comparison is fair."),
+        ("Trend-robust estimate", "A second model gives the months before the opening their own trend line, so a steady drift between ring and controls isn't counted as an effect."),
+        ("Inference", "Prais-Winsten estimation with AR(1) errors and 95% t intervals, because a smoothed rent index is strongly correlated month to month.")])}
+<h3>Verdicts fixed in advance</h3>
+<p>The wording of every possible result was written before any real Census release was loaded. An interval that
+contains zero reads "no detectable effect" and is shown with its bounds: a bounded null, not a zero. If the ring and
+its controls were already drifting apart before the opening, the verdict adds "not a credible causal estimate". The
+trend-robust estimate can qualify the main verdict but can never turn a null into an effect.</p>
+{chat([("detective", "So does new campus housing lower rent next door?"),
+       ("scholar", "On the first real run, five openings have an estimate and none shows a detectable effect either way."),
+       ("detective", "Is that a no?"),
+       ("scholar", "It's a bounded null. A hall of one or two thousand beds may move a ZIP-level rent index by less than the index can show, and the write-up says so.")])}
+<p class="note"><strong>Reported honestly:</strong> each opening is one treated series against three controls; the
+windows of the earliest openings overlap the pandemic; and on very persistent synthetic series the intervals cover
+the truth less often than 95% of the time, which the write-up quantifies. The opening month and bed count of four
+openings are still being confirmed against campus sources, so their results are marked provisional on the site and
+are not quoted here.</p>"""
+
+    site = f"""
+{image(rel, "ucr-home.png",
+       " The home page at 1440 px: every campus in a row, priciest first, with its logo, the ring's typical rent, "
+       "its change on a year before and how many ZIP codes report.", label="Screenshot",
+       alt="UC Campus Rent home page: a headline over a text-pattern background, then eight campus rows with logos, rents and coloured bars")}
+<h3>A page per campus, written for someone who has never read a housing report</h3>
+<p>Each campus page walks through six short chapters, from the price today to the forecast, affordability, supply
+and the housing study, each with a plain-language "why you'd care". Every chart is hand-built SVG with a data table
+behind it, a readout on hover, tap and the arrow keys, and it redraws to fit any screen from 320 to 2560 px. Each
+campus has its own colour theme, and the site is one <code>campus.html</code> that reads a JSON file per campus:
+plain HTML, CSS and JavaScript modules, no framework and no build step.</p>
+{image(rel, "ucr-campus.png",
+       " UC Berkeley's page: the typical rent, the first chapter with its year-on-year change and the ring's ZIP "
+       "codes, and the start of the trend chapter.", label="Screenshot",
+       alt="UC Berkeley page of UC Campus Rent: a large rent figure, an explanation of the ring with ZIP code chips, and a pixel-art dog offering a tip")}
+{tiles([("Tip dogs", "A pixel-art dog per campus, each a different breed in a campus cap, sits beside the text and gives a tip when petted. Petting collects that campus's cap."),
+        ("Face-off", "Pick any two campuses and see their rents on one scale, and what the gap adds up to over a year and a four-year degree."),
+        ("A shared cheer counter", "Each campus's logo is a button. A small Python service on the VM keeps one all-time count per campus, accepts cheers only from the site's own pages and limits how fast one address can add them."),
+        ("Published, then verified", "After each publish a read-only command checks that every live data file equals the pipeline's export byte for byte, passes the schema and is recent, then runs the browser checks on the live pages.")])}
+{image(rel, "ucr-phone.png",
+       " UC San Diego's page at 390 px, in its own colours.", label="Screenshot",
+       alt="UC San Diego page of UC Campus Rent on a phone", phone=True)}"""
+
+    shipping = f"""
+{flow([("Push to main", "GitHub Actions: lint, unit tests, DAG tests in the Airflow image, shellcheck and browser tests", False),
+       ("Oracle VM", "a bootstrap script: Postgres 16, Airflow 3.4, MLflow and the cheer counter as systemd units", True),
+       ("Google Cloud", "Terraform: a bucket, a BigQuery dataset, a keyless service account and a $1 budget", False),
+       ("Pages", "the site and its data files are copied into this domain's repository", False)])}
+<p>The pipeline shares a free 2-core Oracle VM with BayRidership and SeismicSoCal. Its five services run as
+<strong>systemd</strong> units with memory ceilings that sum to 3 GiB and a lower out-of-memory priority than the
+neighbours, so the earthquake detector always wins. Only the cheer counter is reachable from outside, through the
+VM's existing Caddy server; everything else listens on localhost and is opened through an SSH tunnel. A read-only
+health script reports every unit of all three projects, sampled twice a minute apart, without restarting anything.</p>
+<p>Everything in Google Cloud is <strong>Terraform</strong>: the raw-file bucket, the BigQuery dataset for reporting,
+a service account with no key in GitHub (Workload Identity Federation pinned to the repository) and a $1 budget alert
+as code. Tests: 278 pytest, 20 DAG tests that run inside the Airflow image, 35 Playwright browser tests and 61 dbt
+tests, plus the soak run, in which every DAG went green on the first try and the idle stack ran 20 minutes without a
+restart. Expected cost: $0.</p>
+{tip("The installer is idempotent: running it again pulls the code, re-syncs the environments and restarts the units.", prop="builder")}"""
+
+    main_html = (
+        panel("overview", "Overview", overview, num="01")
+        + panel("rents", "Rent near eight campuses", rents, num="02")
+        + panel("platform", "Data platform", platform, num="03")
+        + panel("forecast", "A gated forecast", forecast, num="04")
+        + panel("causal", "Causal study: new campus housing", causal, num="05")
+        + panel("site", "The website", site, num="06")
+        + panel("shipping", "Shipping", shipping, num="07")
+        + pager(rel, ("projects/bayridership/", "BayRidership"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
+
+    rail = (
+        rail_btns([("WWW", "Live site", live)])
+        + panel("toc-ucr", "On this page", toc([("overview", "Overview"), ("rents", "Rent by campus"),
+                                               ("platform", "Data platform"), ("forecast", "Forecast"),
+                                               ("causal", "Causal study"), ("site", "Website"),
+                                               ("shipping", "Shipping")]), body_cls="panel-body tight")
+        + panel("spec-ucr", "Spec sheet", spec([("Campuses", "8"), ("Ring ZIP codes", "50"),
+                                                 ("Sources", "7 public, monthly"), ("Warehouse", "Postgres 16"),
+                                                 ("dbt", "61 tests"), ("Forecast", "40 ZIP codes × 12 months"),
+                                                 ("Orchestration", "Airflow 3.4 · assets"),
+                                                 ("Pipeline host", "Oracle VM · systemd"),
+                                                 ("Reporting copy", "BigQuery"), ("Cost", "$0, free tiers")]),
+                body_cls="panel-body tight")
+        + panel("stack-ucr", "Stack", chips(["Python", "Airflow", "Great Expectations", "dbt", "PostgreSQL",
+                                             "LightGBM", "MLflow", "Evidently", "BigQuery", "GCS",
+                                             "Terraform", "Docker", "GitHub Actions", "systemd", "Caddy",
+                                             "Playwright", "Vanilla JS"]),
+                body_cls="panel-body tight")
+        + info("What is — a ring?",
+               "<p>The set of ZIP codes around a campus where its students rent: those within about 5 km, adjusted "
+               "by a short list of additions and removals. Every campus figure on the site is computed over its ring.</p>")
+        + info("What is — pinball loss?",
+               "<p>The score for a forecast that gives a range instead of one number. It rewards a p90 that the truth "
+               "falls under nine times in ten, and penalises a band that is too narrow or too wide.</p>")
+        + info("What is — a bounded null?",
+               "<p>A result whose interval contains zero. It doesn't prove there is no effect; it says any effect lies "
+               "inside the interval, and how wide that interval is tells you how much the study could have seen.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -2157,7 +2386,7 @@ and fixing patch length and stride for each lookback.</p>"""
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
-        + pager(rel, ("projects/bayridership/", "BayRidership"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
+        + pager(rel, ("projects/uc-campus-rent/", "UC Campus Rent"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
@@ -3366,6 +3595,9 @@ ALL = [
     {"path": "projects/bayridership", "key": "bayridership", "render": transitpulse,
      "title": "BayRidership · Braedyn Thompson",
      "description": "Bay Area transit analytics: Dagster + PySpark + dbt on BigQuery over 68M BART trips, LightGBM station forecasts 48% better than naive, a pre-registered eBART causal study, a guarded text-to-SQL agent proven in an A/B test, and a live map of every scheduled BART train."},
+    {"path": "projects/uc-campus-rent", "key": "uc-campus-rent", "render": ucrent,
+     "title": "UC Campus Rent · Braedyn Thompson",
+     "description": "Rent around eight UC campuses: an Airflow, Great Expectations and dbt pipeline on Postgres, a LightGBM forecast behind a pre-registered gate, and a causal study of new campus housing."},
     # DockWatch hidden for now (not in use); restore this entry plus the nav, home, role and pager links marked "DockWatch hidden".
     # {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,
     #  "title": "DockWatch · Braedyn Thompson",
