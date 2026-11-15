@@ -588,22 +588,22 @@ ROLES = [
      "Turn raw logs and metrics into clear charts and decisions.",
      [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
       ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
-      ("projects/transitpulse/", "TransitPulse", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules")]),
+      ("projects/bayridership/", "BayRidership", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules")]),
     ("DS", "Data Scientist", "data-scientist",
      "Design honest experiments and find out what the data can support.",
      [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
-      ("projects/transitpulse/", "TransitPulse", "pre-registered difference-in-differences with placebo intervals")]),
+      ("projects/bayridership/", "BayRidership", "pre-registered difference-in-differences with placebo intervals")]),
     ("DE", "Data Engineer", "data-engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
-      ("projects/transitpulse/", "TransitPulse", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
+      ("projects/bayridership/", "BayRidership", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
       ("projects/bearlm/", "BearLM", "ETL over PDF / Markdown / notebooks: chunked, batch-embedded with retry into Chroma, BM25 and SQLite")]),
     ("OPS", "MLOps Engineer", "mlops-engineer",
      "Make models retrain, promote and monitor themselves, with the gates written down.",
      [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
-      ("projects/transitpulse/", "TransitPulse", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
+      ("projects/bayridership/", "BayRidership", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
     ("RES", "AI / ML Researcher", "ai-ml-researcher",
      "Run rigorous experiments, find the real limits, and report them honestly.",
@@ -614,15 +614,15 @@ ROLES = [
      "Train models that beat a real baseline, then run them in production.",
      [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
-      ("projects/transitpulse/", "TransitPulse", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
+      ("projects/bayridership/", "BayRidership", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
     ("AI", "AI Engineer", "ai-engineer",
      "Ship LLM features that are grounded, measurable and hard to break.",
      [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
       ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
-      ("projects/transitpulse/", "TransitPulse", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
+      ("projects/bayridership/", "BayRidership", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
     ("AE", "Analytics Engineer", "analytics-engineer",
      "Model raw data into tested tables that every report reads the same way.",
-     [("projects/transitpulse/", "TransitPulse", "dbt on BigQuery: 17 models, 84 data tests, an SCD2 station dimension, one definition per KPI"),
+     [("projects/bayridership/", "BayRidership", "dbt on BigQuery: 17 models, 84 data tests, an SCD2 station dimension, one definition per KPI"),
       ("projects/academy-of-testers/", "Academy of Testers", "question bank kept as reviewable JSON, with an idempotent normalizer and a generated Flyway seed"),
       ("projects/bearlm/", "BearLM", "SQLite usage analytics: most-cited courses, unanswered questions, the course that needs the most help")]),
 ]
@@ -671,7 +671,7 @@ def home(ctx):
          "Live quake detection on 19 stations: CNN→Transformer + GNN, two-stage alerts, MLOps."),
         ("projects/bearlm/", "field-red", "BearLM", "fully local RAG",
          "Zero-cost cited Q&amp;A over ~10K Berkeley CS/DS chunks. recall@1 56% → 82%."),
-        ("projects/transitpulse/", "field-sky", "Transit<br>Pulse", "braedynthompson.com/transitpulse",
+        ("projects/bayridership/", "field-sky", "Bay<br>Ridership", "braedynthompson.com/bayridership",
          "68M BART trips on BigQuery, a live train map, forecasts 48% better than naive, a pre-registered causal study and a guarded SQL agent."),
         # DockWatch hidden for now:
         # ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
@@ -1472,7 +1472,7 @@ answer time of about 6 s on an 8 GB RTX 4060.</p>
         + panel("grounding", "Anti-hallucination", grounding, num="03")
         + panel("etl", "Ingestion pipeline &amp; architecture", etl, num="04")
         + panel("product", "The product", product, num="05")
-        + pager(rel, ("projects/seismicsocal/", "SeismicSoCal"), ("projects/transitpulse/", "TransitPulse")))
+        + pager(rel, ("projects/seismicsocal/", "SeismicSoCal"), ("projects/bayridership/", "BayRidership")))
 
     rail = (
         rail_btns([("GH", "Source code", ctx["github"] + "/bearlm")])
@@ -1500,9 +1500,9 @@ def transitpulse(ctx):
     rel = ctx["rel"]
     gh = ctx["github"] + "/transitpulse"
     doc = gh + "/blob/main/docs/"
-    live = rel + "transitpulse/"
+    live = rel + "bayridership/"
     h = hero(
-        "field-sky", "PROJECT 04 · DATA PLATFORM · CAUSAL INFERENCE · AI AGENT · LIVE", "Transit<br>Pulse",
+        "field-sky", "PROJECT 04 · DATA PLATFORM · CAUSAL INFERENCE · AI AGENT · LIVE", "Bay<br>Ridership",
         "A Bay Area transit analytics platform: eight years of BART and Bay Wheels ridership cleaned with PySpark, "
         "modelled with dbt on BigQuery and orchestrated by Dagster; a 14-day forecast for every station; a "
         "pre-registered causal study of the eBART extension; an analysis of the 15 stations BART may close; and an "
@@ -1519,7 +1519,7 @@ def transitpulse(ctx):
         ("+4.2%", "eBART net riders", "95% placebo interval +1.6% to +7.1%")])}
 <hr class="dotted">
 <p class="lede">How far has BART ridership come back, where is it heading next week, did the newest extension bring
-new riders, and which stations can the system least afford to close? TransitPulse answers all four from one
+new riders, and which stations can the system least afford to close? BayRidership answers all four from one
 warehouse, and lets anyone ask their own question in plain English.</p>
 <p>Public BART and Bay Wheels data lands in <strong>BigQuery</strong> through a <strong>Dagster</strong> pipeline that
 runs itself on a free Oracle VM. <strong>PySpark</strong> cleans the raw trip files, <strong>dbt</strong> models them into
@@ -1615,7 +1615,7 @@ and week fixed effects on log weekly entries.</p>
         ["Per station: Pittsburg/Bay Point · North Concord · Concord", "−40.1% · −23.1% · −4.3%", "each excludes 0"],
         ["Rest of the yellow line (spillover check)", "+0.5%", "−1.7% to +3.0%"],
         ["Whole line, net of the pre-opening trend (post-hoc)", "+1.0%", "−2.4% to +4.2%"]])}
-{image(rel, "transitpulse-event-study-weekly.png",
+{image(rel, "bayridership-event-study-weekly.png",
        " Weekly event study, 4-week bins with 95% placebo bands. The old stations drop 20% in the first month and "
        "keep sliding to about −27% after a year. The whole line sits +4–5% above the controls in the first half-year, "
        "then +1–3%; only 3 of the 23 post bins have a band that excludes 0.", label="Figure",
@@ -1625,7 +1625,7 @@ and week fixed effects on log weekly entries.</p>
         ("Placebo inference", "Treatment is reassigned to all 5,984 sets of 3 control stations. The real line is more extreme than all but 3 of them (RI p = 0.0007); the old stations beat every placebo."),
         ("Validated on synthetic data first", "A 200-simulation study checked interval coverage under null, moved and new scenarios. It caught a too-narrow corridor interval (0.84), fixed by one dated amendment before any real estimate: 0.925 after."),
         ("Robustness and falsification", "Exits instead of entries, 16 suburban-only controls and a monthly 2016–2020 series all agree in sign; a fake opening date in the pre-period finds nothing.")])}
-{image(rel, "transitpulse-event-study-monthly.png",
+{image(rel, "bayridership-event-study-monthly.png",
        " Monthly event study from BART's average-weekday workbooks, 2016–2020. Both series rise against the controls "
        "through the pre-period, from about −6% in early 2016 to 0 at the reference bin, which is the drift the "
        "post-hoc trend adjustment carries forward.", label="Figure",
@@ -1641,7 +1641,7 @@ intervals are reported too, but with 3 treated clusters they under-cover on synt
 intervals are the headline.</p>"""
 
     agent = f"""
-<p>Ask TransitPulse is a <strong>LangGraph</strong> graph: a router (keyword pre-filters for data-changing requests,
+<p>Ask BayRidership is a <strong>LangGraph</strong> graph: a router (keyword pre-filters for data-changing requests,
 prompt injection and secrets; plain data questions skip the model), SQL generation against a schema card of the mart
 tables with <strong>5 retrieved example queries</strong> and one repair retry, a forecast tool, and an answer that
 cites the SQL it ran. The page streams the steps over server-sent events (thinking → SQL → rows → answer), offers
@@ -1727,10 +1727,10 @@ Distance rule; the write-up shows both outcomes). Close calls at a rounding edge
 takes no position on the measure, cites 13 sources, and will need revisiting after the vote.</p>"""
 
     site = f"""
-{image(rel, "transitpulse-desktop.png",
+{image(rel, "bayridership-desktop.png",
        " The top of the live page at 1440 px: the hero with its live strip and departure board, the live map with "
        "trains on every line at 8:00 AM, and the what-if card that closes BART's listed stations.", label="Screenshot",
-       alt="TransitPulse desktop page: hero with a departure board, a map of the Bay Area with trains on six BART lines, and a what-if stations card")}
+       alt="BayRidership desktop page: hero with a departure board, a map of the Bay Area with trains on six BART lines, and a what-if stations card")}
 <h3>Every train, from the timetable, in the browser</h3>
 <p>The map needs no API. A build step turns BART's GTFS feed into 88 KB of JSON: 50 stations, 51 track edges with
 their lines in lane order, 11 service calendars, 34 stop patterns and 3,762 trips in minutes. For the current Pacific
@@ -1744,10 +1744,10 @@ page says so.</p>
         ("Departure board", "The six soonest arrivals anywhere, published by the map every 10 seconds, with a live strip counting trains moving now and recovery vs 2019."),
         ("Trends and forecast", "KPI tiles with ⓘ definitions, ridership since 2019 and bikes vs trains as a share of 2019 with crosshair readouts, and a station picker (combobox, or tap the map) for the 14-day forecast and its band."),
         ("Findings and closures", "The eBART verdict with hedged wording per outcome and two event-study charts, every number read from the study's JSON; one card per at-risk station with a verdict pill, never green or red.")])}
-{image(rel, "transitpulse-phone.png",
+{image(rel, "bayridership-phone.png",
        " The live map band at 390 px: a 1:1 map, nine hub labels, controls stacked under it. Sizing is fluid from "
        "320 px phones to 2560 px screens, and the whole page has a dark mode.", label="Screenshot",
-       alt="TransitPulse on a phone: the BART map with trains and the time controls below it", phone=True)}
+       alt="BayRidership on a phone: the BART map with trains and the time controls below it", phone=True)}
 <p>Vanilla ES modules, no framework, design tokens that mirror a versioned design document, and a style guide page
 that renders every token and component in both themes. axe finds 0 contrast violations in light and dark mode at 390
 and 1440 px; Lighthouse mobile scores 98 / 100 / 100 (performance / accessibility / best practices, LCP 2.3 s, CLS 0).
@@ -1781,7 +1781,7 @@ from committed inputs. Expected cost: $0.</p>
         + panel("platform", "Data platform", platform, num="02")
         + panel("forecast", "Station forecasts", forecast, num="03")
         + panel("causal", "Causal study: eBART", causal, num="04")
-        + panel("agent", "Ask TransitPulse: a guarded text-to-SQL agent", agent, num="05")
+        + panel("agent", "Ask BayRidership: a guarded text-to-SQL agent", agent, num="05")
         + panel("closures", "Which stations can BART afford to close?", closures, num="06")
         + panel("site", "The website", site, num="07")
         + panel("shipping", "Shipping", shipping, num="08")
@@ -1930,7 +1930,7 @@ off, so a flaky test shows up red.</p>"""
         + panel("stream", "Streaming into Iceberg", stream, num="02")
         + panel("cdc", "Change data capture", cdc, num="03")
         + panel("ops", "Orchestration &amp; the site", ops, num="04")
-        + pager(rel, ("projects/transitpulse/", "TransitPulse"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
+        + pager(rel, ("projects/bayridership/", "BayRidership"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
 
     rail = (
         rail_btns([("GH", "Source code", gh)])
@@ -2157,7 +2157,7 @@ and fixing patch length and stride for each lookback.</p>"""
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
-        + pager(rel, ("projects/transitpulse/", "TransitPulse"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
+        + pager(rel, ("projects/bayridership/", "BayRidership"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
@@ -2603,7 +2603,7 @@ has never seen, and an honest write-up of the limits.</p>
 <ul>
 <li><strong>Baselines and held-out tests</strong>: every <a href="{rel}projects/seismicsocal/">SeismicSoCal</a> claim sits next to a
 classical baseline, a confidence interval and a replay of real days.</li>
-<li><strong>Pre-registration</strong>: the <a href="{rel}projects/transitpulse/">TransitPulse</a> causal study and the agent A/B test were
+<li><strong>Pre-registration</strong>: the <a href="{rel}projects/bayridership/">BayRidership</a> causal study and the agent A/B test were
 written down before any result was seen.</li>
 <li><strong>Knowing when the answer is a ceiling</strong>: at <a href="{rel}experience/cbu-research/">CBU</a> the useful result was that the
 data, not the model, was the limit.</li>
@@ -2640,7 +2640,7 @@ data, not the model, was the limit.</li>
 
 WORK = {"academy-of-testers": ("projects/academy-of-testers/", "Academy of Testers"),
         "seismicsocal": ("projects/seismicsocal/", "SeismicSoCal"), "bearlm": ("projects/bearlm/", "BearLM"),
-        "transitpulse": ("projects/transitpulse/", "TransitPulse"),
+        "bayridership": ("projects/bayridership/", "BayRidership"),
         "lawrence-berkeley-lab": ("experience/lawrence-berkeley-lab/", "Berkeley Lab"),
         "cbu-research": ("experience/cbu-research/", "CBU Research"), "numistoken": ("experience/numistoken/", "NumIsToken"),
         "kigumi-group": ("experience/kigumi-group/", "Kigumi Group"), "aperiohub": ("experience/aperiohub/", "AperioHub")}
@@ -2664,18 +2664,18 @@ ROLE_PAGES = {
         "description": "Data analyst work across my projects and internships: dbt KPI marts, exploratory analysis, "
                        "forecasts checked against baselines, A/B tests, causal inference and error analysis.",
         "skills": [
-            ("SQL and data modelling", ["transitpulse"], "17 dbt models on BigQuery: a star schema, an SCD2 station dimension and KPI marts"),
-            ("Cleaning and KPI definitions", ["transitpulse"], "every dropped row gets one reason and an audit; each KPI is computed once"),
+            ("SQL and data modelling", ["bayridership"], "17 dbt models on BigQuery: a star schema, an SCD2 station dimension and KPI marts"),
+            ("Cleaning and KPI definitions", ["bayridership"], "every dropped row gets one reason and an audit; each KPI is computed once"),
             ("Exploratory analysis", ["lawrence-berkeley-lab"], "Pandas EDA that found right-skewed peaks, change-points, and calm vs. erratic eras"),
-            ("Forecasting against baselines", ["lawrence-berkeley-lab", "transitpulse"], "persistence beaten on every variable; station MAE 48% below seasonal naive"),
-            ("Experiments and A/B tests", ["transitpulse", "academy-of-testers"], "a pre-registered A/B test with McNemar's test; an essay grader A/B-tested against official scores"),
+            ("Forecasting against baselines", ["lawrence-berkeley-lab", "bayridership"], "persistence beaten on every variable; station MAE 48% below seasonal naive"),
+            ("Experiments and A/B tests", ["bayridership", "academy-of-testers"], "a pre-registered A/B test with McNemar's test; an essay grader A/B-tested against official scores"),
             ("Rare-event error analysis", ["seismicsocal"], "precision next to a chance baseline; every missed M3+ quake sorted by cause"),
             ("Diagnosing a data limit", ["cbu-research"], "a paired clean-vs-noisy comparison that showed a data ceiling, not a model one"),
             ("Building a gold-label benchmark", ["bearlm"], "questions written from real chunks, each with an exact answer key"),
             ("Measuring a fix", ["numistoken", "kigumi-group"], "load time ~2–3 s → ~300 ms; coverage 90% → 98%"),
             ("Teaching the method", ["aperiohub"], "baselines, held-out data and leakage checks, taught one to one")],
         "work": [
-            ("transitpulse", "warehouse, KPIs and decisions",
+            ("bayridership", "warehouse, KPIs and decisions",
              _TP + " Eight years of BART and Bay Wheels ridership sit in one BigQuery warehouse, and the questions it answers "
              "are an analyst's: how far has ridership come back, did a new extension add riders, and which stations can BART "
              "least afford to close?",
@@ -2804,16 +2804,16 @@ ROLE_PAGES = {
         "description": "Data science across my projects and internships: pre-registered causal studies and A/B tests, "
                        "forecasts with honest uncertainty, leak-free validation and hypothesis tests.",
         "skills": [
-            ("Causal inference", ["transitpulse"], "pre-registered difference-in-differences against 34 control stations, with placebo intervals"),
-            ("A/B testing and power", ["transitpulse"], "a power analysis before arm B ran; exact McNemar p = 0.004"),
-            ("Forecast uncertainty", ["transitpulse"], "quantile LightGBM with a split-conformal band; 73% coverage reported against an 80% target"),
+            ("Causal inference", ["bayridership"], "pre-registered difference-in-differences against 34 control stations, with placebo intervals"),
+            ("A/B testing and power", ["bayridership"], "a power analysis before arm B ran; exact McNemar p = 0.004"),
+            ("Forecast uncertainty", ["bayridership"], "quantile LightGBM with a split-conformal band; 73% coverage reported against an 80% target"),
             ("Validation without leakage", ["lawrence-berkeley-lab", "seismicsocal"], "rolling-origin CV; chronological splits; thresholds frozen on validation days"),
             ("Hypothesis testing", ["lawrence-berkeley-lab"], "two explanations for missed peaks (five losses, percentile forecasts), both rejected"),
             ("Identifiability", ["cbu-research"], "a paired clean-vs-noisy design and a noise sweep"),
             ("Confidence intervals", ["seismicsocal"], "event-clustered bootstrap; a 10-seed study separates seed from sampling variance"),
             ("Probabilistic models", ["academy-of-testers"], "BKT + IRT over 8 skills; the essay grader scored by QWK")],
         "work": [
-            ("transitpulse", "causal study, A/B test, forecasts",
+            ("bayridership", "causal study, A/B test, forecasts",
              _TP + " Three of its questions needed real statistics: did the eBART extension bring new riders, do retrieved "
              "examples make the SQL agent better, and how sure is a two-week forecast?",
              [("+4.2%", "eBART net riders", "placebo interval +1.6% to +7.1%"),
@@ -2902,16 +2902,16 @@ ROLE_PAGES = {
         "description": "Data engineering across my projects: a Dagster, PySpark and dbt pipeline into BigQuery, a live "
                        "seismic streaming pipeline, and an ETL that feeds hybrid search.",
         "skills": [
-            ("Orchestration", ["transitpulse"], "Dagster assets with lineage, sensors and schedules on a shared free VM"),
-            ("Batch cleaning", ["transitpulse"], "PySpark with an explicit schema: every dropped row gets a reason, plus an audit of rows in and out"),
-            ("Data modelling", ["transitpulse"], "dbt from staging to an SCD2 station snapshot, facts, dimensions and KPI marts"),
-            ("Data quality", ["transitpulse", "seismicsocal"], "84 dbt data tests on every build; a live quality gate that rejects gap-fill zeros, stuck runs and clipping"),
-            ("Warehouse cost control", ["transitpulse"], "facts partitioned by date and clustered by station, with a bytes-billed cap per query"),
+            ("Orchestration", ["bayridership"], "Dagster assets with lineage, sensors and schedules on a shared free VM"),
+            ("Batch cleaning", ["bayridership"], "PySpark with an explicit schema: every dropped row gets a reason, plus an audit of rows in and out"),
+            ("Data modelling", ["bayridership"], "dbt from staging to an SCD2 station snapshot, facts, dimensions and KPI marts"),
+            ("Data quality", ["bayridership", "seismicsocal"], "84 dbt data tests on every build; a live quality gate that rejects gap-fill zeros, stuck runs and clipping"),
+            ("Warehouse cost control", ["bayridership"], "facts partitioned by date and clustered by station, with a bytes-billed cap per query"),
             ("Streaming ingestion", ["seismicsocal"], "19 SeedLink streams in 300 s rolling buffers, processed on waveform time"),
             ("ETL with retries", ["bearlm"], "batched embedding with retry and exponential backoff into Chroma, BM25 and SQLite"),
-            ("Infrastructure as code", ["transitpulse"], "Terraform for every GCP resource; CI is the only thing that can deploy")],
+            ("Infrastructure as code", ["bayridership"], "Terraform for every GCP resource; CI is the only thing that can deploy")],
         "work": [
-            ("transitpulse", "a batch pipeline into BigQuery",
+            ("bayridership", "a batch pipeline into BigQuery",
              _TP + " Public BART and Bay Wheels data lands in BigQuery through a Dagster pipeline that runs itself on a free "
              "Oracle VM.",
              [("67.8M", "BART trip rows", "hourly origin-destination, 2018–2025"), ("26.0M", "Bay Wheels trips", "two source schemas"),
@@ -2959,11 +2959,11 @@ ROLE_PAGES = {
         "skills": [
             ("Tracking and registry", ["seismicsocal"], "MLflow runs carry the commit, data hash and seeds; the @champion alias marks the live model"),
             ("Gated promotion", ["seismicsocal"], "six statistical and replay rules; a rule that can't run is logged SKIPPED, never a silent pass"),
-            ("Scheduled retraining", ["seismicsocal", "transitpulse"], "a Dagster retrain job; LightGBM retrains every Monday and writes a run log"),
+            ("Scheduled retraining", ["seismicsocal", "bayridership"], "a Dagster retrain job; LightGBM retrains every Monday and writes a run log"),
             ("Drift monitoring", ["seismicsocal"], "a daily Evidently check per station, with an email after two drifting days"),
-            ("CI/CD", ["seismicsocal", "transitpulse"], "GitHub Actions on every change; keyless Workload Identity Federation to Cloud Run"),
-            ("Infrastructure as code", ["transitpulse"], "Terraform for every GCP resource, budget alerts included"),
-            ("Load and smoke tests", ["transitpulse"], "an image smoke-tested before it's pushed; Locust p95s under load"),
+            ("CI/CD", ["seismicsocal", "bayridership"], "GitHub Actions on every change; keyless Workload Identity Federation to Cloud Run"),
+            ("Infrastructure as code", ["bayridership"], "Terraform for every GCP resource, budget alerts included"),
+            ("Load and smoke tests", ["bayridership"], "an image smoke-tested before it's pushed; Locust p95s under load"),
             ("Selection protocol", ["lawrence-berkeley-lab"], "rolling-origin CV; the test window never picks the model")],
         "work": [
             ("seismicsocal", "QuakeOps: models that maintain themselves",
@@ -2984,7 +2984,7 @@ ROLE_PAGES = {
               "live data clearly beats chance.",
               "Where it stands: the registry, daily pull, drift logging and CI/CD deploys are live, and the gate "
               "passed a dry run (champion vs. itself). The first monthly retrain hasn't run yet."]),
-            ("transitpulse", "shipping and retraining on GCP",
+            ("bayridership", "shipping and retraining on GCP",
              _TP + " Its API and agent run on Cloud Run, its station forecasts retrain every week, and everything in GCP is code.",
              [("119<small>MB</small>", "Container image", "non-root, smoke-tested"),
               ("4.4 s", "Cold start to first byte", "warm 0.09–0.17 s"), ("140 ms", "Ask p95 at 25 users", "Locust, LLM mocked")],
@@ -3024,7 +3024,7 @@ ROLE_PAGES = {
             ("Ablations", ["seismicsocal"], "nearest-station ablation: magnitude R² 0.951 → 0.808"),
             ("Hypothesis tests on failure modes", ["lawrence-berkeley-lab"], "five losses and percentile forecasts, both rejected"),
             ("Variance vs. luck", ["seismicsocal", "lawrence-berkeley-lab"], "a 10-seed study; seed re-runs of the chosen lookback"),
-            ("Pre-registration", ["transitpulse"], "design hashed before any result; a 200-simulation check"),
+            ("Pre-registration", ["bayridership"], "design hashed before any result; a 200-simulation check"),
             ("Time-series Transformers", ["lawrence-berkeley-lab"], "PatchTST: patches as tokens, RevIN, channel independence"),
             ("Mentoring research", ["aperiohub"], "one-to-one research that ends in a defensible result")],
         "work": [
@@ -3073,7 +3073,7 @@ ROLE_PAGES = {
               "Ran a 10-seed study: ensembling added +0.003, inside the sampling CI, so the live system keeps 5 seeds.",
               "Made a replay the acceptance test, with thresholds frozen on validation days and test days scored once. Swarm "
               "tuning followed a rule fixed in advance and raised M3+ catch from 71% to 78%."]),
-            ("transitpulse", "pre-registered studies",
+            ("bayridership", "pre-registered studies",
              _TP + " It includes a causal study of the eBART extension and an A/B test of its SQL agent, both written down "
              "before any result was seen.",
              [("+4.2%", "Pre-registered effect", "placebo interval +1.6% to +7.1%"),
@@ -3113,8 +3113,8 @@ ROLE_PAGES = {
         "skills": [
             ("Deep learning", ["seismicsocal"], "a CNN → Transformer detector and a CNN → GNN → Transformer sizer"),
             ("Training for live conditions", ["seismicsocal"], "live-noise hard negatives; epicentre, pick and station-drop jitter"),
-            ("Forecasting at scale", ["transitpulse"], "one global LightGBM per quantile, 50 stations, 1 to 14 days ahead"),
-            ("Calibration", ["transitpulse"], "a split-conformal band whose label changes only when a back-test earns it"),
+            ("Forecasting at scale", ["bayridership"], "one global LightGBM per quantile, 50 stations, 1 to 14 days ahead"),
+            ("Calibration", ["bayridership"], "a split-conformal band whose label changes only when a back-test earns it"),
             ("Time-series Transformers", ["lawrence-berkeley-lab"], "PatchTST in NeuralForecast, lookback chosen by rolling CV"),
             ("ML in a product", ["academy-of-testers"], "a BKT + IRT engine as pure functions behind Spring Boot"),
             ("Testing ML code", ["academy-of-testers", "seismicsocal"], "36 JUnit tests; pytest and a daemon selftest in CI"),
@@ -3134,7 +3134,7 @@ ROLE_PAGES = {
               "<code>pipeline.py</code> runs live and in replay, and checkpoints carry their normalisers and station list.",
               "Put promotion behind QuakeOps: a retrained model goes live only through MLflow tracking and a six-rule "
               "statistical + replay gate."]),
-            ("transitpulse", "global quantile forecasts, retrained weekly",
+            ("bayridership", "global quantile forecasts, retrained weekly",
              _TP + " Its forecast covers every BART station two weeks out, with a band that says how often it holds.",
              [("48<small>%</small>", "Lower MAE than seasonal naive", "283 vs 549"), ("14", "Days ahead", "all 50 stations"),
               ("73<small>%</small>", "Band coverage", "against an 80% target")],
@@ -3183,9 +3183,9 @@ ROLE_PAGES = {
             ("Hybrid retrieval", ["bearlm"], "BM25 + dense vectors, Reciprocal Rank Fusion, a cross-encoder reranker"),
             ("Grounding and refusals", ["bearlm", "academy-of-testers"], "a confidence gate and an exact refusal string; Testy's similarity cutoff"),
             ("Retrieval and answer evaluation", ["bearlm"], "a gold-label benchmark, recall@1 0.56 → 0.82; RAGAS faithfulness 0.55 → 0.83"),
-            ("Agents with tools", ["transitpulse"], "a LangGraph router, SQL generation with retrieved examples, a forecast tool"),
-            ("Guardrails", ["transitpulse"], "sqlglot AST checks, a read-only identity, dry runs, byte budgets"),
-            ("A/B testing an LLM feature", ["transitpulse"], "execution accuracy 27% → 50%, McNemar p = 0.004"),
+            ("Agents with tools", ["bayridership"], "a LangGraph router, SQL generation with retrieved examples, a forecast tool"),
+            ("Guardrails", ["bayridership"], "sqlglot AST checks, a read-only identity, dry runs, byte budgets"),
+            ("A/B testing an LLM feature", ["bayridership"], "execution accuracy 27% → 50%, McNemar p = 0.004"),
             ("RAG in production", ["academy-of-testers"], "score-band retrieval over Postgres vectors, GPT-4o at temperature 0, constrained JSON"),
             ("Reliable model calls", ["kigumi-group"], "two failure classes fixed; integration tests on the real request path")],
         "work": [
@@ -3204,8 +3204,8 @@ ROLE_PAGES = {
               "course corpus only for the courses you tick.",
               "Stated the evaluation's limits: the RAGAS runs are small (n = 6) with a local judge, so the 50-question "
               "retrieval ablation is the stronger evidence."]),
-            ("transitpulse", "a guarded text-to-SQL agent",
-             _TP + " Ask TransitPulse lets anyone question its warehouse in plain English: a LangGraph agent writes the SQL, "
+            ("bayridership", "a guarded text-to-SQL agent",
+             _TP + " Ask BayRidership lets anyone question its warehouse in plain English: a LangGraph agent writes the SQL, "
              "and layers of guardrails decide whether it runs.",
              [("27 → 50%", "Execution accuracy", "66 gold-SQL questions"), ("10/10", "Off-topic questions refused", "both arms"),
               ("1 GB", "Dry-run cap per query", "read-only identity")],
@@ -3259,16 +3259,16 @@ ROLE_PAGES = {
         "description": "Analytics engineering across my projects: layered dbt models with data tests and one definition per "
                        "KPI, the same SQL on BigQuery and DuckDB, and source-of-truth data kept reviewable.",
         "skills": [
-            ("Layered dbt models", ["transitpulse"], "staging → SCD2 snapshot → dimensions and facts → KPI marts"),
-            ("Data tests", ["transitpulse"], "84 tests, including a singular test that every staged trip date reaches the hourly fact"),
-            ("Metric definitions", ["transitpulse"], "one definition per KPI, read by both the site and the agent"),
-            ("Incremental models", ["transitpulse"], "the hourly fact re-processes the last 35 days plus any unloaded date"),
-            ("Seeds and stated rules", ["transitpulse"], "the closure list in one dbt seed; four rules stated once and shown as text"),
-            ("Portable, cost-aware SQL", ["transitpulse"], "the same models on DuckDB and BigQuery; partitioned, clustered, bytes capped"),
+            ("Layered dbt models", ["bayridership"], "staging → SCD2 snapshot → dimensions and facts → KPI marts"),
+            ("Data tests", ["bayridership"], "84 tests, including a singular test that every staged trip date reaches the hourly fact"),
+            ("Metric definitions", ["bayridership"], "one definition per KPI, read by both the site and the agent"),
+            ("Incremental models", ["bayridership"], "the hourly fact re-processes the last 35 days plus any unloaded date"),
+            ("Seeds and stated rules", ["bayridership"], "the closure list in one dbt seed; four rules stated once and shown as text"),
+            ("Portable, cost-aware SQL", ["bayridership"], "the same models on DuckDB and BigQuery; partitioned, clustered, bytes capped"),
             ("Source-of-truth data", ["academy-of-testers"], "a reviewable JSON bank, an idempotent normalizer, a generated Flyway seed"),
             ("Usage analytics", ["bearlm"], "a SQLite log of questions, cited courses and unanswered questions")],
         "work": [
-            ("transitpulse", "dbt models with one definition per KPI",
+            ("bayridership", "dbt models with one definition per KPI",
              _TP + " Its KPIs are defined once in dbt models on BigQuery, and both the site and its SQL agent read those columns.",
              [("17", "dbt models", "staging to KPI marts"), ("84", "Data tests", "run on every build"),
               ("0.43", "Weekday recovery vs 2019", "matched by ISO week"),
@@ -3363,8 +3363,8 @@ ALL = [
     {"path": "projects/bearlm", "key": "bearlm", "render": bearlm,
      "title": "BearLM · Braedyn Thompson",
      "description": "Fully local hybrid-search RAG over Berkeley CS/DS courses: recall@1 56% to 82%, RAGAS faithfulness 0.55 to 0.83."},
-    {"path": "projects/transitpulse", "key": "transitpulse", "render": transitpulse,
-     "title": "TransitPulse · Braedyn Thompson",
+    {"path": "projects/bayridership", "key": "bayridership", "render": transitpulse,
+     "title": "BayRidership · Braedyn Thompson",
      "description": "Bay Area transit analytics: Dagster + PySpark + dbt on BigQuery over 68M BART trips, LightGBM station forecasts 48% better than naive, a pre-registered eBART causal study, a guarded text-to-SQL agent proven in an A/B test, and a live map of every scheduled BART train."},
     # DockWatch hidden for now (not in use); restore this entry plus the nav, home, role and pager links marked "DockWatch hidden".
     # {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,

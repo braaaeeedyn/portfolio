@@ -38,7 +38,7 @@ PROJECTS = [
     ("academy-of-testers", "Academy of Testers"),
     ("seismicsocal", "SeismicSoCal"),
     ("bearlm", "BearLM"),
-    ("transitpulse", "TransitPulse"),
+    ("bayridership", "BayRidership"),
     # ("dockwatch", "DockWatch"),  # hidden for now; see the DockWatch notes in pages.py
 ]
 EXPERIENCE = [
