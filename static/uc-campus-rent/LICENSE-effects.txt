@@ -1,0 +1,14 @@
+The home page's hero background, web/js/fx/gradient-ascii.js, is a plain-JavaScript port of the React component
+Gradient ASCII from React Bits (https://reactbits.dev/backgrounds/gradient-ascii), which the project's owner
+supplied on 2026-11-14. Its shaders and drawing code are the component's own; only the React wrapper was removed.
+
+React Bits is Copyright (c) 2026 David Haz, under the "MIT + Commons Clause License Condition v1.0"
+(https://github.com/DavidHDev/react-bits/blob/main/LICENSE.md, read 2026-11-15). It allows using the components,
+ported ones included, as part of a website, also commercially. It does not allow selling, sublicensing or
+redistributing the components themselves, on their own or as a ported version. So the port is served as part of
+this site and kept in this private repository; don't publish the file on its own or in a public component
+collection.
+
+web/js/glide.js (the face-off's two menus) is written for this project, but after the design and behaviour of
+another React component the owner supplied the same day, GlideSelect. None of that component's code is in it. The
+owner has not yet recorded where GlideSelect comes from.

@@ -1,0 +1,21 @@
+The campus logos in img/
+
+Each file is a text logo downloaded from Wikimedia Commons (upload.wikimedia.org) on 2026-11-12 or 2026-11-13.
+Commons lists each as in the public domain because it consists only of simple shapes and text (its
+"PD-textlogo" tag). The loop that built this site did not re-read the Commons file pages; the names and the tag
+are recorded here as the project's maintainer gave them.
+
+  berkeley.svg       "University of California, Berkeley logo.svg"
+  davis.svg          "UC Davis wordmark.svg"
+  irvine.svg         "University of California, Irvine logo.svg"
+  merced.svg         "UC Merced logo.svg"
+  riverside.svg      "UC Riverside logo.svg"
+  san_diego.svg      "University of California, San Diego logo.svg"
+  santa_barbara.svg  "UC Santa Barbara logo.svg"
+  ucla.svg           "University of California, Los Angeles logo.svg"
+
+A file page is https://commons.wikimedia.org/wiki/File: followed by the name, with spaces as underscores.
+
+Public domain is about copyright only. The names and logos are trademarks of The Regents of the University of
+California. This site is not affiliated with, sponsored by or endorsed by the University of California or any of
+its campuses; the logos are shown only to say which campus a page is about.

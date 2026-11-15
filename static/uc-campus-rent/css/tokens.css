@@ -1,0 +1,206 @@
+/* Design tokens — a 1:1 transcription of the DESIGN.md v1.0 front matter.
+   Everything else in the CSS uses these variables; no raw colours or sizes outside this file. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-700.woff2") format("woff2");
+}
+:root {
+  color-scheme: light;
+
+  /* --- colours: interface ------------------------------------------------ */
+  --color-ink: #000000;
+  --color-on-ink: #ffffff;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #efefef;
+  --color-canvas-softer: #f6f6f6;
+  --color-hairline: #e2e2e2;
+  --color-pressed: #e2e2e2;
+  --color-ink-elevated: #282828;
+  --color-body: #5e5e5e;
+  --color-mute: #767676;
+  --color-mute-on-ink: #a3a3a3;
+  --color-error: #c62828;
+  --color-focus: #000000;
+
+  /* --- colours: data (maps, trains, charts, legends only) ----------------- */
+  --line-yellow: #ffd200;
+  --line-orange: #f7941d;
+  --line-red: #ed1c24;
+  --line-green: #4db848;
+  --line-blue: #00a6e9;
+  --line-beige: #b5a97b;
+  --line-casing: rgba(0, 0, 0, 0.25);
+  --map-water: #e3ecf3; /* a slight blue tint: reads as water against the white land */
+  --map-land: #ffffff;
+  --map-shoreline: #a3a3a3; /* light mode: dark enough to read the coast against #efefef water */
+  --seq-0: #f3f3f3;
+  --seq-1: #d4d4d4;
+  --seq-2: #a3a3a3;
+  --seq-3: #6b6b6b;
+  --seq-4: #2e2e2e;
+  --seq-5: #000000;
+  --series-primary: #000000;
+  --series-secondary: #8a8a8a;
+  --interval-fill: rgba(0, 0, 0, 0.16); /* light: 0.08 was too faint to see on a white card */
+  --gridline: #ececec;
+
+  /* --- typography -------------------------------------------------------- */
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  --type-display-xxl: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
+  --type-display-xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  --type-display-lg: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --type-display-md: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --type-display-sm: 1.25rem;
+  --type-stat: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+  --type-body-lg: 1.125rem;
+  --type-body-md: 1rem;
+  --type-body-sm: 0.875rem;
+  --type-caption: 0.75rem;
+  --type-eyebrow: 0.75rem;
+  --type-button: 1rem;
+  --type-code: 0.875rem;
+  --type-map-label: clamp(0.6875rem, 0.6rem + 0.3vw, 0.8125rem);
+
+  --lh-display-xxl: 1.2;
+  --lh-display-xl: 1.22;
+  --lh-display-lg: 1.25;
+  --lh-display-md: 1.33;
+  --lh-display-sm: 1.4;
+  --lh-stat: 1.1;
+  --lh-body: 1.5;
+  --lh-body-sm: 1.43;
+  --lh-caption: 1.33;
+  --lh-tight: 1.25;
+  --lh-code: 1.6;
+
+  --tracking-display: -0.02em;
+  --tracking-display-sm: -0.01em;
+  --tracking-eyebrow: 0.06em;
+
+  /* --- radii ------------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-xl: 16px;
+  --radius-pill-tab: 36px;
+  --radius-pill: 999px;
+
+  /* --- spacing (4 px base, in rem so it grows with the root size on large screens; 1rem = 16px up to ~1500px) -- */
+  --space-xxs: 0.25rem;
+  --space-xs: 0.375rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.25rem;
+  --space-2xl: 1.5rem;
+  --space-3xl: 2rem;
+  --space-4xl: 3rem;
+  --space-5xl: 4rem;
+  --space-gutter: clamp(1rem, 4vw, 2rem);
+  --space-section: clamp(3rem, 6vw, 6rem);
+  --space-card: clamp(1rem, 2.5vw, 1.5rem);
+  --space-card-ink: clamp(1.5rem, 4vw, 3rem);
+  --space-grid: clamp(0.75rem, 2vw, 1.5rem);
+
+  /* --- layout ------------------------------------------------------------ */
+  --container: 75rem; /* 1200px at 16px; ~1500px on a 2560px screen */
+  --touch-target: 2.75rem;
+  --nav-height: 4rem;
+  --measure: 68ch;
+
+  /* --- elevation --------------------------------------------------------- */
+  --shadow-0: none;
+  --shadow-1: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.16);
+  --shadow-3: 0 2px 8px rgba(0, 0, 0, 0.16);
+
+  /* --- motion ------------------------------------------------------------ */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* --- map (DESIGN.md §6) ------------------------------------------------ */
+  --map-line-width: 3px;
+  --map-lane-gap: 1px;
+  --map-station-radius: 3px;
+  --map-station-stroke: 2px;
+  --map-hit-radius: 22px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --map-line-width: 4px;
+    --map-station-radius: 4px;
+  }
+}
+
+@media (pointer: fine) {
+  :root {
+    --map-hit-radius: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}
+
+/* --- dark mode: the same roles, inverted (data colours stay; the map's water and land swap) ------------------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink: #ffffff;
+  --color-on-ink: #0d0d0d;
+  --color-canvas: #0d0d0d;
+  --color-canvas-soft: #1c1c1c;
+  --color-canvas-softer: #151515;
+  --color-hairline: #2a2a2a;
+  --color-pressed: #2e2e2e;
+  --color-ink-elevated: #e4e4e4;
+  --color-body: #b4b4b4; /* 9.6:1 on canvas */
+  --color-mute: #9b9b9b; /* 6.9:1 on canvas */
+  --color-mute-on-ink: #6b6b6b; /* 5.3:1 on ink (white) */
+  --color-error: #ff7070;
+  --color-focus: #ffffff;
+  --line-casing: rgba(255, 255, 255, 0.3);
+  --map-water: #121b24;
+  --map-land: #0d0d0d;
+  --map-shoreline: #3a3a3a;
+  --seq-0: #1c1c1c;
+  --seq-1: #3a3a3a;
+  --seq-2: #6b6b6b;
+  --seq-3: #9b9b9b;
+  --seq-4: #d4d4d4;
+  --seq-5: #ffffff;
+  --series-primary: #ffffff;
+  --series-secondary: #9b9b9b;
+  --interval-fill: rgba(255, 255, 255, 0.12);
+  --gridline: #262626;
+  --shadow-1: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-3: 0 2px 8px rgba(0, 0, 0, 0.6);
+}

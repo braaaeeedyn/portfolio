@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>A campus | UC Campus Rent</title>
+    <meta name="description" content="What rent costs around a UC campus, explained step by step, with a 12-month forecast." />
+    <link rel="preload" href="fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script type="module" src="js/campus.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <header class="top">
+      <div class="wrap top__in">
+        <a class="brand" href="./">UC Campus Rent</a>
+        <nav class="nav" aria-label="Campuses"><ul data-nav></ul></nav>
+      </div>
+      <div class="progress" data-progress aria-hidden="true"></div>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero__in">
+          <div class="intro">
+            <p class="eyebrow" data-eyebrow hidden></p>
+            <h1 data-title>Rent around a UC campus</h1>
+            <p class="lede" data-lede></p>
+            <div data-status role="status"></div>
+            <div class="herostat" data-hero hidden>
+              <span class="herostat__value"><span data-hero-rent></span> <small>a month</small></span>
+              <span class="herostat__sub" data-hero-sub></span>
+            </div>
+            <a class="scrollcue" href="#story" data-cue hidden>Start with the price</a>
+          </div>
+          <div class="mascotbox" data-mascotbox hidden>
+            <button class="mascot" type="button" data-mascot aria-label="Cheer for the campus"></button>
+            <p class="tally" data-cheer aria-live="polite">Click to cheer</p>
+          </div>
+        </div>
+      </section>
+
+      <div id="story" data-story hidden>
+        <section class="chapter" data-ch="price" hidden>
+          <div class="wrap chapter__in chapter__in--split">
+            <div class="chapter__text reveal" data-text></div>
+            <div class="chapter__viz reveal" data-viz></div>
+          </div>
+        </section>
+
+        <section class="chapter" data-ch="trend" data-rent hidden>
+          <div class="wrap chapter__in">
+            <div class="chapter__text reveal" data-text></div>
+            <div class="panel reveal">
+              <div class="controls">
+                <div class="seg" role="group" aria-label="How far back the chart goes" data-range>
+                  <button type="button" data-months="" aria-pressed="true">All years</button>
+                  <button type="button" data-months="60" aria-pressed="false">5 years</button>
+                  <button type="button" data-months="24" aria-pressed="false">2 years</button>
+                </div>
+                <button class="toggle" type="button" data-forecast aria-pressed="true" hidden>Forecast</button>
+              </div>
+              <ul class="legend" data-legend></ul>
+              <div
+                class="chart"
+                data-chart
+                tabindex="0"
+                role="group"
+                aria-label="Rent by month. Hover or tap for a month's values, or use the left and right arrow keys."
+              >
+                <div data-svg></div>
+                <div class="tooltip" data-tooltip aria-live="polite" hidden></div>
+              </div>
+              <p class="note" data-band-note></p>
+              <details>
+                <summary>See every number behind the chart</summary>
+                <div class="table-wrap" tabindex="0" role="region" aria-label="Rent by month">
+                  <table data-table></table>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" data-ch="fair" hidden>
+          <div class="wrap chapter__in chapter__in--split">
+            <div class="chapter__text reveal" data-text></div>
+            <div class="chapter__viz reveal" data-viz></div>
+          </div>
+        </section>
+
+        <section class="chapter" data-ch="afford" hidden>
+          <div class="wrap chapter__in chapter__in--split">
+            <div class="chapter__text reveal" data-text></div>
+            <div class="chapter__viz reveal" data-viz></div>
+          </div>
+        </section>
+
+        <section class="chapter" data-ch="supply" hidden>
+          <div class="wrap chapter__in chapter__in--split">
+            <div class="chapter__text reveal" data-text></div>
+            <div class="chapter__viz reveal" data-viz></div>
+          </div>
+        </section>
+
+        <section class="chapter" data-ch="openings" data-openings-panel hidden>
+          <div class="wrap chapter__in">
+            <div class="chapter__text reveal" data-text></div>
+            <ul class="openings reveal" data-openings></ul>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="wrap foot" data-foot hidden>
+      <p><strong>Where the numbers come from</strong></p>
+      <ul data-credits aria-label="Data sources"></ul>
+      <p data-generated></p>
+      <p data-affiliation>
+        UC Campus Rent is an independent project. It is not affiliated with, endorsed by or sponsored by the University
+        of California. Campus names and logos are trademarks of The Regents of the University of California.
+      </p>
+    </footer>
+  </body>
+</html>

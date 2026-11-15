@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>UC Campus Rent</title>
+    <meta
+      name="description"
+      content="What it costs to rent near eight University of California campuses, from UC Berkeley to UCLA, explained step by step, with a 12-month forecast."
+    />
+    <link rel="preload" href="fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script type="module" src="js/home.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <header class="top">
+      <div class="wrap top__in">
+        <a class="brand" href="./">UC Campus Rent</a>
+      </div>
+      <div class="progress" data-progress aria-hidden="true"></div>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero__in">
+          <div class="intro">
+            <p class="eyebrow">Eight campuses, one question</p>
+            <h1>What does it cost to live near a UC campus?</h1>
+            <p class="lede">
+              Thousands of students show up every fall needing a bed, so rent near a campus plays by its own rules.
+              Here's what it costs around eight UC campuses, explained in plain language.
+            </p>
+            <div data-status role="status"></div>
+          </div>
+          <div data-hero-dog></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-ch="pick">
+        <div class="wrap chapter__in">
+          <div class="chapter__text">
+            <p class="kicker"><span class="kicker__n">1</span>Pick a campus</p>
+            <h2>Typical rent near each one, priciest first</h2>
+            <p data-compare-text></p>
+            <p>
+              Systemwide tuition is the same at every UC campus, but rent isn't, and over a four-year degree that gap
+              can add up to tens of thousands of dollars. Each row opens a page that walks through that campus's rent,
+              one idea at a time.
+            </p>
+          </div>
+          <ul class="rows" data-cards aria-label="Campuses"></ul>
+          <div class="panel faceoff reveal" data-faceoff hidden>
+            <span class="panel__title">Face-off: two campuses side by side</span>
+            <div class="faceoff__picks" data-faceoff-picks></div>
+            <div class="bars" data-faceoff-bars></div>
+            <p data-faceoff-text aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter chapter--alt" data-ch="terms">
+        <div class="wrap chapter__in">
+          <div class="chapter__text reveal">
+            <p class="kicker"><span class="kicker__n">2</span>New to this?</p>
+            <h2>Four terms you'll run into</h2>
+          </div>
+          <dl class="terms reveal">
+            <div>
+              <dt>The ring</dt>
+              <dd>
+                The ZIP codes around a campus where students rent. It starts with every ZIP code whose centre is
+                about 3 miles (5 km) or less from campus, or the three nearest, and is then adjusted by hand: a
+                neighborhood farther out that's full of students is added, and one where students don't rent is
+                left out.
+              </dd>
+            </div>
+            <div>
+              <dt>Median</dt>
+              <dd>
+                The middle value. Sort every rent from cheapest to priciest and take the one halfway down, so a handful
+                of luxury places can't skew the result.
+              </dd>
+            </div>
+            <div>
+              <dt>Fair market rent</dt>
+              <dd>
+                The federal housing department's yearly estimate of what a modest two-bedroom costs in an area,
+                utilities included. Voucher programs use it to set how much rent they cover.
+              </dd>
+            </div>
+            <div>
+              <dt>Forecast range</dt>
+              <dd>
+                A guess about next year's rent, given as a low and a high instead of one number. Rent should land
+                between them about 8 times in 10.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chapter" data-ch="findings" data-findings hidden>
+        <div class="wrap chapter__in">
+          <div class="chapter__text reveal">
+            <p class="kicker"><span class="kicker__n">3</span>The experiment</p>
+            <h2>Does new campus housing lower rent next door?</h2>
+            <p>
+              When a university opens a residence hall, hundreds of students leave nearby apartments at once. This site
+              checks whether rent in the neighborhood cools afterward, by comparing it with similar ZIP codes elsewhere
+              in the same metro area.
+            </p>
+            <p data-findings-text></p>
+          </div>
+        </div>
+      </section>
+      <section class="park" data-park hidden aria-labelledby="park-title">
+        <div class="wrap">
+          <h2 id="park-title">The dog park</h2>
+          <p data-rivalry></p>
+          <ul class="park__dogs" data-park-dogs></ul>
+        </div>
+      </section>
+    </main>
+    <footer class="wrap foot" data-foot hidden>
+      <p><strong>Where the numbers come from</strong></p>
+      <ul data-credits aria-label="Data sources"></ul>
+      <p data-generated></p>
+      <p data-affiliation>
+        UC Campus Rent is an independent project. It is not affiliated with, endorsed by or sponsored by the University
+        of California. Campus names and logos are trademarks of The Regents of the University of California.
+      </p>
+    </footer>
+  </body>
+</html>
