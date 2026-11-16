@@ -6,6 +6,7 @@
 <!-- Unlinked until the app is finished: remove this line when the page goes public. -->
 <meta name="robots" content="noindex">
 <title>JobbyMail</title>
+<link rel="icon" type="image/svg+xml" href="img/jobby.svg">
 <meta name="description" content="A Windows app that reads your mailbox and keeps your job applications up to date by itself. Everything stays on your computer.">
 <style>
 :root{
@@ -32,7 +33,7 @@ a{color:inherit}
 .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
 header.top{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
 .brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;text-decoration:none}
-.brand svg{width:34px;height:34px;border-radius:9px;background:#000;box-shadow:inset 0 0 0 1px var(--edge)}
+.brand img{width:34px;height:34px;border-radius:9px;display:block;box-shadow:0 0 0 1px var(--edge)}
 .top a.quiet{color:var(--muted);text-decoration:none;font-size:14px}
 .top a.quiet:hover{color:var(--ink)}
 
@@ -92,7 +93,7 @@ footer a{color:var(--muted)}
 
 <header class="top">
   <a class="brand" href="./" aria-label="JobbyMail">
-    <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#jobby"/></svg>
+    <img src="img/jobby.svg" width="34" height="34" alt="">
     JobbyMail
   </a>
   <a class="quiet" href="../projects/jobbymail/">How it was built</a>
