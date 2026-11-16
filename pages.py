@@ -2052,6 +2052,216 @@ restart. Expected cost: $0.</p>
     return h, layout(main_html, rail)
 
 
+# ============================================================================ JOBBYMAIL
+# Unlinked for now: built at projects/jobbymail/ but not in the nav, the home page or any pager.
+# To link it: add ("jobbymail", "JobbyMail") to PROJECTS in build.py, a card in home()'s feats, and pager links.
+
+def jobbymail(ctx):
+    rel = ctx["rel"]
+    app = rel + "jobbymail/"
+    h = hero(
+        "field-carbon", "PROJECT 06 · DESKTOP APP · ENTITY RESOLUTION · LOCAL-FIRST", "JobbyMail",
+        "A Windows app that reads your mailbox and keeps your job applications up to date by itself. It classifies "
+        "each email, works out which application it belongs to with q-gram entity resolution, and derives every "
+        "status from an append-only event log. The mail, the database and the models stay on your computer.",
+        ["Read-only mail access", "Python · SQLite", "Tauri · React", "Runs on your PC"],
+        C.mini_bars([("candidate pairs skipped", 0.9999, True), ("follow-ups matched", 1.0, False)],
+                    title="matching 6,000 emails to 5,000 companies", fmt=lambda v: f"{v * 100:.2f}%" if v < 1 else "100%"),
+        go(app, "Get the app"))
+
+    overview = f"""
+{stats([("4", "statuses", "Offer, Interviewing, Applied, Rejected"),
+        ("99.99%", "of comparisons skipped", "by q-gram blocking, at 5,000 companies"),
+        ("0", "servers", "everything runs on the user's PC"),
+        ("12 MB", "installer", "Windows, no admin rights")])}
+<hr class="dotted">
+<p class="lede">Applying to jobs produces a stream of email: a confirmation, then silence, an interview invite, a
+rejection, sometimes an offer. JobbyMail reads that stream and keeps the table a job seeker would otherwise maintain
+by hand.</p>
+<p>A <strong>Python</strong> pipeline syncs the mailbox read-only over IMAP, classifies each message, extracts the
+company and role, and resolves the email to an application. Every change is an event in an <strong>append-only
+log</strong> in <strong>SQLite</strong>, and each application's status is worked out from its events, so running the
+pipeline twice changes nothing and a wrong guess can be corrected without losing history. A <strong>Tauri</strong>
+window with <strong>React</strong> pages shows the result.</p>
+{bullets([
+    "Built an incremental, <strong>read-only</strong> mail sync (IMAP with verified TLS; the app password lives only in "
+    "the Windows credential store) that fetches only new messages, de-duplicates by Message-ID, and stores one odd "
+    "message in raw form instead of stopping.",
+    "Resolved each email to an application with <strong>entity resolution</strong>: names cleaned, candidates found by "
+    "<strong>q-gram blocking</strong>, then matched on q-gram overlap across the company name, the sender's name and "
+    "the sender's address. Blocking skipped <strong>99.99%</strong> of 17.5 million candidate pairs.",
+    "Derived every status from an <strong>append-only event log</strong>: a status only moves forward on email "
+    "evidence, a rejection applies from any state, and a status set by hand wins until a newer email arrives.",
+    "Rendered untrusted HTML email safely: an allow-list sanitiser, a sandboxed frame that cannot run scripts, and a "
+    "content policy inside the frame, with remote images blocked until the reader allows them.",
+    "Wrote the tests during the build and ran them all at the end: of 285 Python tests, 284 passed on their first "
+    "run, and the one failure was a fault in the test.",
+])}
+<p class="note"><strong>Reported honestly:</strong> every accuracy and timing figure on this page was measured on
+invented emails written for the build, not on real mail. Real-mail accuracy is unmeasured until a labelled set of
+real messages exists. The app is Windows only, the installer is unsigned, and Outlook.com accounts are not supported.
+The code is in a private repository.</p>"""
+
+    pipeline = f"""
+{flow([("Sync", "IMAP, read-only; only messages newer than the last one seen", False),
+       ("Classify", "confirmation, interview, rejection, offer, other job mail, or not job mail", False),
+       ("Extract", "company, role and date, from the platform's template, the sender or the text", False),
+       ("Resolve", "which application is this about? q-gram blocking, then matching", True),
+       ("Record", "one event appended; the status is derived from the events", False)])}
+<p>Each stage writes its own table, so any stage can be re-run without reading the mailbox again. The mailbox is
+opened read-only, so the app cannot mark, move or delete anything, and attachments are never stored.</p>
+<h3>A classifier that is careful about one mistake</h3>
+<p>The first classifier is a set of rules. Marking a live application rejected is the costliest error, so a status
+phrase is ignored when the sentence is conditional ("if you are not moving forward…", "until the position has been
+filled"), a status needs a job word nearby, and a rejection that sits beside "we received your application" becomes a
+question for the user instead of a status change.</p>
+{tiles([("One odd message never stops a run", "A message with an impossible date or thousands of nested parts is stored with its raw headers and skipped past, so the sync position keeps moving."),
+        ("Hiring platforms", "Mail sent through an applicant-tracking system is recognised by the platform's name in the sender's domain, and the employer is read from the text."),
+        ("Job boards", "A confirmation sent by a job board names the employer in its subject or body; the board itself is never taken as the company."),
+        ("A file of real labels stays out of the repo", "The labelling command refuses to write inside the repository, so real addresses cannot be committed by accident.")])}"""
+
+    resolution = f"""
+<p class="lede">"Acme Recruiting", "Acme Corp" and a hiring platform's address can all be the same employer. A later
+email has to find the right application, and the right role when there are two.</p>
+{flow([("Clean", "lowercase; drop legal endings (Inc, LLC) and hiring words (Careers, Talent Team)", False),
+       ("Block", "split into three-letter q-grams; keep only companies sharing enough of them", True),
+       ("Match", "score the survivors by q-gram overlap on three signals", False),
+       ("Role", "title similarity, then job number, then email thread, then the only open application", False)])}
+{table(["Score", "Outcome"],
+       [["0.70 or more", "matched to that application"],
+        ["0.40 to 0.70", "a question: “Is this email referring to the Data Analyst job at Acme?”"],
+        ["below 0.40", "a different company"]])}
+<p>The thresholds came from 40 hand-made name pairs: the same company scored 0.41 to 1.00 and different companies
+0.36 to 0.60. The ranges overlap in the middle, and that band is what goes to the user as a question.</p>
+{tiles([("Short names", "IBM or HP have too few q-grams to score, so a cleaned name under five letters needs an exact match or a matching sender domain."),
+        ("Two roles at one company", "An application is a company and a role. A rejection that names no role while two applications are open is never applied to both; it becomes a question."),
+        ("The name outranks the address", "Many employers send through the same hiring system, so a shared sender address alone never merges two companies."),
+        ("Sent mail counts", "An application the user emailed directly has no confirmation; the recipient's address names the company.")])}
+<p>At 5,000 companies and 6,000 emails, blocking compared 2,229 of 17.5 million possible pairs and the run took about
+12 seconds, with all 1,000 follow-up emails matched to the right application.</p>
+<p class="note"><strong>A rule that changed during the build:</strong> at first every email in the middle band became
+a question. A scale test showed that two different companies sharing a common word ("… Robotics") land in that band,
+which would have turned every new application at a similarly named company into a question. A first confirmation
+from a merely similar name now starts a new application; interviews, rejections and offers still ask.</p>"""
+
+    events = f"""
+{image(rel, "jm-jobs.png",
+       " The jobs table on invented data: offers first, then interviewing, applied and rejected. Two rows show an "
+       "email that disagrees with a status set by hand, as a suggestion to accept or dismiss.", label="Screenshot",
+       alt="JobbyMail jobs table: company, role, applied date, a status select and an Archive button on each row")}
+<p>Nothing in the event log is ever updated or deleted; the database refuses both. Each event from an email carries a
+key built from the message and the application, so processing the same mailbox twice adds nothing.</p>
+{tiles([("Forward only", "Email evidence moves a status from Applied to Interviewing to Offer. A later confirmation never demotes an interview."),
+        ("Reopening", "After a rejection, a later interview or offer email reopens the application; a later confirmation does not."),
+        ("A person outranks the pipeline", "A status set by hand stays until a newer email arrives, and then the email shows as a suggestion, not a silent change."),
+        ("Archive with a fuse", "Archiving starts a four-second fuse with Undo; the archive event is written only when the fuse ends.")])}
+{image(rel, "jm-review.png",
+       " The review list: emails the pipeline was unsure about, each with a direct question and one-click answers.",
+       label="Screenshot", alt="JobbyMail review page with questions about which application an email refers to")}"""
+
+    viewer = f"""
+<p>Clicking a job opens the email behind it inside the app. HTML email is untrusted input, so it passes three
+layers before it is shown.</p>
+{flow([("Sanitise", "an allow-list built on the browser's own parser: scripts, forms, frames and event handlers removed", False),
+       ("Sandbox", "a frame with no script permission and no access to the app's own origin", True),
+       ("Policy", "a content policy inside the frame that denies everything by default", False)])}
+{image(rel, "jm-viewer.png",
+       " A deliberately hostile sample with a tracking image. The image is blocked and the reader is told why.",
+       label="Screenshot", alt="JobbyMail email viewer showing a message with remote images blocked and a Show remote images button")}
+<p>Remote images are blocked until the reader presses "Show remote images" for that one email, because loading an
+image tells the sender the mail was opened. In review, 37 hostile emails written for the purpose (script tags,
+event-handler attributes, <code>javascript:</code> links, forms, meta refresh, CSS <code>url()</code> tricks, SVG and
+MathML shapes) were each opened both ways: no script ran and no request left before the button was pressed.</p>
+<p>In the desktop window, a link in an email opens in the system browser, and only for web and email addresses; the
+allow-list is in the window's Rust code, and the page itself has no permission to open anything.</p>"""
+
+    stats_sec = f"""
+{image(rel, "jm-insights.png",
+       " The Insights page on invented data. Every figure states how many applications it rests on.",
+       label="Screenshot", alt="JobbyMail Insights page: reply rate, a funnel chart, days to first reply and a silence curve")}
+<p>The Insights page answers what a job seeker asks of their own search: how many applications get any reply, how
+long a reply takes, and when silence starts to mean no. The silence estimate is a Kaplan-Meier style curve that
+treats applications still waiting as not answered <em>yet</em>, instead of counting them as never answered. Any rate
+or estimate needs at least 10 applications behind it; below that the page says "not enough data yet" and shows only
+counts.</p>
+<h3>A trained classifier behind a gate fixed in advance</h3>
+<p>A TF-IDF and logistic-regression classifier, written in the standard library so the installer stays small, can
+replace the rules, but only by passing a gate written into the design before any real result existed:</p>
+{tiles([("Enough labels", "At least 300 labelled real emails, with at least 20 rejections."),
+        ("Better by a margin", "Macro-F1 at least 0.03 above the rules', on emails the model did not train on."),
+        ("No more wrong rejections", "Rejection precision not lower than the rules'."),
+        ("No leakage between folds", "Cross-validation folds are grouped by sender domain, so one company's repeated template cannot flatter the model.")])}
+<p>No model ships with the app. The mechanism was proven on generated emails, with sets built to pass and to fail the
+gate; a failing run removes any older model and the rules take over again.</p>
+{tip("The model file is JSON written and validated by the app's own code, never a pickle, so a corrupt or planted file cannot run anything.", prop="detective")}"""
+
+    app_sec = f"""
+{image(rel, "jm-boards.png",
+       " The checklist: pick the job boards you use, then tick each one off. It clears weekly or daily.",
+       label="Screenshot", alt="JobbyMail checklist page: a grid of job boards with check boxes and a weekly checklist below")}
+<p>The window is <strong>Tauri</strong>, which uses the system's own web view, so the installer is 12 MB. The
+pipeline is frozen into a self-contained folder and started by the window from its own resource folder; it serves a
+local connection on <code>127.0.0.1</code> that requires a random token, and it stops when the window closes.</p>
+{tiles([("Onboarding", "A five-step stepper collects a name, a job field and target roles, connects the mailbox with a test button, and asks how far back to read."),
+        ("One place for the password", "Exactly one route accepts the app password and hands it to the Windows credential store. It never reaches the database, a response or a log."),
+        ("Delete everything", "A single action empties the database, the trained model and the stored credential, after the user types a word to confirm."),
+        ("Jobby", "The mascot is one of 14 original vector sprites, each a glossy white space robot that waves; swapping the chosen one is a one-line change.")])}
+{image(rel, "jm-gallery.png",
+       " The 14 Jobby sprites, each at mascot, profile-picture and icon size.", label="Screenshot",
+       alt="A grid of 14 white robot mascot designs on black backgrounds")}"""
+
+    build = f"""
+<p>The app was built in 15 phases by a loop of four roles: an architect that wrote each phase's plan and its checks,
+a builder, a checker that ran every check and never edited code, and the architect again as reviewer.</p>
+{tiles([("Tests written early, run once", "Each phase wrote its tests without running them; fast checks (it compiles, it lints, it starts, a command prints the expected numbers) guarded each phase, and the whole suite ran in the last one."),
+        ("A regression stops the loop", "Any check that had passed and then failed halted the build. It fired once, when a timing check ran on a machine short of memory, and the run was repeated on a quiet machine."),
+        ("Reviews that reject", "Most phases were sent back once: a classifier that read “if you are not moving forward” as a rejection, a typed date that landed a day early west of UTC, a password that could be left behind in the credential store."),
+        ("Checks that cannot be argued with", "Vendored interface components are pinned byte for byte to their published source, and the preview data is compared field by field with the real local API.")])}
+<p>By the end the build carried 110 checks. The installer is produced by one command: the pipeline is frozen, the
+window is compiled in release mode and both are bundled into a per-user Windows installer.</p>
+<p class="note"><strong>Still open:</strong> accuracy on real mail, Microsoft sign-in for Outlook.com, real job-board
+logos in the checklist grid (lettered tiles stand in), and a signed installer.</p>"""
+
+    main_html = (
+        panel("overview", "Overview", overview, num="01")
+        + panel("pipeline", "From an email to a row", pipeline, num="02")
+        + panel("resolution", "Entity resolution", resolution, num="03")
+        + panel("events", "Events and status", events, num="04")
+        + panel("viewer", "Showing untrusted email", viewer, num="05")
+        + panel("insights", "Insights and a gated model", stats_sec, num="06")
+        + panel("app", "The desktop app", app_sec, num="07")
+        + panel("build", "How it was built", build, num="08")
+        + pager(rel, ("projects/uc-campus-rent/", "UC Campus Rent"), ("experience/lawrence-berkeley-lab/", "Berkeley Lab")))
+
+    rail = (
+        rail_btns([("WWW", "Get the app", app)])
+        + panel("toc-jm", "On this page", toc([("overview", "Overview"), ("pipeline", "Email to row"),
+                                              ("resolution", "Entity resolution"), ("events", "Events and status"),
+                                              ("viewer", "Email viewer"), ("insights", "Insights and model"),
+                                              ("app", "Desktop app"), ("build", "How it was built")]),
+                body_cls="panel-body tight")
+        + panel("spec-jm", "Spec sheet", spec([("Platform", "Windows"), ("Installer", "12 MB, per user"),
+                                                ("Mail access", "IMAP, read-only"), ("Storage", "SQLite, local"),
+                                                ("Matching", "q-grams, q = 3"), ("Thresholds", "0.70 match · 0.40 ask"),
+                                                ("Statuses", "4, derived from events"),
+                                                ("Pipeline start", "0.25 s"), ("Servers", "none"),
+                                                ("Build checks", "110")]),
+                body_cls="panel-body tight")
+        + panel("stack-jm", "Stack", chips(["Python", "SQLite", "IMAP", "keyring", "Tauri", "Rust", "React", "Vite",
+                                            "PyInstaller", "NSIS", "pytest", "Vitest", "Playwright"]),
+                body_cls="panel-body tight")
+        + info("What is — entity resolution?",
+               "<p>Deciding when two records written differently refer to the same real thing: here, when two emails "
+               "are from the same employer about the same application.</p>")
+        + info("What is — a q-gram?",
+               "<p>A run of q letters taken from a word. “acme” in three-letter q-grams is acm and cme, plus "
+               "padded ones at each end. Names that share many q-grams are spelled alike.</p>")
+        + info("What is — blocking?",
+               "<p>A cheap first pass that picks the few records worth comparing, so the expensive comparison is not "
+               "run on every pair.</p>"))
+    return h, layout(main_html, rail)
+
+
 # ============================================================================ DOCKWATCH
 
 
@@ -3598,6 +3808,10 @@ ALL = [
     {"path": "projects/uc-campus-rent", "key": "uc-campus-rent", "render": ucrent,
      "title": "UC Campus Rent · Braedyn Thompson",
      "description": "Rent around eight UC campuses: an Airflow, Great Expectations and dbt pipeline on Postgres, a LightGBM forecast behind a pre-registered gate, and a causal study of new campus housing."},
+    # JobbyMail: built but unlinked (not in the nav, the home page or any pager) until the app is finished.
+    {"path": "projects/jobbymail", "key": "jobbymail", "render": jobbymail,
+     "title": "JobbyMail · Braedyn Thompson",
+     "description": "A local-first Windows app that reads a mailbox and keeps job applications up to date: q-gram entity resolution, an append-only event log, a sanitised email viewer and a classifier behind a pre-registered gate."},
     # DockWatch hidden for now (not in use); restore this entry plus the nav, home, role and pager links marked "DockWatch hidden".
     # {"path": "projects/dockwatch", "key": "dockwatch", "render": dockwatch,
     #  "title": "DockWatch · Braedyn Thompson",

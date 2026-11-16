@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Unlinked until the app is finished: remove this line when the page goes public. -->
+<meta name="robots" content="noindex">
+<title>JobbyMail</title>
+<meta name="description" content="A Windows app that reads your mailbox and keeps your job applications up to date by itself. Everything stays on your computer.">
+<style>
+:root{
+  --bg:#050507; --surface:linear-gradient(180deg,#1a1820 0%,#121116 100%);
+  --edge:rgba(255,255,255,.07); --highlight:rgba(255,255,255,.06);
+  --ink:#f4f4f5; --muted:rgba(244,244,245,.62); --faint:rgba(244,244,245,.32);
+  --shadow:0 24px 48px -28px rgba(0,0,0,.85),0 8px 18px -12px rgba(0,0,0,.6);
+  --r:20px;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%,rgba(255,255,255,.55) 50%,transparent 51%),
+    radial-gradient(1px 1px at 78% 9%,rgba(255,255,255,.4) 50%,transparent 51%),
+    radial-gradient(1px 1px at 34% 62%,rgba(255,255,255,.35) 50%,transparent 51%),
+    radial-gradient(1px 1px at 91% 47%,rgba(255,255,255,.5) 50%,transparent 51%),
+    radial-gradient(1px 1px at 58% 83%,rgba(255,255,255,.3) 50%,transparent 51%),
+    radial-gradient(1px 1px at 6% 91%,rgba(255,255,255,.4) 50%,transparent 51%),
+    radial-gradient(900px 500px at 50% -10%,rgba(120,130,170,.16),transparent 70%);
+  background-attachment:fixed}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;text-decoration:none}
+.brand svg{width:34px;height:34px;border-radius:9px;background:#000;box-shadow:inset 0 0 0 1px var(--edge)}
+.top a.quiet{color:var(--muted);text-decoration:none;font-size:14px}
+.top a.quiet:hover{color:var(--ink)}
+
+.card{position:relative;border-radius:var(--r);background:var(--surface);
+  box-shadow:var(--shadow),inset 0 0 0 1px var(--edge),inset 0 1px 0 var(--highlight)}
+
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:center;padding:44px 40px;margin-top:8px;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-.03em;margin:0 0 16px;text-wrap:balance}
+.hero p.lede{font-size:18px;color:var(--muted);margin:0 0 26px;max-width:36em}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:14px;font-weight:600;
+  font-size:15px;text-decoration:none;border:0;cursor:pointer}
+.btn.primary{background:#f4f4f5;color:#121016;box-shadow:0 6px 18px -8px rgba(255,255,255,.35)}
+.btn.primary[aria-disabled="true"]{background:linear-gradient(180deg,#3a3644,#27242f);color:var(--muted);cursor:default;
+  box-shadow:inset 0 0 0 1px var(--edge),inset 0 1px 0 rgba(255,255,255,.12)}
+.btn.ghost{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.btn.ghost:hover{background:rgba(255,255,255,.05)}
+.btn:focus-visible{outline:2px solid #f4f4f5;outline-offset:3px}
+.fine{margin:14px 0 0;font-size:13px;color:var(--faint)}
+.mascot{display:flex;justify-content:center}
+.mascot svg{width:min(260px,70%);height:auto;filter:drop-shadow(0 18px 40px rgba(143,227,255,.18))}
+.wave{transform-origin:68px 63px;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-16deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-10deg)}}
+@media (prefers-reduced-motion:reduce){.wave{animation:none}}
+
+h2{font-size:26px;letter-spacing:-.02em;margin:64px 0 18px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.tile{padding:22px}
+.tile h3{margin:0 0 6px;font-size:16px;letter-spacing:-.01em}
+.tile p{margin:0;color:var(--muted);font-size:14.5px}
+.tile.wide{grid-column:span 2}
+
+.shots{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+figure{margin:0;padding:10px}
+figure img{display:block;width:100%;height:auto;border-radius:12px}
+figcaption{padding:10px 6px 4px;color:var(--muted);font-size:14px}
+
+ol.steps{margin:0;padding:22px 22px 22px 44px;color:var(--muted)}
+ol.steps li{margin:0 0 8px}
+ol.steps li strong{color:var(--ink);font-weight:600}
+.note{color:var(--faint);font-size:13.5px;margin:14px 2px 0}
+footer{margin:64px 0 40px;color:var(--faint);font-size:13.5px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+footer a{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding:32px 22px;text-align:left}
+  .mascot{order:-1;justify-content:flex-start}
+  .mascot svg{width:140px}
+  .grid{grid-template-columns:1fr}
+  .tile.wide{grid-column:auto}
+  .shots{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <a class="brand" href="./" aria-label="JobbyMail">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#jobby"/></svg>
+    JobbyMail
+  </a>
+  <a class="quiet" href="../projects/jobbymail/">How it was built</a>
+</header>
+
+<main>
+<section class="card hero">
+  <div>
+    <h1>Your job applications, kept up to date by your inbox.</h1>
+    <p class="lede">JobbyMail reads your mailbox, finds the emails about your applications, and fills in the table
+    for you: applied, interviewing, offer, rejected. Everything stays on your computer.</p>
+    <div class="cta">
+      <!-- When the installer is published, replace this element with:
+           <a class="btn primary" href="JobbyMail_0.1.0_x64-setup.exe" download>Download for Windows</a> -->
+      <span class="btn primary" role="link" aria-disabled="true">Windows installer coming soon</span>
+      <a class="btn ghost" href="#how">See how it works</a>
+    </div>
+    <p class="fine">Windows 10 and 11. Free. Works with Gmail.</p>
+  </div>
+  <div class="mascot">
+    <svg viewBox="0 0 100 100" role="img" aria-label="Jobby, the JobbyMail mascot, waving" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <linearGradient id="jb" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="0.55" stop-color="#eef1f7"/><stop offset="1" stop-color="#a3acc2"/></linearGradient>
+        <linearGradient id="js" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d5dae6"/><stop offset="1" stop-color="#7f889e"/></linearGradient>
+        <linearGradient id="jv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3040"/><stop offset="1" stop-color="#06070b"/></linearGradient>
+        <radialGradient id="je"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#8fe3ff"/></radialGradient>
+        <linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+        <g id="jobby">
+          <ellipse cx="50" cy="93" rx="15" ry="2.6" fill="url(#je)" opacity="0.4"/>
+          <path d="M41 84 L45 89 L55 89 L59 84 Z" fill="url(#js)"/>
+          <path d="M32 63 Q22 66 23 76" fill="none" stroke="url(#js)" stroke-width="5.5"/>
+          <circle cx="23" cy="78" r="4.6" fill="url(#jb)"/>
+          <g class="wave"><path d="M68 63 Q81 58 82 44" fill="none" stroke="url(#js)" stroke-width="5.5"/><circle cx="82" cy="40" r="5.2" fill="url(#jb)"/></g>
+          <path d="M31 58 Q30 82 50 85 Q70 82 69 58 Z" fill="url(#jb)"/>
+          <rect x="41" y="65" width="18" height="7" rx="3.5" fill="url(#jv)"/>
+          <circle cx="46" cy="68.5" r="1.5" fill="url(#je)"/><circle cx="51" cy="68.5" r="1.5" fill="url(#je)" opacity="0.5"/>
+          <rect x="43" y="52" width="14" height="7" rx="2" fill="url(#js)"/>
+          <line x1="50" y1="15" x2="50" y2="8" stroke="#c3c9d8" stroke-width="2.2"/><circle cx="50" cy="6" r="3.2" fill="url(#je)"/>
+          <rect x="23" y="14" width="54" height="40" rx="19" fill="url(#jb)"/>
+          <rect x="29" y="23" width="42" height="22" rx="11" fill="url(#jv)"/>
+          <ellipse cx="41" cy="34" rx="3.2" ry="4.8" fill="url(#je)"/><ellipse cx="59" cy="34" rx="3.2" ry="4.8" fill="url(#je)"/>
+          <path d="M33 29 Q40 24.5 51 25" fill="none" stroke="url(#jg)" stroke-width="2.4"/>
+        </g>
+      </defs>
+      <use href="#jobby"/>
+    </svg>
+  </div>
+</section>
+
+<h2 id="how">What it does</h2>
+<div class="grid">
+  <div class="card tile wide">
+    <h3>A table that fills itself in</h3>
+    <p>Apply to a job and the confirmation email adds a row with the company, the role and the date. An interview
+    invite, an offer or a rejection changes the status, and the table reorders: offers first, then interviewing,
+    applied and rejected.</p>
+  </div>
+  <div class="card tile">
+    <h3>It asks when it isn't sure</h3>
+    <p>"Is this email referring to the Data Analyst job at Acme?" One click answers it. Nothing changes until you do.</p>
+  </div>
+  <div class="card tile">
+    <h3>You stay in charge</h3>
+    <p>Change any status by hand, add an application that never sent an email, archive what's finished and undo it
+    within four seconds.</p>
+  </div>
+  <div class="card tile">
+    <h3>Read the email in place</h3>
+    <p>Click a job to see the email behind it. Tracking images are blocked until you choose to show them.</p>
+  </div>
+  <div class="card tile">
+    <h3>Your own numbers</h3>
+    <p>Reply rate, days to a first reply, and when silence usually means no, each with how many applications it rests on.</p>
+  </div>
+  <div class="card tile wide">
+    <h3>A checklist for the search itself</h3>
+    <p>Pick the job boards you use and tick each one off as you check it. The list clears every week, or every day
+    if you prefer.</p>
+  </div>
+  <div class="card tile">
+    <h3>Jobby</h3>
+    <p>A small space robot keeps you company and waves when something happens.</p>
+  </div>
+</div>
+
+<h2>A look inside</h2>
+<p class="note" style="margin:-8px 2px 14px">These screenshots use invented companies and emails.</p>
+<div class="shots">
+  <figure class="card"><img src="img/jobs.png" alt="The jobs table with a status select and an Archive button on each row" loading="lazy" width="1100" height="720"><figcaption>The jobs table, ordered by status.</figcaption></figure>
+  <figure class="card"><img src="img/review.png" alt="The review page asking which application an email refers to" loading="lazy" width="1100" height="760"><figcaption>Questions about emails it wasn't sure of.</figcaption></figure>
+  <figure class="card"><img src="img/insights.png" alt="The Insights page with reply rate, a funnel chart and a silence curve" loading="lazy" width="1100" height="800"><figcaption>Insights from your own applications.</figcaption></figure>
+  <figure class="card"><img src="img/checklist.png" alt="A grid of job boards with check boxes above a weekly checklist" loading="lazy" width="1100" height="760"><figcaption>The job-board checklist.</figcaption></figure>
+</div>
+
+<h2>Private by design</h2>
+<div class="grid">
+  <div class="card tile">
+    <h3>Nothing is uploaded</h3>
+    <p>Your mail, the database and the models stay on your PC. There is no JobbyMail server and no account.</p>
+  </div>
+  <div class="card tile">
+    <h3>Read-only</h3>
+    <p>JobbyMail opens your mailbox read-only. It cannot send, move, mark or delete anything.</p>
+  </div>
+  <div class="card tile">
+    <h3>One place for the password</h3>
+    <p>You connect with an app password, kept in the Windows credential store. "Delete all local data" removes it
+    along with everything else.</p>
+  </div>
+</div>
+
+<h2>Getting started</h2>
+<div class="card">
+  <ol class="steps">
+    <li><strong>Install.</strong> Run the installer; it needs no administrator rights. Windows will warn about an
+    unknown publisher because the installer is not signed.</li>
+    <li><strong>Tell it about you.</strong> Your name, your field and the roles you're after.</li>
+    <li><strong>Connect Gmail.</strong> Turn on 2-Step Verification, create an app password in your Google Account,
+    and paste it into the app.</li>
+    <li><strong>Pick how far back to read,</strong> and let the first scan run.</li>
+  </ol>
+</div>
+<p class="note">Outlook.com accounts are not supported yet: Microsoft no longer allows app passwords for them.
+Uninstalling keeps your data; use "Delete all local data" in the app first if you want it gone.</p>
+</main>
+
+<footer>
+  <span>JobbyMail is a personal project by Braedyn Thompson.</span>
+  <span><a href="../projects/jobbymail/">How it was built</a> · <a href="../">Portfolio</a></span>
+</footer>
+
+</div>
+</body>
+</html>
