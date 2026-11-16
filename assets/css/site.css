@@ -722,6 +722,7 @@ table.data .win { font-weight: 700; color: var(--chrome-indigo); }
 }
 .proof:hover { border-color: var(--chrome-indigo); background: #f4f6fc; }
 .proof-where { display: block; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+.proof-kind { margin-left: 7px; font-family: var(--f-pixel); font-size: 8px; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-indigo); white-space: nowrap; }
 .proof-what { display: block; font-size: 11.5px; line-height: 1.35; color: #4a4f63; }
 
 

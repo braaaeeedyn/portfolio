@@ -586,43 +586,51 @@ def layout(main_html, rail_html):
 ROLES = [
     ("DA", "Data Analyst", "data-analyst",
      "Turn raw logs and metrics into clear charts and decisions.",
-     [("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
-      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team"),
-      ("projects/bayridership/", "BayRidership", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules")]),
+     [("projects/bayridership/", "BayRidership", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "typical rent near 8 campuses from 7 public sources, with the count of reporting ZIP codes beside every figure"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
+      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team")]),
     ("DS", "Data Scientist", "data-scientist",
      "Design honest experiments and find out what the data can support.",
      [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
-      ("projects/bayridership/", "BayRidership", "pre-registered difference-in-differences with placebo intervals")]),
+      ("projects/bayridership/", "BayRidership", "pre-registered difference-in-differences with placebo intervals"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "event study of campus housing openings against matched control ZIP codes, verdict rules fixed in advance")]),
     ("DE", "Data Engineer", "data-engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
       ("projects/bayridership/", "BayRidership", "Dagster + PySpark + dbt on BigQuery, 68M rows, 84 data tests"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "Airflow over 7 public sources into Postgres: a Great Expectations check per source, 61 dbt tests"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
       ("projects/bearlm/", "BearLM", "ETL over PDF / Markdown / notebooks: chunked, batch-embedded with retry into Chroma, BM25 and SQLite")]),
     ("OPS", "MLOps Engineer", "mlops-engineer",
      "Make models retrain, promote and monitor themselves, with the gates written down.",
      [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
       ("projects/bayridership/", "BayRidership", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "MLflow champion promoted only through a gate written down in advance; five systemd services under a 3 GiB cap"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
     ("RES", "AI / ML Researcher", "ai-ml-researcher",
-     "Run rigorous experiments, find the real limits, and report them honestly.",
+     "Run experiments carefully and report the limits along with the results.",
      [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST + showing peaks aren't predictable from history alone"),
-      ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test")]),
+      ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test"),
+      ("projects/bayridership/", "BayRidership", "pre-registered A/B test and difference-in-differences with placebo intervals")]),
     ("ML", "Machine Learning Engineer", "machine-learning-engineer",
      "Train models that beat a real baseline, then run them in production.",
      [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
-      ("projects/bayridership/", "BayRidership", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly")]),
+      ("projects/bayridership/", "BayRidership", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "LightGBM p10 / p50 / p90 rent forecast 12 months ahead, promoted only if it beats the champion by 2%")]),
     ("AI", "AI Engineer", "ai-engineer",
-     "Ship LLM features that are grounded, measurable and hard to break.",
+     "Build grounded LLM features and measure how well they work.",
      [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
       ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
-      ("projects/bayridership/", "BayRidership", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004")]),
+      ("projects/bayridership/", "BayRidership", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004"),
+      ("experience/kigumi-group/", "Kigumi Group", "two failure classes in an AI assistant separated and pinned with tests; coverage 90% → 98%")]),
     ("AE", "Analytics Engineer", "analytics-engineer",
      "Model raw data into tested tables that every report reads the same way.",
      [("projects/bayridership/", "BayRidership", "dbt on BigQuery: 17 models, 84 data tests, an SCD2 station dimension, one definition per KPI"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "dbt on Postgres: staging, a fact per source, a campus mart and an event-study mart, 61 tests"),
       ("projects/academy-of-testers/", "Academy of Testers", "question bank kept as reviewable JSON, with an idempotent normalizer and a generated Flyway seed"),
       ("projects/bearlm/", "BearLM", "SQLite usage analytics: most-cited courses, unanswered questions, the course that needs the most help")]),
 ]
@@ -632,8 +640,14 @@ def roles_section(rel, resume):
     for ico, role, slug, pitch, proofs in ROLES:
         cv = (f"<a class='role-cv' href='{rel}{resume}' target='_blank' rel='noopener' "
               f"title='Open my r&eacute;sum&eacute;'>PDF &darr;</a>")
+        def kind(href, where):
+            # SeismicSoCal was built during the CBU research internship, so it is shown under it.
+            if href == "projects/seismicsocal/":
+                return "CBU Research / SeismicSoCal", "Internship project"
+            return where, ("Internship" if href.startswith("experience/") else "Project")
         links = "".join(
-            f"<a class='proof' href='{rel}{href}'><span><span class='proof-where'>{where}</span>"
+            f"<a class='proof' href='{rel}{href}'><span><span class='proof-where'>{kind(href, where)[0]}"
+            f"<span class='proof-kind'>{kind(href, where)[1]}</span></span>"
             f"<span class='proof-what'>{what}</span></span><span class='arrow-chip'></span></a>"
             for href, where, what in proofs)
         cards.append(f"<article class='role'><header class='role-head halftone'><span class='role-ico'>{ico}</span>"
@@ -659,8 +673,8 @@ def home(ctx):
         "</g><rect x='14' y='200' width='10' height='14' fill='#9fbee7'><animate attributeName='opacity' values='1;0;1' dur='1.1s' repeatCount='indefinite'/></rect></svg>")
     h = hero(
         "field-lavender", "PLAYER 1 · PORTFOLIO", "Braedyn<br>Thompson",
-        "I build machine-learning systems end to end: the data pipeline, the model, the honest "
-        "evaluation, and the product people actually use.",
+        "I build machine-learning systems end to end: the data pipeline, the model, the "
+        "evaluation, and the product people use.",
         ["Machine learning", "Data science", "RAG / LLMs", "Full-stack"], art,
         go("#projects", "See the projects") + go("#experience", "Internships"))
 
@@ -714,14 +728,14 @@ def home(ctx):
         f"<span class='row-meta'>{d}</span></a>" for href, ico, t, s, d in exp) + "</div>"
 
     about = """
-<p class="lede">I like problems where the honest answer matters more than the impressive one.</p>
+<p class="lede">I like problems where I can check whether the answer is right.</p>
 <p>Across forecasting, seismology, retrieval and ed-tech, my work follows the same loop: build a
 reproducible pipeline, pick a baseline worth beating, evaluate on data the model has never seen
-(chronological splits, held-out sets, ablations), and then ship the thing as a real product with a
-real user surface.</p>
-<p>Sometimes the honest result is a ceiling. At CBU I showed an inverse-FEA predictor was stuck because of
-the <em>data</em>, not the model, and that redirected the team toward fixing the inputs instead of
-tuning models that had nothing left to find.</p>"""
+(chronological splits, held-out sets, ablations), and then ship it as a product
+people can use.</p>
+<p>Sometimes the result is a ceiling. At CBU I showed an inverse-FEA predictor was limited by
+its <em>data</em>, and the team switched from tuning models
+to fixing the inputs.</p>"""
 
     skills = tiles([
         ("ML &amp; deep learning", "PyTorch, scikit-learn, XGBoost, CNN / Transformer / GNN, PatchTST, neuralforecast"),
@@ -799,12 +813,12 @@ def aot(ctx):
 <p class="lede">Most test-prep sites hand every student the same practice set. Academy of Testers
 tries to work out what <em>this</em> student knows and ask the question that will teach us the most.</p>
 <p>The platform covers 29 AP subjects and SAT Math: unit practice, the real 2025 free-response questions, timed
-mock exams, lessons, and an AI study assistant. At its core are two ML systems I designed and built: an
+mock exams, lessons, and an AI study assistant. I designed and built its two ML systems: an
 <strong>adaptive SAT math engine</strong> that tracks mastery of 8 skills, and a <strong>retrieval-augmented essay grader</strong> for AP
 free-response questions. Around them, a <strong>Mistake Notebook</strong> and <strong>week-by-week study plans</strong> turn what a
 student gets wrong into what they study next.</p>
 {bullets([
-    "Architected an adaptive learning engine that models per-student skill mastery by combining "
+    "Built an adaptive learning engine that models per-student skill mastery by combining "
     "<strong>Bayesian Knowledge Tracing</strong> with <strong>Item Response Theory</strong>, selecting questions to maximize "
     "information gain at the learner's estimated ability. I extended the 8-skill model with <strong>forgetting-curve decay</strong> "
     "and <strong>prerequisite-graph penalty propagation</strong>, and it powers the mastery radar.",
@@ -847,7 +861,7 @@ Five pieces fit together:</p>
 <h3>1 · Bayesian Knowledge Tracing</h3>
 <p>Standard four-parameter BKT (P(T)=0.10, P(S)=0.10, P(G)=0.25 for 4-option multiple choice). Each answer
 gives a Bayesian posterior and then a learning transition. Then I <strong>damp the step</strong>: only 25% of an upward
-move is applied, but 50% of a downward one, so <em>mastery is easier to lose than to earn</em>. One lucky guess
+move is applied, but 50% of a downward one, so <em>a weight falls faster than it rises</em>. One lucky guess
 can't push a student over the threshold.</p>
 {table(["Starting at w = 0.40", "BKT posterior", "+ learning", "Damped step", "New weight"],
        [["Correct answer", "0.706", "0.735", "25% of +0.335", "<b>0.484</b>"],
@@ -921,7 +935,7 @@ and swapping to pgvector later would only change the repository layer. Every chu
 <p>Nearest-neighbor retrieval naturally returns mid-band essays, the ones most similar to a typical
 response. The grader then <em>compresses</em> scores toward the middle. Pulling a wider pool and stratifying it so the prompt
 always sees low, mid and high anchors fixed most of that compression.</p>
-<h3>Evaluation: a real A/B against official scores</h3>
+<h3>Evaluation: an A/B against official scores</h3>
 <p>The harness extracts verbatim student responses and their official scores from College Board
 "Sample Responses + Scoring Commentary" packets. It keeps only typed responses and drops scanned
 handwriting and garbled OCR. Then it grades each one twice: a <strong>baseline</strong> arm with no rubric and no retrieval, and
@@ -930,7 +944,7 @@ the <strong>grounded</strong> arm. Test essays (2023/2024) never touch the RAG c
   {fig(C.frq_chart(), "MAE fell 24% on English and 22% on APUSH, a subject and rubric the grader was never tuned on.")}
   {fig(C.qwk_chart(), "Quadratic weighted kappa rose on both sets. Within-one-point agreement on English went from 77% to 87%.")}
 </div>
-{tip("APUSH is the honest test: never tuned on, and error still fell 22%.")}
+{tip("The grader was never tuned on APUSH, and error there still fell 22%.")}
 {table(["Set", "n", "Arm", "MAE", "Exact", "Within-1", "QWK"],
        [["English Lang + Lit", "39", "baseline", "0.974", "33%", "77%", "0.590"],
         ["", "", "<span class='win'>grounded</span>", "<span class='win'>0.744</span>", "<span class='win'>38%</span>", "<span class='win'>87%</span>", "<span class='win'>0.624</span>"],
@@ -967,13 +981,13 @@ that's slightly off the syllabus. This is the failure mode it prevents:</p>
 it applies and to answer from general knowledge when it doesn't.</li>
 <li>So Testy stays <strong>grounded in the course when the course covers it</strong>, and <strong>doesn't refuse</strong>
 reasonable questions when it doesn't.</li>
-<li>Any schoolwork is in scope; the selected subject is context, not a limit. If the AI call fails, the student's
-hourly allowance is refunded rather than spent on an error.</li>
+<li>Any schoolwork is in scope, and the selected subject is only context. If the AI call fails, the student's
+hourly allowance is refunded.</li>
 </ul>
 {chat([("wizard", "Why doesn't Testy just answer only from the course material?"),
        ("scholar", "Then any question slightly off the syllabus would get refused, even good ones."),
        ("wizard", "So how does it stay grounded?"),
-       ("scholar", "Weak matches are cut, and the course is used as a reference rather than a limit.")])}
+       ("scholar", "Weak matches are cut, and the prompt lets it use general knowledge when the course doesn't cover the question.")])}
 
 <h3>Safeguard 2 · No repeated work on every message</h3>
 <p>Embeddings are stored in Postgres as JSON float arrays of <strong>1,536 dimensions</strong>. Without a cache, every
@@ -985,7 +999,7 @@ prevents that:</p>
 {beside(image(rel, "aot-ai-chat.png", "Testy answering a history question. Questions can be scoped to a subject, and usage is rate-limited per user (the counter shows messages left this hour).", "Screenshot", alt="Testy AI study chat"), "Grounded when the course covers it, still helpful when it doesn't.", "right", prop="fairy")}"""
 
     study = f"""
-<p>Practice only helps if the misses come back. Three tools close that loop, and all of them work without an account.</p>
+<p>Three study tools sit around the practice questions, and all of them work without an account.</p>
 <h3>Mistake Notebook: spaced repetition on every miss</h3>
 <p>Every question a student misses, in AP unit practice, mixed review, mock exams or SAT sessions, lands in a
 <strong>Leitner queue</strong>. Each correct review moves it to a longer interval; a wrong one sends it back to the start:</p>
@@ -1013,7 +1027,7 @@ round out the prep.</p>
 {beside(image(rel, "aot-sat-lesson.png", "An SAT Math lesson (Linear Functions): the concept walkthrough, a formula sheet, worked examples with hidden solutions and quick checks, with links into the adaptive academy and to Testy.", "Live site", alt="SAT Linear Functions lesson page"), "Learn it, check it, then practise it in the adaptive academy.", "right")}"""
 
     platform = f"""
-<p>Around the two ML systems sits the rest of a real product, which I built too:</p>
+<p>I also built the rest of the platform around the two ML systems:</p>
 {tiles([("Exam hubs", "Browse AP and SAT, search and filter subjects, and drill into subject pages."),
         ("Practice bank", "5,160 AP multiple-choice questions (30 per unit, easy / medium / hard) and 590 SAT Math items."),
         ("Flashcards", "Premade decks plus your own stacks, with per-card progress."),
@@ -1031,10 +1045,10 @@ round out the prep.</p>
         + panel("overview", "Overview", overview, num="01")
         + panel("architecture", "System architecture", arch, num="02")
         + panel("radar", "The mastery radar", radar_sec, num="03")
-        + panel("engine", "Adaptive engine, piece by piece", engine, num="04")
+        + panel("engine", "How the adaptive engine works", engine, num="04")
         + panel("frq", "RAG essay grader", frq, num="05")
-        + panel("testy", "Testy: keeping RAG helpful and fast", testy, num="06")
-        + panel("study", "Study tools that close the loop", study, num="07")
+        + panel("testy", "Testy: two retrieval safeguards", testy, num="06")
+        + panel("study", "Mistake Notebook, study plans and lessons", study, num="07")
         + panel("platform", "The rest of the platform", platform, num="08")
         + pager(rel, None, ("projects/seismicsocal/", "SeismicSoCal")))
 
@@ -1083,7 +1097,7 @@ def seismic(ctx):
         ("145", "Replay pushes, all real quakes", "80 held-out days · chance 0%"),
         ("83<small>%</small>", "Isolated M3+ caught", "with 3+ sensors online")])}
 <hr class="dotted">
-<p class="lede">Detect → Locate → Size → Alert. Every claim sits next to its classic-seismology baseline, a 95%
+<p class="lede">The pipeline detects a quake, locates it, sizes it and sends an alert. Each result is reported with its classic-seismology baseline, a 95%
 confidence interval and a replay of real days the system never trained on.</p>
 <p>SeismicSoCal trains on <strong>26 years of Southern California data</strong> (USGS catalogue + SCEDC waveforms,
 2000 → 2026): <strong>6,243 quakes (M2.0–7.1)</strong> for sizing and <strong>50,743 detection windows</strong>, including 2,062
@@ -1119,7 +1133,7 @@ model is allowed to replace the live one.</p>
 earthquake is in it or just traffic, wind or sensor noise. It works wherever the quake starts in the window (AUC 0.9997
 / 0.9999 / 0.9997 with the P-wave at 2 / 12 / 22 s), and train, validation and test AUC match, so it isn't memorising.</p>
 {beside(image(rel, "seismic-detect-evidence.png", "From the live site's Evidence panel: held-out ROC vs. STA/LTA on 7,303 windows (2022–2026), and AUC by where the P-wave falls in the 30 s window.", alt="Detection evidence: ROC vs STA/LTA and robustness to onset position"), "Near-perfect wherever the quake starts in the window.", "right")}
-<h3>False triggers, at the threshold that actually runs</h3>
+<h3>False triggers at the live threshold</h3>
 <p>The live trigger is 0.6, not the checkpoint's MCC-optimal 0.9987, so both are reported. A per-window trigger still
 isn't an alert: it also needs a clean pick and two more stations that locate the same source.</p>
 {table(["Threshold", "Test noise (n = 2,339)", "Held-out live noise, Oct 2–5 (n = 397)", "Event windows caught"],
@@ -1132,7 +1146,7 @@ Two graph-convolution layers over the 19-station network (Gaussian distance weig
 stations feed the head. Training jitters the epicentre by ~8 km and the picks by ±0.5 s and drops stations at random, so
 it learns under live conditions.</p>
 {image(rel, "seismic-size-evidence.png", "From the live site. Top: predicted vs. catalogue magnitude on 937 held-out quakes (MAE 0.10 vs. 0.16), and error by size. Bottom: what the network fusion buys, and the live pipeline replayed on 20 days (quakes below M2 are outside training and read high, but stay under the M3.0 push floor).", alt="Size evidence: scatter, error by size, ablation, replayed live sizing")}
-{beside(fig(C.ablation_chart(), "Only the nearest station: R² 0.808, worse than the classic formula. The graph fusion is the skill. Live-like conditions (10 km location error, 3–6 stations) cost just 0.012."), "Take away the graph and it loses to the classic formula.", "right")}
+{beside(fig(C.ablation_chart(), "Only the nearest station: R² 0.808, worse than the classic formula. The gain comes from the graph fusion. Live-like conditions (10 km location error, 3–6 stations) cost just 0.012."), "Take away the graph and it loses to the classic formula.", "right")}
 <h3>Seed variance vs. sampling variance</h3>
 {table(["Magnitude model (937 held-out quakes)", "R²", "95% CI"],
        [["Single model, mean over 10 seeds", "0.949", "0.948–0.951 (t-interval over seeds)"],
@@ -1159,13 +1173,13 @@ replay harness.</p>
 {fig(C.alert_timeline(), "Medians over the 80 replayed days. The first notice waits for the third station's pick; the confirmation waits for 25 s of P-wave at the nearest stations.", "Timeline")}
 <h3>Why three stations</h3>
 <p>With 3 picks, latitude, longitude and origin time are exactly determined, so a low misfit proves nothing on its
-own. The <strong>negative evidence</strong> does the work: a real quake reaches nearer stations first, so a solution
+own. The locator also uses <strong>negative evidence</strong>: a real quake reaches nearer stations first, so a solution
 whose closer stations stayed quiet is coincident noise. One or two stations become a <em>tentative</em> event: logged,
 never pushed. Requiring four stations was tested on validation days: it confirmed 31 events instead of 86 and missed a
 real out-of-network M3.6 that three stations caught.</p>
 <h3>Two-stage alerts, with a speed the user picks</h3>
-<p>Five variants of the first message were replayed over 20 days, and the trade-off became a setting instead of a
-hidden constant:</p>
+<p>Five variants of the first message were replayed over 20 days, and the speed trade-off is now a setting
+the user picks:</p>
 {table(["First-message variant", "Test days: sent / real M2.5+ / retracted / no quake", "Median after origin", "Quick-size MAE"],
        [["<b>Standard</b> (4 s of P, full response removal)", "6 / 6 / 1 / 0", "33.4 s", "0.21"],
         ["4 s, sensitivity-scaled (not offered)", "6 / 6 / 1 / 0", "27.7 s", "0.20"],
@@ -1184,7 +1198,7 @@ the tray.</p>
 a station it follows, with the distance measured from the located epicentre to that station.</p>"""
 
     shaking = f"""
-<p>A magnitude and a distance don't tell someone what they actually felt. For every quake, the current one in a push
+<p>A magnitude and a distance don't tell someone what they felt. For every quake, the current one in a push
 and every past one in the quake list, the app estimates the <strong>shaking at the user's home</strong> as a
 Modified Mercalli Intensity level (I–X, e.g. <em>"Light: felt indoors; dishes and windows rattle"</em>). It's an
 estimate from the physics and our own sensors, not a measurement at the house.</p>
@@ -1195,7 +1209,7 @@ estimate from the physics and our own sensors, not a measurement at the house.</
        ("On the phone", "computed on the device; the home never leaves it", False)])}
 <div class="formula halftone">log10 PGV = a + b·M + c·log10 R + d·R + e·log10(Vs30 / 631) + event_term
 <span class="c">// fitted on the training events only (chronological split); event_term = how this quake shook our sensors, clipped to ±0.5</span></div>
-<h3>Validated on people's reports, not on itself</h3>
+<h3>Validated against people's reports</h3>
 <p>USGS "Did You Feel It?" collects what people report feeling. The DYFI offset was fitted on the older 29 Southern
 California M3.5+ quakes and the result scored <strong>once</strong> on the newer 28 quakes (1,892 report cells):</p>
 {table(["Held out: 28 quakes, 1,892 cells", "MAE (MMI levels)", "Within one level"],
@@ -1226,7 +1240,7 @@ declarations shifted by an hour.</p>
        [["Push alerts", "145; 133 matched a catalogued M2.5+ within 60 km. The other 12 were also real quakes, outside the network and placed 63–145 km off. <b>None was for a quake that didn't happen</b> (chance baseline 0%)."],
         ["Confirmed events that were real", "86% on busy days, 79% on random days (chance 4% / 0%); about 7 false confirmations a week, logged and never pushed"],
         ["First message → confirmation", "Standard ~31 s, Fast ~25 s, confirmation ~50 s after the quake begins"],
-        ["First messages later retracted", "Standard 28%, Fast 36%: the price of speed, and why the confirmation replaces them"]])}
+        ["First messages later retracted", "Standard 28%, Fast 36%: the faster setting retracts more, and the confirmation replaces the first message either way"]])}
 {chat([("detective", "How do you know an alert from this thing is real?"),
        ("referee", "It replayed 80 archived days it never trained on. 145 pushes, and every one was a real quake."),
        ("detective", "And how many quakes did it miss?"),
@@ -1243,7 +1257,7 @@ stations had data in the archive, 7 were seen but not confirmed, and 8 weren't s
 coverage is thinnest (Imperial Valley and the Salton Sea).</li>
 <li>Below M2 is outside the magnitude training range; those sizes read slightly high but stay under the M3 push floor.</li>
 </ul>
-<h3>Fixing swarms without buying false alarms</h3>
+<h3>Catching more quakes in swarms</h3>
 <p>Most misses were a second quake absorbed into the first: an <strong>echo window</strong> (a new event this close to a declared
 one counts as its coda) and a <strong>station rest period</strong> (no new pick this soon after the last) hid it. I swept 32
 configurations on <strong>validation</strong> days only (12 swarm days, including Ridgecrest 2019, plus 10 quiet days), with an
@@ -1263,7 +1277,7 @@ chance baseline. Pushes are switched on only once confirmed precision on live da
 magnitudes match the catalogue.</p>"""
 
     ops = f"""
-<p>A model that's right today can quietly go stale. <strong>QuakeOps</strong> makes the system maintain itself, and a
+<p><strong>QuakeOps</strong> handles retraining, promotion and drift monitoring. A
 retrained model can only replace the live one by proving, statistically and on replayed days, that it's at least as good.</p>
 {flow([("Data", "monthly append; older months never change", False),
        ("Train", "challenger logged to MLflow with commit, data hash, seeds", False),
@@ -1292,7 +1306,7 @@ compares each station with its training noise: ok, watch (1 feature drifted) or 
 drifting days in a row.</p>
 <p>Drift features started logging on Oct 6, 2026, which is why the station pills still read "no data": the first
 statuses arrive with the next daily run.</p>
-<p class="note"><strong>Status, honestly:</strong> the registry, daily pull, drift logging, /health page and CI/CD deploys
+<p class="note"><strong>Status:</strong> the registry, daily pull, drift logging, /health page and CI/CD deploys
 are live. The gate has been checked on a dry run (champion vs. itself); the first end-to-end monthly retrain hasn't run yet.</p>
   </div>
 </div>"""
@@ -1306,7 +1320,7 @@ notifications, and an update gate for breaking releases.</p>
 {fig(C.seismic_system(), "Offline, the PC builds datasets, trains on the GPU and replays archived days. Online, the VM runs the same engine on the live stream. QuakeOps connects them through the MLflow registry.", "Architecture")}
 {tiles([("One station list", "network.py is imported by the builder, daemon, API, scorer and replay; every station must stream on the public relay."),
         ("Self-checking checkpoints", "Models carry their normalizers and station list; the daemon refuses a model trained on a different network."),
-        ("Privacy by design", "Subscriptions store station codes, a push token and an alert speed. Never a location: the home used for shaking estimates stays on the phone."),
+        ("What the server stores", "Subscriptions store station codes, a push token and an alert speed, and no location. The home used for shaking estimates stays on the phone."),
         ("CI/CD", "GitHub Actions: ruff, the pytest suite, the daemon selftest and the site build on every change; tar deploy to the VM on main.")])}
 {diagram(rel, "seismicsocal-architecture.webp", "earthquakeDiagram.png", "SeismicSoCal code-level architecture diagram",
          "Code-level view: the web and mobile app (coverage map, push registration, native notifications, and the on-device shaking estimate, which fetches its coefficients from the API); the HTTP API, which spawns the live stream daemon; detection and alerts, where one event pipeline scores windows with the detection model, picks and locates, sizes events with the magnitude model and estimates shaking before push dispatch through Firebase; models and evaluation (detector and magnitude training, the dataset builder, and the archive replay that re-runs the same engine); and the data layer over the SeedLink stream, the USGS catalogue and the SCEDC waveform service.", scroll=True)}
@@ -1328,8 +1342,8 @@ differ more than the 0.42-level average, which is measured over 10 km report cel
         + panel("results", "Results vs. classical seismology", results, num="02")
         + panel("live", "The live pipeline &amp; alerts", live, num="03")
         + panel("shaking", "Shaking at your home (MMI)", shaking, num="04")
-        + panel("replay", "The acceptance test: 80 real days", replay, num="05")
-        + panel("quakeops", "QuakeOps: production ML", ops, num="06")
+        + panel("replay", "Acceptance test: a replay of 80 held-out days", replay, num="05")
+        + panel("quakeops", "QuakeOps: retraining, promotion gate and drift", ops, num="06")
         + panel("deploy", "Deployment &amp; architecture", stack, num="07")
         + pager(rel, ("projects/academy-of-testers/", "Academy of Testers"), ("projects/bearlm/", "BearLM")))
 
@@ -1362,7 +1376,7 @@ differ more than the 0.42-level average, which is measured over 10 km report cel
                "detector's 0.9998.</p>")
         + info("What is — a chance baseline?",
                "<p>Shift every declared event by an hour and score it again. Real detections stop matching the "
-               "catalogue; coincidences in a busy catalogue don't. Precision only means something next to that number.</p>"))
+               "catalogue; coincidences in a busy catalogue don't. Whatever still matches is the chance rate that precision is compared with.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -1421,20 +1435,20 @@ question/passage pair together to pick the best four.</p>
 <h3>A benchmark with exact gold labels</h3>
 <p>Instead of hand-labelling relevance, the eval set is <strong>generated from real corpus chunks</strong>. Each
 question is written from one specific chunk, so that chunk's <code>(course, section, chunk_id)</code> is the exact
-answer key. recall@k then asks a precise question: did retrieval surface the true source? It's a synthetic
+answer key. recall@k then measures whether retrieval surfaced the true source. It's a synthetic
 benchmark with real gold labels, 50 questions across the courses.</p>"""
 
     grounding = f"""
-<p>Better retrieval isn't enough on its own. The generator also has to <em>stay inside</em> what was retrieved.
+<p>Once the right passages are retrieved, the generator still has to <em>stay inside</em> what was retrieved.
 Four defenses work together:</p>
-{tiles([("Confidence gate", "The cross-encoder scores every chunk. Below 0.02 it's dropped, and if nothing clears the bar, BearLM refuses instead of guessing."),
+{tiles([("Confidence gate", "The cross-encoder scores every chunk. Below 0.02 it's dropped, and if nothing clears the bar, BearLM refuses."),
         ("Strict prompt", "Answer only from the context, otherwise return an exact refusal string. Temperature 0, 8K context."),
         ("Query rewriting", "Optionally rewrites vague questions into sharper retrieval queries, and the UI shows which query was used."),
         ("Page citations", "Deduplicated (course, section) citations that open the source PDF at the cited page.")])}
 {chat([("wizard", "What happens when the course materials don't cover the question?"),
-       ("berkeley", "BearLM refuses instead of guessing, and every answer it does give cites its sources."),
+       ("berkeley", "BearLM refuses, and every answer it does give cites its sources."),
        ("wizard", "No making things up, then. Respect.")])}
-{beside(fig(C.ragas_chart(), "RAGAS with a local Llama 3.1 judge. Better context in gives better-grounded answers out: faithfulness 0.55 → 0.83, relevancy 0.80 → 0.97."), "", "left")}
+{beside(fig(C.ragas_chart(), "RAGAS with a local Llama 3.1 judge. With better retrieved context the answers are better grounded: faithfulness 0.55 → 0.83, relevancy 0.80 → 0.97."), "", "left")}
 <p class="note"><strong>Reported honestly:</strong> the RAGAS runs are small (n = 6) with a small local judge, and on one
 hybrid sample the judge couldn't produce parseable output, so RAGAS dropped it. The retrieval ablation (n = 50) is the
 stronger evidence. The gate threshold is calibrated to bge's sigmoid scores (off-topic ≈ 0.0, real matches ≥ ~0.04).
@@ -1447,7 +1461,7 @@ stronger evidence. The gate threshold is calibrated to bge's sigmoid scores (off
        ("Load", "Chroma vectors · BM25 index · SQLite analytics", False)])}
 <p>Re-ingesting rebuilds the whole store, about 10.4K chunks. On Windows, firing thousands of embedding
 requests at a local server runs into socket exhaustion (<code>WSAENOBUFS</code>), so embedding is batched with
-retry and backoff. The pipeline then finishes reliably instead of dying halfway through. The BM25 index (~40 s
+retry and backoff, which lets the full run finish. The BM25 index (~40 s
 to build over 10K docs) is pre-warmed on a background thread at startup and cached.</p>
 <p>A <code>BACKEND=local|openai</code> flag keeps the original OpenAI + MongoDB Atlas path working for
 side-by-side comparison. Local costs <strong>$0.0000/query</strong> against roughly $0.0006 for OpenAI, with a median
@@ -1457,7 +1471,7 @@ answer time of about 6 s on an 8 GB RTX 4060.</p>
          "The learner uses the web and Projects interfaces through a FastAPI HTTP API. Answer orchestration (rag.py) combines hybrid retrieval, confidence reranking and the answer model over Ollama. Corpus ingestion extracts, splits and embeds course materials into vector collections.", scroll=True)}"""
 
     product = f"""
-<p>BearLM is a full product, not just a script: a FastAPI backend and a hand-built vanilla-JS frontend
+<p>BearLM has a FastAPI backend and a hand-built vanilla-JS frontend
 (marked, DOMPurify, KaTeX, all vendored locally) that renders Markdown tables, code blocks and LaTeX.</p>
 {tiles([("Projects", "Bring your own PDFs, keep multiple persistent chats, and get project-first answers that fall back to the course corpus."),
         ("Corpus scoping", "Per-project checkboxes choose which courses an answer may fall back on."),
@@ -1536,9 +1550,9 @@ $0, inside every service's free tier.</p>
     "the agent.",
     "Forecast daily entries at all 50 stations 14 days ahead with global LightGBM quantile models, cutting MAE "
     "<strong>48%</strong> against a seasonal-naive baseline (283 vs 549) under walk-forward validation with bootstrap "
-    "CIs, and calibrated the band with split-conformal prediction, reporting its 73% coverage honestly.",
+    "CIs, and calibrated the band with split-conformal prediction; it covers 73% of back-test days against an 80% target.",
     "Shipped a guarded text-to-SQL agent (sqlglot AST checks, a read-only service account, BigQuery dry runs, byte "
-    "budgets) and proved its retrieval step in a <strong>pre-registered A/B test</strong> with a power analysis: "
+    "budgets) and tested its retrieval step in a <strong>pre-registered A/B test</strong> with a power analysis: "
     "execution accuracy <strong>27% → 50%</strong> on 66 gold-SQL questions, exact McNemar p = 0.004.",
     "Ran a <strong>pre-registered</strong> difference-in-differences study of the 2018 eBART extension against 34 "
     "control stations with placebo inference validated on synthetic data: the line gained about <strong>+4.2%</strong> "
@@ -1546,7 +1560,7 @@ $0, inside every service's free tier.</p>
     "Analysed the <strong>15 BART stations</strong> named for possible closure with four stated ridership rules, "
     "checked the press's claims against the warehouse, and let visitors close them on the live map.",
 ])}
-<p class="note"><strong>Not built, and said so:</strong> the Looker Studio and Power BI reports (a build guide, DAX
+<p class="note"><strong>Not built:</strong> the Looker Studio and Power BI reports (a build guide, DAX
 measures and a check week are ready) and a QLoRA text-to-SQL fine-tune, deferred. The live agent runs Gemini, which
 hasn't been scored on the full eval set; the 50% is a local Llama 3.1 8B.</p>"""
 
@@ -1556,7 +1570,7 @@ hasn't been scored on the full eval set; the 50% is a local Llama 3.1 8B.</p>"""
        ("Model", "dbt: staging → SCD2 snapshot → dims / facts → KPI marts in BigQuery, 84 tests", True),
        ("Forecast", "weekly LightGBM retrain writes forecasts + a run log with every metric and CI", False),
        ("Serve", "FastAPI on Cloud Run reads the marts with a 100 MB per-query cap", False)])}
-<h3>Cleaning that explains itself</h3>
+<h3>Cleaning, with a reason for every dropped row</h3>
 <p>The Spark job reads the headerless BART files with an explicit schema and <em>permissive</em> corrupt-record
 handling, then tags each row as kept or dropped for one reason: malformed, bad date or hour, bad station code,
 non-positive trips, or a duplicate (the latest source file wins). Kept rows get weekday and US-holiday flags and are
@@ -1595,7 +1609,7 @@ scaled by each station's 28-day level, so one model fits Embarcadero and the qui
              1300, lambda v: f"{v:,.0f}", {"lgb": ("LightGBM", C.OURS), "naive": ("Seasonal naive", C.BASE)},
              "Back-test error, daily entries per station (lower is better)", ticks=[0, 400, 800, 1200]),
      "Walk-forward back-test: 12 origins every 14 days, the first 6 for calibration and the last 6 for testing, pooled over 50 stations and 14 horizons. MAE 283 [216, 365] against 549 [417, 698] for the seasonal-naive baseline; the improvement's 95% bootstrap interval (paired over stations) is 200 to 340 entries a day.")}
-<h3>An error band that says how often it holds</h3>
+<h3>Calibrating the error band</h3>
 <p>The band is calibrated with rolling <strong>split-conformal</strong> prediction on conformalised quantile scores:
 each test fold widens the p10–p90 band using only the folds before it, so a fold never calibrates itself. It held the
 actual value on <strong>73%</strong> of back-test days against an 80% target (raw p10–p90: 70.5%; the Christmas fold
@@ -1607,7 +1621,7 @@ label switches to "80% range" only when a back-test earns it.</p>
     causal = f"""
 <p class="lede">Did the 2018 eBART extension to Antioch bring new riders to BART, or just move existing ones to the
 new stations?</p>
-<p>The trick is the unit. A rider who used to drive to Pittsburg/Bay Point and now boards at Antioch leaves the
+<p>A rider who used to drive to Pittsburg/Bay Point and now boards at Antioch leaves the
 <em>corridor total</em> unchanged; a rider new to BART raises it. So the study measures both the three old stations
 and the whole Concord → Antioch line summed into one unit, against 34 BART stations far from the line, with station
 and week fixed effects on log weekly entries.</p>
@@ -1649,11 +1663,11 @@ tables with <strong>5 retrieved example queries</strong> and one repair retry, a
 cites the SQL it ran. The page streams the steps over server-sent events (thinking → SQL → rows → answer), offers
 "Show SQL" and "Copy SQL", keeps the last five answers across a reload, and refuses off-topic questions with
 suggestions. It has been live on <strong>Gemini</strong> since 2026-10-16, with Ollama locally.</p>
-<h3>Guardrails, in layers</h3>
+<h3>Guardrail layers</h3>
 {tiles([("sqlglot AST check", "Exactly one SELECT, a table allowlist (the marts only, never the 68M-row hourly fact), no DDL / DML, file readers or INFORMATION_SCHEMA; LIMIT added or clamped to 200."),
         ("Read-only identity", "The service account can only read the marts and ml datasets; BigQuery dry-runs every query and refuses anything over 1 GB, then runs it with that as the billing cap and a 20 s job timeout."),
         ("Budgets", "10 questions per IP per minute and a 10 GB daily byte budget; a Gemini quota error ends the stream with a clear message instead of a 500."),
-        ("Evaluated, not vibes", "66 in-scope questions with gold SQL scored by execution accuracy (the result rows must match), plus 10 off-topic questions that must be refused; an oracle run scores 1.0 by construction.")])}
+        ("Scored by execution", "66 in-scope questions with gold SQL scored by execution accuracy (the result rows must match), plus 10 off-topic questions that must be refused; an oracle run scores 1.0 by construction.")])}
 <h3>A/B test: do retrieved examples help?</h3>
 {fig(C.hbars([("All 66 questions", [("a", 0.27), ("b", 0.50)]), ("KPI (15)", [("a", 0.27), ("b", 0.53)]),
               ("Station (17)", [("a", 0.47), ("b", 0.47)]), ("Trend (15)", [("a", 0.07), ("b", 0.40)]),
@@ -1733,7 +1747,7 @@ takes no position on the measure, cites 13 sources, and will need revisiting aft
        " The top of the live page at 1440 px: the hero with its live strip and departure board, the live map with "
        "trains on every line at 8:00 AM, and the what-if card that closes BART's listed stations.", label="Screenshot",
        alt="BayRidership desktop page: hero with a departure board, a map of the Bay Area with trains on six BART lines, and a what-if stations card")}
-<h3>Every train, from the timetable, in the browser</h3>
+<h3>How the map draws every train from the timetable</h3>
 <p>The map needs no API. A build step turns BART's GTFS feed into 88 KB of JSON: 50 stations, 51 track edges with
 their lines in lane order, 11 service calendars, 34 stop patterns and 3,762 trips in minutes. For the current Pacific
 time the browser picks the services running that day (weekday rules plus holiday exceptions, including the previous
@@ -1750,7 +1764,7 @@ page says so.</p>
        " The live map band at 390 px: a 1:1 map, nine hub labels, controls stacked under it. Sizing is fluid from "
        "320 px phones to 2560 px screens, and the whole page has a dark mode.", label="Screenshot",
        alt="BayRidership on a phone: the BART map with trains and the time controls below it", phone=True)}
-<p>Vanilla ES modules, no framework, design tokens that mirror a versioned design document, and a style guide page
+<p>The site is vanilla ES modules with no framework, design tokens that mirror a versioned design document, and a style guide page
 that renders every token and component in both themes. axe finds 0 contrast violations in light and dark mode at 390
 and 1440 px; Lighthouse mobile scores 98 / 100 / 100 (performance / accessibility / best practices, LCP 2.3 s, CLS 0).
 Reduced-motion users get positions every 30 s with no animation; a polite live region announces the train count once
@@ -1818,7 +1832,7 @@ from committed inputs. Expected cost: $0.</p>
                "The spread of those fake effects shows how big an effect pure noise can produce.</p>")
         + info("What is — split-conformal calibration?",
                "<p>Score how far past the model's band the truth fell on earlier weeks, then widen the band by the "
-               "80th-percentile score. Done on folds the model hasn't seen, it makes the band's coverage honest.</p>")
+               "80th-percentile score. Because those folds are ones the model hasn't seen, the coverage figure isn't inflated.</p>")
         + info("What is — McNemar's test?",
                "<p>When two methods answer the same questions, only the questions they disagree on carry information. "
                "McNemar's test asks whether one method wins those disagreements more often than a coin flip would.</p>"))
@@ -1871,14 +1885,14 @@ workbook per campus, and to <strong>BigQuery</strong>.</p>
     "Shipped a public site with a page per campus, keyboard-readable SVG charts and a shared cheer counter, and a "
     "read-only check that the live data files match the pipeline's export <strong>byte for byte</strong>.",
 ])}
-<p class="note"><strong>Not built yet, and said so:</strong> the Looker Studio report on the BigQuery copy. The
+<p class="note"><strong>Not built yet:</strong> the Looker Studio report on the BigQuery copy. The
 forecast's first scheduled month hasn't completed, so this page quotes no realised forecast error. The code is in a
 private repository.</p>"""
 
     rents = f"""
 <p>Each campus's number is the <strong>median</strong> of Zillow's observed rent index across the ZIP codes in its
-ring that report rent that month. A median, so one very expensive ZIP code can't pull the figure up the way an average
-would; and the count of reporting ZIP codes travels with the number everywhere it is shown, because some rings are
+ring that report rent that month. Using the median means one very expensive ZIP code can't pull the figure up the way an average
+would. The count of reporting ZIP codes is shown with the number everywhere, because some rings are
 thin.</p>
 {fig(C.hbars([("UC Santa Barbara", [("r", 4862)]), ("UC Irvine", [("r", 3501)]), ("UCLA", [("r", 3354)]),
               ("UC San Diego", [("r", 3278)]), ("UC Berkeley", [("r", 2887)]), ("UC Riverside", [("r", 2489)]),
@@ -1891,7 +1905,7 @@ thin.</p>
         ["UCLA", "$3,354", "+1.1%", "6"], ["UC San Diego", "$3,278", "+3.6%", "6"],
         ["UC Berkeley", "$2,887", "+4.0%", "12"], ["UC Riverside", "$2,489", "+2.4%", "3"],
         ["UC Davis", "$2,366", "+4.8%", "2"], ["UC Merced", "$1,924", "+1.1%", "2"]], num_cols=(1, 2, 3))}
-<h3>The ring: one rule, and a list anyone can review</h3>
+<h3>How the ring is defined</h3>
 <p>A script reads the Census Bureau's ZIP-code file and each campus's coordinates and keeps the ZIP codes within
 5 km, or the three nearest where a campus has fewer. That rule misses student neighbourhoods a little farther out and
 includes places where students don't rent, so a seed file of overrides adds and drops ZIP codes one line at a time,
@@ -1909,7 +1923,7 @@ the eight campus cities; the other campus pages hide those parts.</p>"""
        ("Load", "typed raw tables in Postgres 16, each file loaded once", False),
        ("Model", "dbt: staging, a fact per source, a campus mart and an event-study mart, 61 tests", True),
        ("Forecast and publish", "the gate, then JSON, Excel, BigQuery and the raw archive in GCS", False)])}
-<h3>Seven sources, each on its own terms</h3>
+<h3>The seven sources</h3>
 {table(["Source", "What it adds"],
        [["Zillow observed rent index and home value index", "rent and home values by ZIP code, monthly"],
         ["HUD Small Area Fair Market Rents", "the 2-bedroom fair market rent by ZIP code, yearly"],
@@ -1921,11 +1935,11 @@ the eight campus cities; the other campus pages hide those parts.</p>"""
 <p>Not every source may be downloaded by a script. Where a source's terms rule that out, its DAG reads a file the
 owner downloaded in a browser instead of fetching it, and the rest of the path is the same. Every credit line a
 source asks for is part of the published data files, and the check on the published files fails if one is missing.</p>
-<h3>Assets, not a clock, decide what runs</h3>
+<h3>Assets decide what runs</h3>
 <p>Each source's load updates an Airflow asset. A load triggers the dbt build; a finished build triggers the forecast
 and the publish; a promoted model triggers the publish again. So one new Zillow file flows through to the public site
 with no manual step, and a failing source test stops the marts until a person looks.</p>
-{tiles([("Quarantine, don't guess", "A file that fails its suite moves to a quarantine folder and is never loaded. The manifest records what was loaded, quarantined or pruned."),
+{tiles([("Quarantine", "A file that fails its suite moves to a quarantine folder and is never loaded. The manifest records what was loaded, quarantined or pruned."),
         ("Retention", "A daily DAG prunes raw files the models no longer read and lists each one. Raw files are also archived gzipped in a cloud bucket."),
         ("One task at a time", "The DAGs share one warehouse on a small shared VM, so Airflow runs a single task at a time and every DAG starts paused."),
         ("The same code locally", "Docker Compose runs Postgres, Airflow and MLflow on a laptop; a soak test runs every DAG on test data, then watches the idle stack for restarts.")])}"""
@@ -1959,7 +1973,7 @@ the log of the ratio between the two, so a shift that hits the whole metro cance
         ("Inference", "Prais-Winsten estimation with AR(1) errors and 95% t intervals, because a smoothed rent index is strongly correlated month to month.")])}
 <h3>Verdicts fixed in advance</h3>
 <p>The wording of every possible result was written before any real Census release was loaded. An interval that
-contains zero reads "no detectable effect" and is shown with its bounds: a bounded null, not a zero. If the ring and
+contains zero reads "no detectable effect" and is shown with its bounds as a bounded null. If the ring and
 its controls were already drifting apart before the opening, the verdict adds "not a credible causal estimate". The
 trend-robust estimate can qualify the main verdict but can never turn a null into an effect.</p>
 {chat([("detective", "So does new campus housing lower rent next door?"),
@@ -2098,7 +2112,7 @@ window with <strong>React</strong> pages shows the result.</p>
     "run, and the one failure was a fault in the test.",
 ])}
 <p class="note"><strong>Reported honestly:</strong> every accuracy and timing figure on this page was measured on
-invented emails written for the build, not on real mail. Real-mail accuracy is unmeasured until a labelled set of
+invented emails written for the build. Real-mail accuracy is unmeasured until a labelled set of
 real messages exists. The app is Windows only, the installer is unsigned, and Outlook.com accounts are not supported.
 The code is in a private repository.</p>"""
 
@@ -2110,7 +2124,7 @@ The code is in a private repository.</p>"""
        ("Record", "one event appended; the status is derived from the events", False)])}
 <p>Each stage writes its own table, so any stage can be re-run without reading the mailbox again. The mailbox is
 opened read-only, so the app cannot mark, move or delete anything, and attachments are never stored.</p>
-<h3>A classifier that is careful about one mistake</h3>
+<h3>A rule-based classifier that avoids false rejections</h3>
 <p>The first classifier is a set of rules. Marking a live application rejected is the costliest error, so a status
 phrase is ignored when the sentence is conditional ("if you are not moving forward…", "until the position has been
 filled"), a status needs a job word nearby, and a rejection that sits beside "we received your application" becomes a
@@ -2153,7 +2167,7 @@ from a merely similar name now starts a new application; interviews, rejections 
 key built from the message and the application, so processing the same mailbox twice adds nothing.</p>
 {tiles([("Forward only", "Email evidence moves a status from Applied to Interviewing to Offer. A later confirmation never demotes an interview."),
         ("Reopening", "After a rejection, a later interview or offer email reopens the application; a later confirmation does not."),
-        ("A person outranks the pipeline", "A status set by hand stays until a newer email arrives, and then the email shows as a suggestion, not a silent change."),
+        ("A person outranks the pipeline", "A status set by hand stays until a newer email arrives, and then the email shows as a suggestion to accept or dismiss."),
         ("Archive with a fuse", "Archiving starts a four-second fuse with Undo; the archive event is written only when the fuse ends.")])}
 {image(rel, "jm-review.png",
        " The review list: emails the pipeline was unsure about, each with a direct question and one-click answers.",
@@ -2216,7 +2230,7 @@ a builder, a checker that ran every check and never edited code, and the archite
 {tiles([("Tests written early, run once", "Each phase wrote its tests without running them; fast checks (it compiles, it lints, it starts, a command prints the expected numbers) guarded each phase, and the whole suite ran in the last one."),
         ("A regression stops the loop", "Any check that had passed and then failed halted the build. It fired once, when a timing check ran on a machine short of memory, and the run was repeated on a quiet machine."),
         ("Reviews that reject", "Most phases were sent back once: a classifier that read “if you are not moving forward” as a rejection, a typed date that landed a day early west of UTC, a password that could be left behind in the credential store."),
-        ("Checks that cannot be argued with", "Vendored interface components are pinned byte for byte to their published source, and the preview data is compared field by field with the real local API.")])}
+        ("Exact-match checks", "Vendored interface components are pinned byte for byte to their published source, and the preview data is compared field by field with the real local API.")])}
 <p>By the end the build carried 110 checks. The installer is produced by one command: the pipeline is frozen, the
 window is compiled in release mode and both are bundled into a per-user Windows installer.</p>
 <p class="note"><strong>Still open:</strong> accuracy on real mail, Microsoft sign-in for Outlook.com, real job-board
@@ -2429,13 +2443,13 @@ def lbnl(ctx):
 the spike, everything downstream slows down.</p>
 <p>My work has two halves. One is building a forecaster that beats a hard-to-beat naive baseline. The other is
 finding out, with evidence, <em>how predictable the peaks are at all</em>, so the team designs features and models
-around a real limit instead of chasing it. I present to the group every week, and each week's question comes out of
+around a real limit. I present to the group every week, and each week's question comes out of
 the last one's result.</p>
 {bullets([
     "Implemented <strong>PatchTST</strong> (PyTorch / NeuralForecast) for multivariate forecasting of cache traffic at 1-, 7- and "
     "30-day horizons, choosing the lookback window with rolling cross-validation and <strong>beating a persistence baseline on "
     "every variable and horizon</strong>, by up to 24% RMSE.",
-    "Showed that the missed traffic peaks are a <strong>predictability limit, not a modelling flaw</strong>: changing the loss or "
+    "Showed that the missed traffic peaks are a <strong>limit on what past traffic can predict</strong>: changing the loss or "
     "forecasting high on purpose missed the same spikes, which redirected the work toward new input signals.",
     "Built reproducible <strong>Pandas EDA pipelines</strong> over several years of XCache logs from three regional caches, and "
     "showed that the best amount of history depends on whether traffic is calm or erratic.",
@@ -2454,7 +2468,7 @@ Each day has six variables: how many file accesses there were and how much data 
 served from the cache.</p>
 <h3>Exploring before modelling</h3>
 <p>I built <strong>reproducible Pandas pipelines</strong> that load, clean, resample and plot every site the same way and rerun
-end to end on new data. Exploration shaped every later decision:</p>
+end to end on new data. What the exploration found:</p>
 {tiles([("Structure in the data", "Total accesses always equal hits plus misses, for counts and volumes, a constraint a model should respect."),
         ("Sites differ", "The largest cache has the most traffic and the best hit rate; the smallest is more volatile. One model shouldn't be assumed to fit every site, so sites are modelled separately."),
         ("Right-skewed peaks", "Most days are ordinary and a few are extreme. The rare tail is what operations care about most."),
@@ -2465,7 +2479,7 @@ end to end on new data. Exploration shaped every later decision:</p>
 long-horizon forecasting. Given the last <em>L</em> days of a series (the <strong>lookback</strong>), it predicts the next
 <em>H</em> days (the <strong>horizon</strong>) in one shot, instead of predicting one day and feeding that guess back in. One set of
 weights serves every variable.</p>
-<p>Its key idea is borrowed from vision transformers, which cut an image into small squares and treat each square as a
+<p>Its main idea is borrowed from vision transformers, which cut an image into small squares and treat each square as a
 "word". PatchTST cuts a time series into short <strong>patches</strong> of consecutive days and treats each patch as a token.</p>
 {beside(fig(C.patchtst_schematic(), "How PatchTST sees a lookback window: patches become tokens, a channel-independent Transformer encodes them, and a head emits the forecast. Schematic only, not real data.", "Schematic"), "", "right")}
 <h3>How a forecast is made, step by step</h3>
@@ -2499,18 +2513,17 @@ way they do when a model feeds its own predictions back in.</li>
 <li><strong>Patches follow the lookback:</strong> 16-day patches with an 8-day stride once the window is long enough; for very
 short windows the patch shrinks to half the window, since a patch can't be longer than its input.</li>
 <li><strong>Scaling:</strong> each variable standardised, because counts and data volumes live on very different scales.</li>
-<li><strong>Chosen deliberately:</strong> lookback, horizon, model size, dropout and loss were each tested as experiments (below),
-not left at defaults.</li>
+<li><strong>Chosen deliberately:</strong> lookback, horizon, model size, dropout and loss were each tested as experiments (below).</li>
 </ul>"""
 
     model = f"""
-<h3>Step 1 · Set a bar worth clearing</h3>
+<h3>Step 1 · Baselines and the hold-out split</h3>
 <p>For traffic, "tomorrow looks like today" (<strong>persistence</strong>) is a strong baseline because most of the signal is
 momentum and weekly rhythm. I compared PatchTST with persistence and a linear model on a <strong>chronological</strong>
 hold-out (never a random split, which would leak the future), with early stopping on validation loss to avoid overfitting.</p>
-<h3>Step 2 · Look past the headline number</h3>
+<h3>Step 2 · Plot the forecasts against the actual traffic</h3>
 <p>The first model beat both baselines on most variables, including the one operators care about. Plotting the forecasts
-against reality told a different story: it tracked the typical level but <strong>smoothed straight through the spikes</strong>,
+against reality showed a problem: the model tracked the typical level but <strong>smoothed straight through the spikes</strong>,
 and on the low-volume miss variables it collapsed toward zero. Those variables only looked fine because their true values
 are mostly near zero too.</p>
 <p><strong>Conclusion:</strong> RMSE rewards being right on average, so a model that plays it safe near the typical value can
@@ -2518,7 +2531,7 @@ score well while missing every spike. From then on I judged every experiment on 
 {image(rel, "lbnl-forecast-vs-actual.png", "Daily cache-hit volume over the test period: actual vs. the first PatchTST model. The forecast tracks the everyday level and rhythm but stays far below the rare spikes.", alt="Daily hit volume, actual vs PatchTST")}"""
 
     tuning = f"""
-<p>I chose each hyperparameter deliberately rather than leaving defaults, and tested the one that mattered most, the
+<p>I set each hyperparameter by testing it, and ran the one that mattered most, the
 amount of history, as an experiment of its own.</p>
 {tiles([("Lookback", "How many past days the model sees. Swept from a few days to most of a year, separately for each horizon."),
         ("Horizon", "1, 7 and 30 days, each evaluated on its own so a good short horizon can't hide a weak long one."),
@@ -2563,7 +2576,7 @@ from softest to strictest (MAE, three Huber settings, MSE). All five produced ne
 same spikes by the same amount. Measured against the MAE-trained model, every stricter loss was equal or slightly worse,
 on peak days too. <strong>Rejected.</strong></p>
 {image(rel, "lbnl-loss-relative.png", "Each loss compared with the MAE-trained model (0 = same). If stricter losses chased peaks, the dark bars would be negative.", "Figure", alt="Change in error vs. the MAE loss")}
-{beside(image(rel, "lbnl-loss-comparison.png", "Prediction vs. actual for five training losses (MAE, Huber δ = 0.5 / 1.0 / 2.0, MSE). The shaded areas are the peak gap: under every loss the largest spikes are still under-predicted.", alt="Prediction vs actual for five loss functions"), "Five losses, same story: the biggest spikes stay under-predicted.", "right")}
+{beside(image(rel, "lbnl-loss-comparison.png", "Prediction vs. actual for five training losses (MAE, Huber δ = 0.5 / 1.0 / 2.0, MSE). The shaded areas are the peak gap: under every loss the largest spikes are still under-predicted.", alt="Prediction vs actual for five loss functions"), "All five losses under-predict the biggest spikes.", "right")}
 <h3>Hypothesis 2 · Just forecast high on purpose</h3>
 <p>For provisioning, over-shooting is cheaper than falling short, so I trained <strong>percentile forecasts</strong> that aim
 above the median. Raising the target added spare capacity on ordinary days but barely changed how often a busy day was
@@ -2582,7 +2595,7 @@ setup at all, or does it depend on the kind of traffic?</p>
 model on each with the same chronological split, and repeated the lookback-by-horizon comparison inside both.</p>
 {tiles([("Calm traffic", "The best amount of history grows with the horizon: short windows a day or a week ahead, and long history starts to pay off a month ahead."),
         ("Erratic traffic", "A window of the last few days wins almost everywhere. Rapid shifts make long history stale, so it turns into misleading noise."),
-        ("Same model, different worlds", "Error was dramatically higher in the erratic era, so a single model judged on mixed data hides how differently it behaves in each.")])}
+        ("Error by era", "Error was far higher in the erratic era, so a single model judged on mixed data hides how differently it behaves in each.")])}
 {image(rel, "lbnl-regimes.png", "For each era, every lookback's error divided by the best lookback for the same variable and horizon (1.0 = best, outlined). Ratios only: absolute errors differ hugely between the eras.", "Figure", alt="Heatmaps of error relative to the best lookback, calm vs erratic era")}
 <p><strong>Conclusion:</strong> rather than one model for all traffic, <strong>detect the regime and use a model tuned for it</strong>.
 The next step is a measurable seasonality or regime signal that says in advance whether traffic will be calm or erratic,
@@ -2592,7 +2605,7 @@ and fixing patch length and stride for each lookback.</p>"""
         panel("overview", "Overview", overview, num="01")
         + panel("patchtst", "What PatchTST is &amp; how it works", how, num="02")
         + panel("problem", "The problem &amp; the data", problem, num="03")
-        + panel("model", "A baseline worth beating", model, num="04")
+        + panel("model", "The first model and its baselines", model, num="04")
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
@@ -2613,7 +2626,7 @@ and fixing patch length and stride for each lookback.</p>"""
                 body_cls="panel-body tight")
         + info("What is — persistence?",
                "<p>The naive forecast: predict that the next value equals the last observed one. For traffic with "
-               "strong momentum it's surprisingly hard to beat, which makes it the honest bar.</p>")
+               "strong momentum it's hard to beat, which makes it the baseline to compare against.</p>")
         + info("What is — XCache?",
                "<p>A regional data cache for scientific computing. When a physicist reads a file, a <b>hit</b> serves "
                "it from the nearby cache; a <b>miss</b> fetches it over the wide-area network and keeps a copy for "
@@ -2639,11 +2652,11 @@ def cbu(ctx):
 
     overview = f"""
 {stats([("7", "ML models benchmarked", "inverse-FEA diagnosis"),
-(full.STAT if full else ("~0.10", "R² ceiling", "a data limit, not a model limit")),
+(full.STAT if full else ("~0.10", "R² ceiling", "set by the data")),
         ("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"),
         ("0.951", "Magnitude R²", "vs 0.886 baseline")])}
 <hr class="dotted">
-<p class="lede">Two research problems, one habit: find out what the data can actually support before promising anything.</p>
+<p class="lede">This internship has two research problems. In both, I started by finding out what the data could support.</p>
 {bullets([
     "Diagnosed the root cause of a stalled <strong>inverse-FEA predictor</strong> by benchmarking 7 ML models (Random Forest, XGBoost, "
     "HGB/ExtraTrees ensembles, PCA pipelines), running paired clean-vs-noisy analysis and a noise-identifiability sweep. This proved the "
@@ -2681,16 +2694,16 @@ publication. The method is below.</p>
 {tiles([("Leak-free scaling", "Scalers fit on the training fold only, never on the rows being scored."),
         ("Out-of-fold scores", "Every reported R² comes from rows the model never trained on."),
         ("Predict-the-mean", "Each target is compared with a trivial baseline, the real test for a hard target."),
-        ("Overfitting, measured", "Train-minus-out-of-fold gap reported per target, so a good score can be shown to be real.")])}
+        ("Overfitting gap", "Train-minus-out-of-fold gap reported per target, so a good score can be shown to be real.")])}
 <p>I also dropped the chained setup (feeding one target's prediction into the next). The targets are drawn
-independently, so chaining passes noise along rather than signal.</p>
+independently, so chaining only passes noise along.</p>
 
 <h3>Step 2 · Benchmark seven models</h3>
 <p>If the bottleneck is the model, different inductive biases should give different answers. I benchmarked
 <strong>seven model configurations</strong> under the same cross-validation: a baseline random forest, chained random
 forests, and my own models, including boosted / ExtraTrees voting ensembles and PCA pipelines. Every one landed on the same
 ceiling for the hard target, while the easier targets were predicted well by all of them.</p>
-{tip("Seven very different models, one ceiling. That's the data talking.")}
+{tip("Seven very different models hit the same ceiling.")}
 
 <h3>Step 3 · Paired clean vs. noisy data</h3>
 <p>The decisive test was to <strong>train on clean data and on noisy data side by side</strong>. If a target is recoverable
@@ -2710,7 +2723,7 @@ ran an ablation on only the cleanest group. Dropping the noisiest inputs didn't 
 failed on every target until I mean-centred the noisy features onto the clean ones, which fixed a systematic offset and
 recovered the easy targets. The hard target stayed unrecoverable.</p>
 
-<h3>Step 6 · Turn "it doesn't work" into a spec</h3>
+<h3>Step 6 · Noise sweep: how much noise each target tolerates</h3>
 <p>Finally I rebuilt the feature generator, injected Gaussian landmark noise at increasing levels, re-projected through
 the clean PCA and cross-validated each target. The result is an <strong>identifiability curve</strong>: the noise level at
 which each target stops being predictable. At the real measurement noise the hard target is far past that point, and
@@ -2721,10 +2734,9 @@ the curve says how precise the measurements would need to be for it to work.</p>
        ("scholar", "Fix the measurements. The noise sweep says how much cleaner they need to be.")])}
 
 <h3>The outcome</h3>
-<p>Every line of evidence pointed the same way: the <strong>R² ≈ 0.10 ceiling was a data limitation, not a model
-limitation</strong>. That redirected the team from model tuning to the inputs: what's measured, and at what signal
+<p>Every line of evidence pointed the same way: the <strong>R² ≈ 0.10 ceiling comes from the data</strong>. That redirected the team from model tuning to the inputs: what's measured, and at what signal
 quality. In the meantime, the useful outputs are the targets that <em>are</em> identifiable, plus a calibrated prediction
-interval (quantile models) for the hard one instead of a misleading point estimate. A negative result like this saves weeks.</p>"""
+interval (quantile models) for the hard one instead of a misleading point estimate.</p>"""
 
     seismic_sec = f"""
 <p>The second half of the internship is <strong>SeismicSoCal</strong>, deep-learning seismology for Southern California,
@@ -2751,7 +2763,7 @@ retrained model through a six-rule statistical + replay gate, and checks the liv
     approach = f"""
 <p>Both halves of this internship (and my other research) follow the same loop. Here is each step, with what it
 looked like in practice.</p>
-{tip("Research is a loop, not a line.", prop="scholar")}
+{tip("The eight steps run as a loop.", prop="scholar")}
 {research_steps(ctx["cbu_public"])}"""
 
     main_html = (
@@ -2804,7 +2816,7 @@ def numis(ctx):
 <hr class="dotted">
 {bullets([
     "Enabled resumable redemptions for previously unrecoverable transactions by building <strong>Redemption History and Detail "
-    "services</strong> with robust state management and payment-resumption logic, <strong>eliminating a class of stuck-transaction failures</strong>.",
+    "services</strong> that persist each step's state and resume interrupted payments, which <strong>eliminated a class of stuck-transaction failures</strong>.",
     "Reduced redemption action load times by <strong>~85% (~2–3 s to ~300 ms)</strong> by removing redundant function calls to streamline "
     "backend lifecycle APIs, then containerizing and deploying backend services with <strong>Docker</strong> for production readiness.",
 ])}"""
@@ -2822,7 +2834,7 @@ the transaction got <strong>stuck</strong>. There was no record a user or the sy
 <li><strong>Payment-resumption logic</strong>: continue an interrupted redemption from its last confirmed state instead of
 restarting it or abandoning it, guarding against acting twice on the same payment.</li>
 </ul>
-<p>The result is that a whole <strong>class</strong> of failures disappeared. It wasn't one bug fix. The system can now
+<p>This removed a whole <strong>class</strong> of failures, because the system can now
 recover from any interruption between steps.</p>
 <h3>The history views</h3>
 <p>These are the style guides for the account's history views: a list of past submissions with their status, and a
@@ -2868,12 +2880,12 @@ It's only allocated when a serial is assigned to a submission item, so previews 
 
     perf = f"""
 <p>Redemption actions felt slow, taking two to three seconds per action. Profiling the lifecycle APIs showed the time
-wasn't going into real work. It went into <strong>redundant function calls</strong>: the same lookups and checks repeated
+was going into <strong>redundant function calls</strong>: the same lookups and checks repeated
 across the lifecycle of a single request.</p>
 {beside(fig(C.latency_chart(), "Streamlining the backend lifecycle APIs took redemption actions from about 2–3 seconds to about 300 ms, roughly an 85% reduction."), "", "right")}
-<h3>Then: production-ready packaging</h3>
+<h3>Docker packaging and deployment</h3>
 <p>With the services faster and recoverable, I <strong>containerized the backend services with Docker</strong> and deployed
-them. That gave the same build in development and production, reproducible environments, and a clean path to deploy.</p>"""
+them. That gave the same build in development and production, and a clean path to deploy.</p>"""
 
     main_html = (
         image(rel, "numis-hero.webp", "The NumIsToken home screen: tokenize a coin or go to OpenSea, with live gold and silver prices in the top bar.", "Live site", alt="NumIsToken home screen")
@@ -2984,7 +2996,7 @@ that talks to external services. That's also where the pipeline bugs were.</p>
                                             "Image generation", "Debugging"]), body_cls="panel-body tight")
         + info("What is — code coverage?",
                "<p>The share of the codebase that runs during the test suite. It doesn't prove the code is correct, "
-               "but code no test runs is code nobody has checked.</p>"))
+               "but it does show which code no test has ever run.</p>"))
     return h, layout(main_html, rail)
 
 
@@ -3005,7 +3017,7 @@ def aperiohub(ctx):
         ("5", "Research directions", "ML systems · neural nets · open data · LLMs · AI ethics"),
         ("1", "Deliverable", "a concrete, defensible research output")])}
 <hr class="dotted">
-<p class="lede">A research project is only as good as the questions you learned to ask along the way.</p>
+<p class="lede">The aim is for the student to finish with one research result they can explain and defend.</p>
 <p><strong>AperioHub Advisory</strong> (Singapore, UAE and India) runs project-based experiential learning for students and
 early-career professionals alongside its consultancy work. As a <strong>Research Mentor</strong> I guide one high school
 student through a focused research direction in AI and machine learning, from choosing a question to defending the result.</p>
@@ -3013,28 +3025,28 @@ student through a focused research direction in AI and machine learning, from ch
     "Mentor a high school student <strong>one-to-one</strong> through a structured <strong>8–10 session</strong> AI/ML research engagement "
     "(online, roughly one hour a week, scheduled across US and Asia time zones): each session <strong>reviews progress</strong>, "
     "<strong>introduces one new concept or direction</strong> and <strong>assigns a focused task</strong>, so the student ends with a "
-    "<strong>concrete, defensible output</strong> rather than a tour of the field.",
+    "<strong>concrete, defensible output</strong>.",
 ])}
 {tip("The direction is chosen with the student in the first sessions; it isn't fixed yet.")}
 {tiles([
     ("ML systems &amp; model evaluation", "pick a baseline worth beating, hold out data the model never saw, report the gap with its uncertainty"),
     ("Neural networks", "build a small model from the ground up, then ask what it actually learned and where it fails"),
-    ("Applied AI on open datasets", "a real public dataset, a real question, and the cleaning and leakage checks that come with it"),
-    ("Large language models", "evaluate rather than admire: prompts, retrieval and grounding, measured on a fixed question set"),
+    ("Applied AI on open datasets", "one question asked of a public dataset, with the cleaning and leakage checks that come with it"),
+    ("Large language models", "evaluate prompts, retrieval and grounding on a fixed question set"),
     ("AI ethics &amp; bias analysis", "measure a bias claim on data, with a method that someone else could re-run"),
 ])}"""
 
     session = f"""
-<p>Every session runs the same loop, which is what makes the engagement a research project rather than a series of lessons:</p>
+<p>Every session runs the same loop:</p>
 {flow([("Review", "what was done since last time, and what it showed", False),
-       ("Introduce", "one new concept or a change of direction, no more", True),
+       ("Introduce", "a single new concept or a change of direction", True),
        ("Assign", "a focused task to finish before the next session", False)])}
 <p>Sessions are recorded and <strong>AI-assisted notes</strong> are generated automatically, so the student has a reference for
 each session and a running record of the whole project, including the dead ends.</p>
 {chat([("scholar", "What does the student walk away with at the end?"),
        ("explorer", "A question they chose, a method they can explain, a result they can defend, and the record of how they got there."),
-       ("scholar", "So the write-up is the proof, not the slides."),
-       ("explorer", "Right. Honest limits included.")])}"""
+       ("scholar", "So the write-up is what they show for it?"),
+       ("explorer", "Yes, and it includes the limits of the result.")])}"""
 
     bring = f"""
 <p>I teach the loop I use in my own work: a reproducible pipeline, a baseline worth beating, evaluation on data the model
@@ -3109,7 +3121,7 @@ ROLE_PAGES = {
             ("Forecasting against baselines", ["lawrence-berkeley-lab", "bayridership"], "persistence beaten on every variable; station MAE 48% below seasonal naive"),
             ("Experiments and A/B tests", ["bayridership", "academy-of-testers"], "a pre-registered A/B test with McNemar's test; an essay grader A/B-tested against official scores"),
             ("Rare-event error analysis", ["seismicsocal"], "precision next to a chance baseline; every missed M3+ quake sorted by cause"),
-            ("Diagnosing a data limit", ["cbu-research"], "a paired clean-vs-noisy comparison that showed a data ceiling, not a model one"),
+            ("Diagnosing a data limit", ["cbu-research"], "a paired clean-vs-noisy comparison that traced the ceiling to the data"),
             ("Building a gold-label benchmark", ["bearlm"], "questions written from real chunks, each with an exact answer key"),
             ("Measuring a fix", ["numistoken", "kigumi-group"], "load time ~2–3 s → ~300 ms; coverage 90% → 98%"),
             ("Teaching the method", ["aperiohub"], "baselines, held-out data and leakage checks, taught one to one")],
@@ -3125,7 +3137,7 @@ ROLE_PAGES = {
               "two source schemas into one.",
               "Defined each KPI once in a dbt mart (recovery vs 2019, rolling 28-day entries, year-over-year change, peak-hour "
               "share, busiest station), so the site and the SQL agent read the same columns instead of re-deriving them.",
-              "Showed what the data says: in 2025 weekday BART ridership was at 43% of 2019, while Bay Wheels ran at 127–210% "
+              "Found that in 2025 weekday BART ridership was at 43% of 2019, while Bay Wheels ran at 127–210% "
               "of its 2019 monthly level, so bikes per 1,000 BART entries rose from 21.1 to 80.6.",
               "Scored the 15 stations BART may close on four rules shown as text (strong 6, mixed 7, weak 2) and checked the "
               "press against the warehouse: “about 12%” of ridership is 12.6%, and South San Francisco's "
@@ -3134,7 +3146,7 @@ ROLE_PAGES = {
               "how 34 far-away stations changed over the same weeks. The line gained +4.2%; a post-hoc trend check says +1.0%, "
               "and I report both."]),
             ("lawrence-berkeley-lab", "exploring and forecasting cache traffic",
-             _LBNL + ". Exploration came first, and it shaped every later decision.",
+             _LBNL + ". I explored the data before modelling it.",
              [("24<small>%</small>", "Lower RMSE than persistence", "best case; every variable beaten"),
               ("3", "Regional caches", "explored and modelled separately"),
               ("5", "Loss functions tested", "same spikes missed by all")],
@@ -3151,16 +3163,16 @@ ROLE_PAGES = {
             ("cbu-research", "finding a data ceiling",
              _CBU + "A model predicting a structure's stiffness from its measured shape (an inverse-FEA problem) was stuck at "
              "R² ≈ 0.10 on one target, holding up the team's IEEE paper. I set out to find out whether tuning could help at all.",
-             [("7", "Models benchmarked", "one shared ceiling"), ("~0.10", "R² ceiling", "a data limit, not a model limit")],
+             [("7", "Models benchmarked", "one shared ceiling"), ("~0.10", "R² ceiling", "set by the data")],
              ["Made the evaluation trustworthy before comparing anything: scalers fit on the training fold only, every score "
               "out-of-fold, each target checked against a predict-the-mean baseline, and the overfitting gap reported.",
               "Benchmarked seven model configurations under the same cross-validation. All of them landed on the same ceiling "
               "for the hard target, while the easier targets were predicted well by every one.",
-              "Ran the decisive comparison: the same models trained on clean and on noisy data, side by side. The target was "
+              "Trained the same models on clean and on noisy data, side by side. The target was "
               "recoverable from clean data and lost once realistic noise was added, so no amount of tuning could bring it back.",
               "Swept the noise level to find where each target stops being predictable, which tells the team how precise the "
               "measurements need to be. They moved from model tuning to fixing the inputs."]),
-            ("seismicsocal", "measuring a rare-event system honestly",
+            ("seismicsocal", "measuring a rare-event system",
              _SEIS + ", built during my CBU internship. Before trusting it, I replayed 80 archived days it never trained on and "
              "accounted for every alert and every miss.",
              [("145", "Replay push alerts", "every one a real quake"),
@@ -3177,16 +3189,16 @@ ROLE_PAGES = {
               "Checked the home-shaking estimate against what people reported feeling: 94% within one intensity level on 28 "
               "held-out quakes."]),
             ("academy-of-testers", "AI checked against official scores",
-             _AOT + " Its RAG essay grader is judged against the scores College Board actually gave.",
+             _AOT + " Its RAG essay grader is judged against the scores College Board gave.",
              [("-23<small>%</small>", "Grading error (MAE)", "vs. a naive LLM grader"),
               ("0.62", "QWK vs. official scores", "English, n = 39"), ("87<small>%</small>", "Within one point", "up from 77%")],
-             ["Ran a real A/B: each typed College Board sample response graded twice, by a baseline with no rubric or "
+             ["Ran an A/B: each typed College Board sample response graded twice, by a baseline with no rubric or "
               "retrieval and by the grounded grader. Test essays come from 2023/2024 and the retrieval corpus from 2025, so "
               "nothing leaks.",
               "Used metrics built for ordered scores: mean absolute error, exact and within-one agreement, and quadratic "
               "weighted kappa (QWK), which measures agreement beyond chance and counts a miss by two points four times as "
               "much as a miss by one.",
-              "Kept APUSH as the honest check, a subject the grader was never tuned on: error still fell 22%. The samples are "
+              "Kept APUSH as a held-out check, a subject the grader was never tuned on: error still fell 22%. The samples are "
               "small (39 + 8), which I state next to the results, and the config was frozen after the run.",
               "Diagnosed score compression: nearest-neighbour retrieval returned mostly mid-band essays, so grades drifted to "
               "the middle. Stratifying the retrieved pool by score band fixed most of it."]),
@@ -3195,7 +3207,7 @@ ROLE_PAGES = {
              [("50", "Benchmark questions", "exact gold labels"), ("0.82", "recall@1", "from 0.56 dense-only"),
               ("0.84", "MRR", "from 0.70")],
              ["Generated the benchmark from real corpus chunks: each question is written from one chunk, so that chunk's ID is "
-              "the exact answer key. recall@k then asks a precise question: is the true source in the top k results?",
+              "the exact answer key. recall@k then asks whether the true source is in the top k results.",
               "Measured each retrieval stage on it: recall@1 went from 0.56 with dense vectors alone to 0.60 with hybrid "
               "keyword search, then 0.82 with a reranker.",
               "Stated the weak spot: the RAGAS answer-quality runs are small (n = 6) with a local judge, so the retrieval "
@@ -3206,8 +3218,8 @@ ROLE_PAGES = {
              "Full-Stack Software Engineering Intern at NumIsToken, Sep 2025 – Jun 2026, on the backend behind token redemptions.",
              [("-85<small>%</small>", "Redemption load time", "~2–3 s → ~300 ms"),
               ("0", "Unrecoverable stuck redemptions", "a failure class removed")],
-             ["Profiled the redemption lifecycle APIs before changing anything. The two to three seconds per action weren't "
-              "real work: the same lookups and checks were repeated across a single request.",
+             ["Profiled the redemption lifecycle APIs before changing anything. The two to three seconds per action came "
+              "from the same lookups and checks, repeated across a single request.",
               "Removed the redundant calls and measured again: about 300 ms per action, roughly 85% faster.",
               "Persisted every step of a redemption behind History and Detail services, so an interrupted one can be found and "
               "resumed from its last confirmed state without acting twice on the same payment."]),
@@ -3241,7 +3253,7 @@ ROLE_PAGES = {
         "art": [("+4.2%", "eBART riders, pre-registered"), ("0.004", "A/B result, McNemar p"),
                 ("~0.10", "R² data ceiling at CBU"), ("0.9998", "detection ROC-AUC")],
         "description": "Data science across my projects and internships: pre-registered causal studies and A/B tests, "
-                       "forecasts with honest uncertainty, leak-free validation and hypothesis tests.",
+                       "forecasts with their uncertainty reported, leak-free validation and hypothesis tests.",
         "skills": [
             ("Causal inference", ["bayridership"], "pre-registered difference-in-differences against 34 control stations, with placebo intervals"),
             ("A/B testing and power", ["bayridership"], "a power analysis before arm B ran; exact McNemar p = 0.004"),
@@ -3253,13 +3265,13 @@ ROLE_PAGES = {
             ("Probabilistic models", ["academy-of-testers"], "BKT + IRT over 8 skills; the essay grader scored by QWK")],
         "work": [
             ("bayridership", "causal study, A/B test, forecasts",
-             _TP + " Three of its questions needed real statistics: did the eBART extension bring new riders, do retrieved "
+             _TP + " Three of its questions needed statistics: did the eBART extension bring new riders, do retrieved "
              "examples make the SQL agent better, and how sure is a two-week forecast?",
              [("+4.2%", "eBART net riders", "placebo interval +1.6% to +7.1%"),
               ("27 → 50%", "Agent accuracy", "McNemar p = 0.004"),
               ("48<small>%</small>", "Lower forecast error", "MAE 283 vs 549"),
               ("73<small>%</small>", "Band coverage", "against an 80% target")],
-             ["Chose the unit with care. A rider who switches from Pittsburg/Bay Point to Antioch leaves the line's total "
+             ["Chose the unit to separate new riders from switchers. A rider who switches from Pittsburg/Bay Point to Antioch leaves the line's total "
               "unchanged; a new rider raises it. So the study compares the whole line and the three old stations with 34 "
               "far-away stations, with station and week fixed effects on log weekly entries: +4.2% for the line, −23.9% for "
               "the old stations.",
@@ -3276,7 +3288,7 @@ ROLE_PAGES = {
               "Back-tested the forecasts walk-forward with a paired bootstrap CI on the improvement (200 to 340 entries a "
               "day), and named the band a “calibrated model range” because it held 73%, not 80%."]),
             ("lawrence-berkeley-lab", "forecasting and testing why peaks are missed",
-             _LBNL + ". I test how predictable that traffic really is, peaks included.",
+             _LBNL + ". I test how predictable that traffic is, peaks included.",
              [("24<small>%</small>", "Lower RMSE than persistence", "every variable and horizon"),
               ("5", "Losses tested", "MAE to MSE, same spikes missed"),
               ("100", "Day lookback", "beat every 3-day setup on RMSE")],
@@ -3293,7 +3305,7 @@ ROLE_PAGES = {
             ("cbu-research", "proving a data ceiling",
              _CBU + "A model predicting a structure's stiffness from its measured shape (an inverse finite-element problem) was "
              "stuck at R² ≈ 0.10 on one target. I tested whether any model could do better.",
-             [("7", "Model configurations", "same cross-validation"), ("~0.10", "R² ceiling", "a data limit, not a model limit")],
+             [("7", "Model configurations", "same cross-validation"), ("~0.10", "R² ceiling", "a limit in the data")],
              ["Audited the evaluation first (leak-free scaling, out-of-fold scores, a predict-the-mean baseline, the overfitting "
               "gap) and dropped the chained setup, which passed noise from one target to the next.",
               "Benchmarked seven configurations, from a baseline random forest to boosted and ExtraTrees ensembles and PCA "
@@ -3302,19 +3314,19 @@ ROLE_PAGES = {
               "data and gone once realistic noise was added.",
               "Ruled out the obvious bottlenecks: bypassing PCA and training on only the cleanest inputs didn't rescue it.",
               "Trained on clean simulations and tested on noisy measurements, then swept the noise level to get an "
-              "identifiability curve. For the hard target the useful output is a quantile prediction interval, not a "
-              "misleading point estimate."]),
-            ("seismicsocal", "deep vs. classical, with honest intervals",
+              "identifiability curve. For the hard target a quantile prediction interval is more useful than a "
+              "point estimate."]),
+            ("seismicsocal", "deep vs. classical, with confidence intervals",
              _SEIS + ", built during my CBU internship. Each model is measured against the classic seismology method it "
              "replaces.",
              [("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"), ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
               ("94<small>%</small>", "Within one MMI level", "28 held-out quakes")],
              ["Split every dataset chronologically (70/15/15), the 2,062 hard negatives of real live-stream noise included, "
-              "so the test set is genuinely the future.",
+              "so the test set is the future.",
               "Bootstrapped confidence intervals by event, so a quake's correlated station windows resample together. The deep "
               "and classical intervals don't overlap.",
               "Ran a nearest-station ablation: with only the closest station, magnitude R² falls to 0.808, worse than the "
-              "classic formula. The fusion across stations is the skill.",
+              "classic formula. The accuracy comes from combining stations.",
               "Separated seed variance from sampling variance with a 10-seed study. Ensembling added only +0.003, inside the "
               "sampling CI, so the live system keeps 5 seeds.",
               "Fitted the shaking-intensity offset on the older 29 quakes and scored it once on the newer 28 (1,892 report "
@@ -3397,7 +3409,7 @@ ROLE_PAGES = {
                        "retraining, drift monitoring, Terraform and keyless CI/CD to Cloud Run.",
         "skills": [
             ("Tracking and registry", ["seismicsocal"], "MLflow runs carry the commit, data hash and seeds; the @champion alias marks the live model"),
-            ("Gated promotion", ["seismicsocal"], "six statistical and replay rules; a rule that can't run is logged SKIPPED, never a silent pass"),
+            ("Gated promotion", ["seismicsocal"], "six statistical and replay rules; a rule that can't run is logged SKIPPED instead of passing"),
             ("Scheduled retraining", ["seismicsocal", "bayridership"], "a Dagster retrain job; LightGBM retrains every Monday and writes a run log"),
             ("Drift monitoring", ["seismicsocal"], "a daily Evidently check per station, with an email after two drifting days"),
             ("CI/CD", ["seismicsocal", "bayridership"], "GitHub Actions on every change; keyless Workload Identity Federation to Cloud Run"),
@@ -3405,7 +3417,7 @@ ROLE_PAGES = {
             ("Load and smoke tests", ["bayridership"], "an image smoke-tested before it's pushed; Locust p95s under load"),
             ("Selection protocol", ["lawrence-berkeley-lab"], "rolling-origin CV; the test window never picks the model")],
         "work": [
-            ("seismicsocal", "QuakeOps: models that maintain themselves",
+            ("seismicsocal", "QuakeOps: retraining behind a gate",
              _SEIS + ". QuakeOps is its MLOps loop: a retrained model can replace the live one only by proving, statistically "
              "and on replayed days, that it's at least as good.",
              [("6", "Promotion-gate rules", "statistical + replay"), ("10", "Replay days per challenger", "champion vs. challenger"),
@@ -3438,11 +3450,11 @@ ROLE_PAGES = {
               "picks the band's label from that run's own coverage.",
               "Backed it with tests: 179 pytest, 52 node and 75 Playwright tests, 84 dbt data tests, and reproducibility "
               "checks that recompute the A/B, the causal study and the trend adjustment from committed inputs."]),
-            ("lawrence-berkeley-lab", "a selection protocol you can trust",
+            ("lawrence-berkeley-lab", "a model-selection protocol",
              _LBNL + ".",
              [("24<small>%</small>", "Lower RMSE than persistence", "under rolling-origin CV"),
               ("5", "Seeds re-run", "the choice held")],
-             ["Trained on a chronological hold-out, never a random split, with early stopping on validation loss.",
+             ["Trained on a chronological hold-out with early stopping on validation loss.",
               "Selected the lookback with rolling-origin cross-validation: train on the past, forecast the next block, slide "
               "forward. Persistence was scored on the identical windows, and the test window never picks the model.",
               "Re-ran the chosen model on 5 random seeds. Its error moved only slightly, so the choice is a stable finding "
@@ -3467,16 +3479,16 @@ ROLE_PAGES = {
             ("Time-series Transformers", ["lawrence-berkeley-lab"], "PatchTST: patches as tokens, RevIN, channel independence"),
             ("Mentoring research", ["aperiohub"], "one-to-one research that ends in a defensible result")],
         "work": [
-            ("cbu-research", "a data limit, proven",
+            ("cbu-research", "a data limit, shown with a paired design",
              _CBU + "An inverse-FEA model (predicting a structure's stiffness from its measured shape) was stuck at R² ≈ 0.10 "
-             "on one target, holding up the team's IEEE paper. My question: is that a model problem or a data problem?",
+             "on one target, holding up the team's IEEE paper. I asked whether that was a model problem or a data problem.",
              [("7", "Model configurations", "one shared ceiling"),
               ("~0.10", "R² on the hard target", "a data limit, not a model limit")],
              ["Made the evaluation trustworthy first: leak-free scaling, out-of-fold scores, a predict-the-mean baseline and a "
               "measured overfitting gap, so a small difference couldn't be an artefact.",
               "Benchmarked seven configurations with different inductive biases under the same cross-validation. If the model "
               "were the bottleneck they would disagree; they all hit the same ceiling.",
-              "Ran the decisive experiment, a paired clean-vs-noisy design, then ruled out the obvious bottlenecks (PCA, the "
+              "Ran a paired clean-vs-noisy design, then ruled out the obvious bottlenecks (PCA, the "
               "noisiest inputs) with a bypass and an ablation.",
               "Tested the realistic deployment, trained on clean simulations and used on noisy measurements, and swept "
               "injected noise to draw an identifiability curve: how precise the measurements must be for each target to work.",
@@ -3501,7 +3513,7 @@ ROLE_PAGES = {
               "predictable.",
               "Split calm and erratic eras of one cache: the best amount of history depends on the regime."]),
             ("seismicsocal", "deep vs. classical, then a replay",
-             _SEIS + ". The question I held it to: would this live system have alerted correctly on real days it never saw?",
+             _SEIS + ". I tested whether this live system would have alerted correctly on real days it never saw.",
              [("0.9998", "Detection ROC-AUC", "vs 0.816 STA/LTA"), ("0.951", "Magnitude R²", "vs 0.886 amp + distance"),
               ("0.808", "R², nearest station only", "the graph fusion is the skill")],
              ["Designed two architectures: a CNN → Transformer that reads one station's 30 s window to detect, and a CNN → "
@@ -3671,7 +3683,7 @@ ROLE_PAGES = {
               "grades toward the middle.",
               "Kept vectors in Postgres as JSON arrays with a small pure-Java cosine engine instead of a vector database; every "
               "retrieval is logged with rank and similarity for spot checks.",
-              "Gave Testy a similarity cutoff and made the course a reference, not a limit, so it stays grounded when the "
+              "Gave Testy a similarity cutoff and treated the course as a reference, so it stays grounded when the "
               "course covers a question and doesn't refuse reasonable ones when it doesn't.",
               "Cached each subject's parsed embeddings in memory; when the AI call fails, the student's allowance is refunded "
               "rather than spent."]),
