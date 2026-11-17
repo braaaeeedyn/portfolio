@@ -40,6 +40,7 @@ PROJECTS = [
     ("bearlm", "BearLM"),
     ("bayridership", "BayRidership"),
     ("uc-campus-rent", "UC Campus Rent"),
+    ("jobbymail", "JobbyMail"),
     # ("dockwatch", "DockWatch"),  # hidden for now; see the DockWatch notes in pages.py
 ]
 EXPERIENCE = [

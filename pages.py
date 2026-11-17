@@ -584,18 +584,6 @@ def layout(main_html, rail_html):
 # Roles I'm targeting, each backed by the work that shows the skill. (ico, role, slug, pitch, [(href, where, proof)])
 # The slug is the role page's URL (roles/<slug>/); ROLE_PAGES below holds each page's content.
 ROLES = [
-    ("DA", "Data Analyst", "data-analyst",
-     "Turn raw logs and metrics into clear charts and decisions.",
-     [("projects/bayridership/", "BayRidership", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules"),
-      ("projects/uc-campus-rent/", "UC Campus Rent", "typical rent near 8 campuses from 7 public sources, with the count of reporting ZIP codes beside every figure"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
-      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team")]),
-    ("DS", "Data Scientist", "data-scientist",
-     "Design honest experiments and find out what the data can support.",
-     [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
-      ("projects/bayridership/", "BayRidership", "pre-registered difference-in-differences with placebo intervals"),
-      ("projects/uc-campus-rent/", "UC Campus Rent", "event study of campus housing openings against matched control ZIP codes, verdict rules fixed in advance")]),
     ("DE", "Data Engineer", "data-engineer",
      "Build pipelines that ingest messy sources reliably and reproducibly.",
      [# ("projects/dockwatch/", "DockWatch", "Kafka → Spark Streaming → Iceberg, Debezium CDC, Airflow + Trino"),  # DockWatch hidden
@@ -603,36 +591,48 @@ ROLES = [
       ("projects/uc-campus-rent/", "UC Campus Rent", "Airflow over 7 public sources into Postgres: a Great Expectations check per source, 61 dbt tests"),
       ("projects/seismicsocal/", "SeismicSoCal", "19-station SeedLink stream, quality gating, Dagster retrain job"),
       ("projects/bearlm/", "BearLM", "ETL over PDF / Markdown / notebooks: chunked, batch-embedded with retry into Chroma, BM25 and SQLite")]),
-    ("OPS", "MLOps Engineer", "mlops-engineer",
-     "Make models retrain, promote and monitor themselves, with the gates written down.",
-     [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
-      ("projects/bayridership/", "BayRidership", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
-      ("projects/uc-campus-rent/", "UC Campus Rent", "MLflow champion promoted only through a gate written down in advance; five systemd services under a 3 GiB cap"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
-    ("RES", "AI / ML Researcher", "ai-ml-researcher",
-     "Run experiments carefully and report the limits along with the results.",
-     [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
-      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST + showing peaks aren't predictable from history alone"),
-      ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test"),
-      ("projects/bayridership/", "BayRidership", "pre-registered A/B test and difference-in-differences with placebo intervals")]),
+    ("DS", "Data Scientist", "data-scientist",
+     "Design honest experiments and find out what the data can support.",
+     [("experience/cbu-research/", "CBU Research", "7-model benchmark proved an R² ≈ 0.10 data ceiling"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling CV showing models under-predict rare peaks"),
+      ("projects/bayridership/", "BayRidership", "pre-registered difference-in-differences with placebo intervals"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "event study of campus housing openings against matched control ZIP codes, verdict rules fixed in advance")]),
+    ("DA", "Data Analyst", "data-analyst",
+     "Turn raw logs and metrics into clear charts and decisions.",
+     [("projects/bayridership/", "BayRidership", "one definition per KPI in dbt marts; 15 at-risk BART stations scored on four stated rules"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "typical rent near 8 campuses from 7 public sources, with the count of reporting ZIP codes beside every figure"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "reproducible Pandas EDA over cache logs: skewed peaks, change-points, calm vs. erratic traffic"),
+      ("experience/cbu-research/", "CBU Research", "paired clean-vs-noisy analysis that redirected the team")]),
     ("ML", "Machine Learning Engineer", "machine-learning-engineer",
      "Train models that beat a real baseline, then run them in production.",
      [("projects/seismicsocal/", "SeismicSoCal", "0.9998 ROC-AUC live detector; MLflow-gated retraining + drift checks"),
       ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST beat persistence on every target, up to 24% lower RMSE"),
       ("projects/bayridership/", "BayRidership", "LightGBM station forecasts, MAE 48% below seasonal naive, conformal band, retrained weekly"),
       ("projects/uc-campus-rent/", "UC Campus Rent", "LightGBM p10 / p50 / p90 rent forecast 12 months ahead, promoted only if it beats the champion by 2%")]),
+    ("RES", "AI / ML Researcher", "ai-ml-researcher",
+     "Run experiments carefully and report the limits along with the results.",
+     [("experience/cbu-research/", "CBU Research", "IEEE inverse-FEA paper: proved an R² ≈ 0.10 data ceiling"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "PatchTST + showing peaks aren't predictable from history alone"),
+      ("projects/seismicsocal/", "SeismicSoCal", "deep vs. classical baselines, 10-seed study, replay acceptance test"),
+      ("projects/bayridership/", "BayRidership", "pre-registered A/B test and difference-in-differences with placebo intervals")]),
     ("AI", "AI Engineer", "ai-engineer",
      "Build grounded LLM features and measure how well they work.",
      [("projects/bearlm/", "BearLM", "local RAG, hybrid search + reranking, RAGAS faithfulness 0.55 → 0.83"),
       ("projects/academy-of-testers/", "Academy of Testers", "RAG essay grader, ~23% lower error vs. College Board scores"),
       ("projects/bayridership/", "BayRidership", "guarded text-to-SQL agent live on Gemini; pre-registered A/B 27% → 50%, p = 0.004"),
       ("experience/kigumi-group/", "Kigumi Group", "two failure classes in an AI assistant separated and pinned with tests; coverage 90% → 98%")]),
-    ("AE", "Analytics Engineer", "analytics-engineer",
-     "Model raw data into tested tables that every report reads the same way.",
-     [("projects/bayridership/", "BayRidership", "dbt on BigQuery: 17 models, 84 data tests, an SCD2 station dimension, one definition per KPI"),
-      ("projects/uc-campus-rent/", "UC Campus Rent", "dbt on Postgres: staging, a fact per source, a campus mart and an event-study mart, 61 tests"),
-      ("projects/academy-of-testers/", "Academy of Testers", "question bank kept as reviewable JSON, with an idempotent normalizer and a generated Flyway seed"),
-      ("projects/bearlm/", "BearLM", "SQLite usage analytics: most-cited courses, unanswered questions, the course that needs the most help")]),
+    ("OPS", "MLOps Engineer", "mlops-engineer",
+     "Make models retrain, promote and monitor themselves, with the gates written down.",
+     [("projects/seismicsocal/", "SeismicSoCal", "QuakeOps: MLflow registry, six-rule champion/challenger gate, Dagster retrain, Evidently drift"),
+      ("projects/bayridership/", "BayRidership", "Terraform + keyless CI/CD to Cloud Run, smoke-tested image, load-tested, weekly retrain"),
+      ("projects/uc-campus-rent/", "UC Campus Rent", "MLflow champion promoted only through a gate written down in advance; five systemd services under a 3 GiB cap"),
+      ("experience/lawrence-berkeley-lab/", "Berkeley Lab", "rolling-origin selection protocol: the test window never picks the model")]),
+    ("SE", "Software Engineer", "software-engineering",
+     "Ship full products: backend services, APIs and desktop apps, tested and deployed.",
+     [("projects/jobbymail/", "JobbyMail", "Tauri + React + Python desktop app; 417 tests across four suites; q-gram entity resolution"),
+      ("experience/numistoken/", "NumIsToken", "resumable token redemptions and an admin tool; action load time ~2–3 s → ~300 ms"),
+      ("experience/kigumi-group/", "Kigumi Group", "root-caused intermittent AI-assistant failures; test coverage 90% → 98%"),
+      ("projects/bayridership/", "BayRidership", "FastAPI service and React app, Terraform and keyless CI/CD to Cloud Run")]),
 ]
 
 def roles_section(rel, resume):
@@ -667,15 +667,15 @@ def home(ctx):
         "<text x='14' y='26' font-family='Silkscreen, monospace' font-size='12' fill='#7a8aba'>SYSTEM CHECK . . . OK</text>"
         "<g font-family='VT323, monospace' fill='#9fbee7'>"
         "<text x='14' y='66' font-size='30'>0.9998</text><text x='120' y='66' font-size='18' fill='#7a8aba'>quake detection ROC-AUC</text>"
-        "<text x='14' y='106' font-size='30'>0.82</text><text x='120' y='106' font-size='18' fill='#7a8aba'>BearLM recall@1 (from 0.56)</text>"
-        "<text x='14' y='146' font-size='30'>-23%</text><text x='120' y='146' font-size='18' fill='#7a8aba'>AP essay grading error</text>"
-        "<text x='14' y='186' font-size='30'>-85%</text><text x='120' y='186' font-size='18' fill='#7a8aba'>redemption load time</text>"
+        "<text x='14' y='106' font-size='30'>68M</text><text x='120' y='106' font-size='18' fill='#7a8aba'>BART trip rows modeled</text>"
+        "<text x='14' y='146' font-size='30'>48%</text><text x='120' y='146' font-size='18' fill='#7a8aba'>lower forecast error vs naive</text>"
+        "<text x='14' y='186' font-size='30'>82%</text><text x='120' y='186' font-size='18' fill='#7a8aba'>RAG recall@1 (from 56%)</text>"
         "</g><rect x='14' y='200' width='10' height='14' fill='#9fbee7'><animate attributeName='opacity' values='1;0;1' dur='1.1s' repeatCount='indefinite'/></rect></svg>")
     h = hero(
         "field-lavender", "PLAYER 1 · PORTFOLIO", "Braedyn<br>Thompson",
         "I build machine-learning systems end to end: the data pipeline, the model, the "
         "evaluation, and the product people use.",
-        ["Machine learning", "Data science", "RAG / LLMs", "Full-stack"], art,
+        ["Data engineering", "Machine learning", "LLMs / RAG", "MLOps"], art,
         go("#projects", "See the projects") + go("#experience", "Internships"))
 
     feats = [
@@ -689,6 +689,8 @@ def home(ctx):
          "68M BART trips on BigQuery, a live train map, forecasts 48% better than naive, a pre-registered causal study and a guarded SQL agent."),
         ("projects/uc-campus-rent/", "field-ice", "UC Campus<br>Rent", "braedynthompson.com/uc-campus-rent",
          "Rent around eight UC campuses: Airflow, Great Expectations and dbt on Postgres, a gated LightGBM forecast and a causal study of new campus housing."),
+        ("projects/jobbymail/", "field-carbon", "Jobby<br>Mail", "Windows desktop app",
+         "A local-first job-application tracker: reads your mailbox read-only, resolves each email to an application with q-gram entity resolution, 417 tests across four suites."),
         # DockWatch hidden for now:
         # ("projects/dockwatch/", "field-indigo", "Dock<br>Watch", "real-time lakehouse",
         #  "641 live stations through Kafka, Spark Streaming and Iceberg, plus Debezium CDC."),
@@ -718,6 +720,9 @@ def home(ctx):
         ("projects/bearlm/", "BLM", "BearLM",
          "Data &amp; AI Engineer · local hybrid-search RAG; RAGAS faithfulness 0.55 → 0.83.",
          "AUG 2026 – NOW"),
+        ("projects/jobbymail/", "JM", "JobbyMail",
+         "Software Engineer · local-first Windows desktop app: Tauri + React over a Python pipeline, q-gram entity resolution, 417 tests.",
+         "JUL 2026 – NOW"),
         ("projects/academy-of-testers/", "AOT", "Academy of Testers",
          "ML &amp; AI Software Developer · adaptive learning engine + RAG essay grading.",
          "JAN 2023 – JUN 2026"),
@@ -729,13 +734,24 @@ def home(ctx):
 
     about = """
 <p class="lede">I like problems where I can check whether the answer is right.</p>
-<p>Across forecasting, seismology, retrieval and ed-tech, my work follows the same loop: build a
-reproducible pipeline, pick a baseline worth beating, evaluate on data the model has never seen
-(chronological splits, held-out sets, ablations), and then ship it as a product
-people can use.</p>
-<p>Sometimes the result is a ceiling. At CBU I showed an inverse-FEA predictor was limited by
-its <em>data</em>, and the team switched from tuning models
-to fixing the inputs.</p>"""
+<p>That check is the first thing I set up. Before I build, I work out what a good answer would look
+like and how I would know I had one: a baseline worth beating, a held-out set the model never saw, and
+a number I can stand behind. Most of what follows is there to make that number trustworthy.</p>
+<p>My projects run across forecasting, seismology, retrieval and ed-tech, and they follow the same
+loop. Build a reproducible pipeline, pick a baseline, test on data the model has not seen (chronological
+splits, ablations, placebo tests), then ship the result as something a person can open and use.</p>
+<p>I care about the pipeline as much as the model, because a forecast is only as good as the data under
+it. So I spend real time on the unglamorous parts: ingestion, cleaning with a logged reason for every
+dropped row, dbt models with a test on every build, and orchestration that reruns itself on a free VM
+while I am asleep.</p>
+<p>Sometimes the honest answer is that the data cannot support the question. At CBU I spent weeks
+showing that an inverse-FEA predictor was held back by its <em>inputs</em> rather than the model, and
+the team stopped tuning and started fixing the measurements. I would rather report a ceiling than a
+number I cannot defend.</p>
+<p>I build the product end too, since a model nobody can open is not finished. SeismicSoCal sends a real
+push alert when it detects a quake, BayRidership answers questions through a guarded SQL agent, and
+JobbyMail runs entirely on your own computer. Shipping forces the parts I would otherwise skip: latency,
+failure states, and what the thing does when the input is strange.</p>"""
 
     skills = tiles([
         ("ML &amp; deep learning", "PyTorch, scikit-learn, XGBoost, CNN / Transformer / GNN, PatchTST, neuralforecast"),
@@ -743,8 +759,10 @@ to fixing the inputs.</p>"""
         ("Data", "Pandas, ETL pipelines, EDA, rolling CV, Matplotlib, Seaborn, Plotly, SQL"),
         ("Data engineering", "Spark (batch + Structured Streaming), Kafka, Iceberg, dbt, BigQuery, Airflow, Trino, Debezium, Terraform"),
         ("Backend", "Python, FastAPI, Java / Spring Boot, PostgreSQL, Flyway, SQLite, Chroma"),
-        ("Frontend", "React, TypeScript, Vite, Tailwind, Capacitor (Android), hand-built SVG"),
+        ("Frontend &amp; desktop", "React, TypeScript, Vite, Tailwind, Tauri (Rust shell), Capacitor (Android), hand-built SVG"),
         ("Ops &amp; MLOps", "MLflow, Dagster, Evidently, GitHub Actions, Docker, systemd, Caddy, Oracle Cloud, FCM push"),
+        ("Statistics &amp; causal inference", "difference-in-differences, event studies, A/B tests, McNemar, bootstrap CIs, conformal prediction"),
+        ("Testing &amp; data quality", "pytest, Playwright, Great Expectations, dbt tests, coverage, chronological validation"),
     ])
 
     contact = f"""
@@ -779,6 +797,7 @@ The fastest way to reach me is email.</p>
 <li><span class="when">OCT 2026</span>AperioHub · Research Mentor, AI &amp; ML (part-time)</li>
 <li><span class="when">SEP 2026</span>Berkeley Lab · Data Science &amp; ML Research Intern</li>
 <li><span class="when">AUG 2026</span>BearLM · Data &amp; AI Engineer</li>
+<li><span class="when">JUL 2026</span>JobbyMail · Software Engineer (desktop app)</li>
 <li><span class="when">MAY 2026</span>CBU · ML Research Intern (SeismicSoCal)</li>
 <li><span class="when">SEP 2025</span>NumIsToken · Full-Stack SWE Intern</li>
 <li><span class="when">JUN 2025</span>The Kigumi Group · Backend SWE Intern (Hong Kong)</li>
@@ -2108,8 +2127,9 @@ window with <strong>React</strong> pages shows the result.</p>
     "evidence, a rejection applies from any state, and a status set by hand wins until a newer email arrives.",
     "Rendered untrusted HTML email safely: an allow-list sanitiser, a sandboxed frame that cannot run scripts, and a "
     "content policy inside the frame, with remote images blocked until the reader allows them.",
-    "Wrote the tests during the build and ran them all at the end: of 285 Python tests, 284 passed on their first "
-    "run, and the one failure was a fault in the test.",
+    "Wrote the tests during the build and ran them all at the end: 417 tests across four suites (Python, the React "
+    "UI, the Rust shell and the browser) now pass; the few that failed on the first full run were faults in the "
+    "tests, not the app.",
 ])}
 <p class="note"><strong>Reported honestly:</strong> every accuracy and timing figure on this page was measured on
 invented emails written for the build. Real-mail accuracy is unmeasured until a labelled set of
@@ -3092,6 +3112,7 @@ data, not the model, was the limit.</li>
 WORK = {"academy-of-testers": ("projects/academy-of-testers/", "Academy of Testers"),
         "seismicsocal": ("projects/seismicsocal/", "SeismicSoCal"), "bearlm": ("projects/bearlm/", "BearLM"),
         "bayridership": ("projects/bayridership/", "BayRidership"),
+        "jobbymail": ("projects/jobbymail/", "JobbyMail"),
         "lawrence-berkeley-lab": ("experience/lawrence-berkeley-lab/", "Berkeley Lab"),
         "cbu-research": ("experience/cbu-research/", "CBU Research"), "numistoken": ("experience/numistoken/", "NumIsToken"),
         "kigumi-group": ("experience/kigumi-group/", "Kigumi Group"), "aperiohub": ("experience/aperiohub/", "AperioHub")}
@@ -3703,61 +3724,59 @@ ROLE_PAGES = {
               "coverage from 90% to 98%."]),
         ]},
 
-    "analytics-engineer": {
-        "field": "field-sky", "tags": ["dbt", "SQL", "BigQuery &middot; DuckDB", "Data tests"],
-        "art": [("17", "dbt models"), ("84", "data tests on every build"), ("0.43", "weekday recovery vs 2019"),
-                ("590", "SAT items in one JSON bank")],
-        "description": "Analytics engineering across my projects: layered dbt models with data tests and one definition per "
-                       "KPI, the same SQL on BigQuery and DuckDB, and source-of-truth data kept reviewable.",
+    "software-engineering": {
+        "field": "field-carbon", "tags": ["Python &middot; Tauri", "React", "Testing", "Entity resolution"],
+        "art": [("417", "tests across four suites"), ("-85%", "faster redemption actions"),
+                ("98%", "code coverage, from 90%"), ("99.99%", "candidate pairs skipped")],
+        "description": "Software engineering across my work: a local-first desktop app, backend services behind a payments "
+                       "flow, performance profiling, debugging intermittent failures, and tests that hold.",
         "skills": [
-            ("Layered dbt models", ["bayridership"], "staging → SCD2 snapshot → dimensions and facts → KPI marts"),
-            ("Data tests", ["bayridership"], "84 tests, including a singular test that every staged trip date reaches the hourly fact"),
-            ("Metric definitions", ["bayridership"], "one definition per KPI, read by both the site and the agent"),
-            ("Incremental models", ["bayridership"], "the hourly fact re-processes the last 35 days plus any unloaded date"),
-            ("Seeds and stated rules", ["bayridership"], "the closure list in one dbt seed; four rules stated once and shown as text"),
-            ("Portable, cost-aware SQL", ["bayridership"], "the same models on DuckDB and BigQuery; partitioned, clustered, bytes capped"),
-            ("Source-of-truth data", ["academy-of-testers"], "a reviewable JSON bank, an idempotent normalizer, a generated Flyway seed"),
-            ("Usage analytics", ["bearlm"], "a SQLite log of questions, cited courses and unanswered questions")],
+            ("Full-stack and desktop apps", ["jobbymail"], "a Tauri and React front end over a Python pipeline, packaged as a Windows installer"),
+            ("Backend services behind payments", ["numistoken"], "redemption History and Detail services on the backend of a live token flow"),
+            ("Reliability and recovery", ["numistoken", "jobbymail"], "redemptions resumable from the last confirmed state; an append-only event log that makes every rerun safe"),
+            ("Performance profiling", ["numistoken"], "redemption actions cut from ~2–3 s to ~300 ms by removing repeated lookups"),
+            ("Debugging intermittent failures", ["kigumi-group"], "two AI-assistant failure classes separated and each pinned with a test"),
+            ("Testing and coverage", ["kigumi-group", "jobbymail"], "coverage raised from 90% to 98%; 417 tests across Python, UI, the Rust shell and the browser"),
+            ("Handling untrusted input", ["jobbymail"], "HTML email rendered in a sandboxed frame with an allow-list sanitiser and a content policy"),
+            ("Entity resolution at scale", ["jobbymail"], "q-gram blocking skips 99.99% of 17.5M candidate pairs before matching")],
         "work": [
-            ("bayridership", "dbt models with one definition per KPI",
-             _TP + " Its KPIs are defined once in dbt models on BigQuery, and both the site and its SQL agent read those columns.",
-             [("17", "dbt models", "staging to KPI marts"), ("84", "Data tests", "run on every build"),
-              ("0.43", "Weekday recovery vs 2019", "matched by ISO week"),
-              ("12.6<small>%</small>", "Of weekday trips", "at the first 10 listed stations")],
-             ["Layered the models from staging through an SCD2 station snapshot, which keeps each version of a station so "
-              "renames and openings are tracked over time, to dimensions, facts and KPI marts in a star schema.",
-              "Made the hourly fact incremental: it re-processes the last 35 days plus any date not yet loaded, so a "
-              "back-filled year is picked up, and a singular test checks that every staged trip date reaches it.",
-              "Defined each KPI once (recovery vs 2019, rolling 28-day entries, year-over-year change, peak-hour share, "
-              "busiest station). Recovery compares each weekday with the same ISO week of 2019, so the turn of the year never "
-              "compares January with December.",
-              "Modelled the station-closure question from one dbt seed and three marts: each station's 2025 weekday trips, "
-              "rank, recovery, change on 2024, nearest open station by haversine distance and top destinations. Four rules "
-              "are stated once and shown on the site as text.",
-              "Checked the press against the warehouse (“about 12%” of ridership is 12.6%), and kept the same SQL running on "
-              "DuckDB locally and BigQuery in production, partitioned, clustered and capped on bytes billed."]),
-            ("academy-of-testers", "a question bank with one source of truth",
-             _AOT + " Its practice content is data, and the SAT bank has a single reviewable source of truth.",
-             [("590", "SAT Math items", "one reviewable JSON bank"), ("5,160", "AP practice questions", "172 units &middot; 29 subjects"),
-              ("179", "Real 2025 FRQs", "26 subjects, rubric-tagged")],
-             ["Kept the SAT question bank as reviewable JSON: a deterministic, idempotent normalizer turns raw practice tests "
-              "into it, and a generator emits the Flyway seed migration from it.",
-              "Made Flyway migrations the only way the schema changes, and question IDs permanent, because the response "
-              "history references them forever.",
-              "Tagged each FRQ's rubric and exemplar chunks with its prompt id, so grading retrieves that question's own "
-              "rubric and samples.",
-              "Withheld answers and difficulty from the client until after submission, to keep the data used to recalibrate "
-              "difficulty clean. The Mistake Notebook stores only references (source, subject, question id, schedule), never "
-              "question text or answers."]),
-            ("bearlm", "metadata and usage analytics",
-             _BLM + " One ingestion pass gives every chunk the metadata that citations, the benchmark and the analytics key on.",
-             [("10.4K", "Chunks with metadata", "course &middot; section &middot; source &middot; chunk_id"),
-              ("10", "Courses", "one shared corpus"), ("50", "Benchmark questions", "keyed to chunk ids")],
-             ["Split PDFs, Markdown and Jupyter notebooks by token length and tagged each chunk with course, section, source "
-              "and chunk_id. That key drives the page citations, the benchmark's answer key and the analytics.",
-              "Built a SQLite analytics page: questions asked, courses cited, answered vs. no-source counts, the course that "
-              "needs the most help with its hot-spot topics, and generated practice questions for it.",
-              "Loaded Chroma, the BM25 index and SQLite in one ingestion pass, so a rebuild keeps all three in step."]),
+            ("jobbymail", "a local-first desktop app",
+             "A Windows desktop app I built end to end, Jul 2026 – present: a Tauri and React front end over a Python "
+             "pipeline that reads a mailbox read-only and keeps a job-application table up to date by itself.",
+             [("417", "Tests passing", "Python, UI, Rust, browser"),
+              ("99.99<small>%</small>", "Candidate pairs skipped", "q-gram blocking at 5,000 companies"),
+              ("0", "Servers", "runs on the user's PC"), ("12 MB", "Installer", "Windows, no admin rights")],
+             ["Built an incremental, read-only mail sync (IMAP with verified TLS, the app password kept only in the Windows "
+              "credential store) that fetches only new messages, de-duplicates by Message-ID, and stores one odd message in "
+              "raw form instead of stopping.",
+              "Resolved each email to an application with entity resolution: names cleaned, candidates found by q-gram "
+              "blocking, then matched on q-gram overlap across the company name, the sender's name and address. Blocking "
+              "skipped 99.99% of 17.5 million candidate pairs.",
+              "Derived every status from an append-only event log, so running the pipeline twice changes nothing and a wrong "
+              "guess can be corrected without losing history.",
+              "Rendered untrusted HTML email safely: an allow-list sanitiser, a sandboxed frame that cannot run scripts, and "
+              "a content policy inside the frame, with remote images blocked until the reader allows them.",
+              "Wrote the tests during the build and ran them all at the end: 417 across four suites, all passing."]),
+            ("numistoken", "backend behind a payments flow",
+             "Full-Stack Software Engineering Intern at NumIsToken, Sep 2025 – Jun 2026, on the backend behind token redemptions.",
+             [("-85<small>%</small>", "Redemption load time", "~2–3 s → ~300 ms"),
+              ("0", "Unrecoverable stuck redemptions", "a failure class removed")],
+             ["Profiled the redemption lifecycle APIs before changing anything. The two to three seconds per action came "
+              "from the same lookups and checks, repeated across a single request.",
+              "Removed the redundant calls and measured again: about 300 ms per action, roughly 85% faster.",
+              "Persisted every step of a redemption behind History and Detail services, so an interrupted one can be found and "
+              "resumed from its last confirmed state without acting twice on the same payment."]),
+            ("kigumi-group", "root-causing recurring failures",
+             "Backend Software Engineer Intern in Hong Kong, Jun – Sep 2025, on KiguLab, a digital wellbeing and AI-ethics "
+             "curriculum for ages 8–21.",
+             [("98<small>%</small>", "Code coverage", "up from 90%"),
+              ("2", "Failure classes separated", "connections &middot; query formulation")],
+             ["Started from AI assistant failures that looked random from outside: the same question would work once and "
+              "fail the next time.",
+              "Separated them by targeted debugging into two classes with different fixes: unstable backend connections, and "
+              "malformed queries sent to the GPT and image models.",
+              "Measured coverage before and after (90% to 98%, so the untested code shrank by 80%) and pinned each diagnosed "
+              "failure with a test."]),
         ]},
 }
 
