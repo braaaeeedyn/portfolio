@@ -2239,10 +2239,10 @@ local connection on <code>127.0.0.1</code> that requires a random token, and it 
 {tiles([("Onboarding", "A five-step stepper collects a name, a job field and target roles, connects the mailbox with a test button, and asks how far back to read."),
         ("One place for the password", "Exactly one route accepts the app password and hands it to the Windows credential store. It never reaches the database, a response or a log."),
         ("Delete everything", "A single action empties the database, the trained model and the stored credential, after the user types a word to confirm."),
-        ("Jobby", "The mascot is one of 14 original vector sprites, each a glossy white space robot that waves; swapping the chosen one is a one-line change.")])}
+        ("Jobby", "The mascot is one of eight original vector sprites, each a glossy white space robot that waves; the chosen one (Orb) is a one-line change.")])}
 {image(rel, "jm-gallery.png",
-       " The 14 Jobby sprites, each at mascot, profile-picture and icon size.", label="Screenshot",
-       alt="A grid of 14 white robot mascot designs on black backgrounds")}"""
+       " The eight Jobby designs, each at mascot, profile-picture and icon size; Orb is in use.", label="Screenshot",
+       alt="A grid of eight white robot mascot designs on black backgrounds")}"""
 
     build = f"""
 <p>The app was built in 15 phases by a loop of four roles: an architect that wrote each phase's plan and its checks,
@@ -2621,6 +2621,26 @@ model on each with the same chronological split, and repeated the lookback-by-ho
 The next step is a measurable seasonality or regime signal that says in advance whether traffic will be calm or erratic,
 and fixing patch length and stride for each lookback.</p>"""
 
+    where = """
+<p>The first model answered one question: can a Transformer beat persistence? The work since then asked a harder
+one. What is the best honest next-day forecast, and does anything beyond a single PatchTST actually add to it?</p>
+<h3>A small blend, chosen the hard way</h3>
+<p>The reported one-day model is a fixed three-part blend: an <strong>hourly-input PatchTST</strong> that reads two
+weeks of hourly traffic and predicts the next day's total, the original daily PatchTST, and a shallow decision tree
+on the daily features. The hourly signal is where most of the extra accuracy came from. Across the rolling-origin
+folds it averages about <strong>14.5 TB/day of error against persistence's 17.6</strong>, roughly 17% lower, and it
+wins on most of the held-out folds.</p>
+<h3>What didn't help</h3>
+<p>Plenty, and each is written up as a null rather than dropped quietly. Zero-shot time-series foundation models
+(Amazon's <strong>Chronos-2</strong> and <strong>Chronos-Bolt</strong>) made the same mistakes the blend already
+made and were worse on busy days, so they earned zero weight. Heavier networks (NHITS, TiDE, an LSTM, TimeXer) and
+gradient-boosted trees added nothing over the blend either.</p>
+<h3>Rules fixed before the data was read</h3>
+<p>Every candidate is pre-registered before a single model is fit. Models are chosen on rolling-origin folds with
+leave-one-fold-out; a separate block of earlier days can only veto a choice, never make one; and the test window is
+read only after the choice is locked to a hash. The model's one real weakness is stated plainly, that it
+under-forecasts the rare record-high days, and the whole pipeline is guarded by 566 automated checks.</p>"""
+
     main_html = (
         panel("overview", "Overview", overview, num="01")
         + panel("patchtst", "What PatchTST is &amp; how it works", how, num="02")
@@ -2629,12 +2649,14 @@ and fixing patch length and stride for each lookback.</p>"""
         + panel("tuning", "Choosing how much history to use", tuning, num="05")
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
+        + panel("where-next", "Where it went next", where, num="08")
         + pager(rel, ("projects/uc-campus-rent/", "UC Campus Rent"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
                                              ("model", "Baseline"), ("tuning", "Lookback &amp; robustness"),
-                                             ("peaks", "Peak hypotheses"), ("regimes", "Traffic regimes")]),
+                                             ("peaks", "Peak hypotheses"), ("regimes", "Traffic regimes"),
+                                             ("where-next", "Where it went next")]),
               body_cls="panel-body tight")
         + panel("spec-lb", "Spec sheet", spec([("Org", "Berkeley Lab · ESnet"), ("Role", "DS &amp; ML Research Intern"),
                                                 ("Program", "Data Science Discovery"), ("Dates", "Sep 2026 – present"),
