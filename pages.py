@@ -774,7 +774,7 @@ The fastest way to reach me is email.</p>
 {rail_btns([("@", "Email me", "mailto:" + ctx["email"]), ("GH", "GitHub", ctx["github"]),
             ("IN", "LinkedIn", ctx["linkedin"])])}"""
 
-    resumes = ("<p>A one-page PDF covering all of the roles above.</p>"
+    resumes = ("<p>A one-page Data Engineering r&eacute;sum&eacute;.</p>"
                + rail_btns([("CV", "R&eacute;sum&eacute; (PDF)", rel + ctx["resume"])]))
 
     education = spec([("School", "UC Berkeley"), ("Major", "Computer Science &amp; Data Science"),
