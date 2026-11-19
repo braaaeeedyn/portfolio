@@ -97,8 +97,10 @@ def nav(rel, current):
       <span class="now-label">Now playing</span>
       <div class="now-chips">
         <span class="lcd-chip halftone"><span class="dot"></span>Berkeley Lab</span>
+        <span class="lcd-chip halftone"><span class="dot"></span>CBU Research</span>
         <span class="lcd-chip halftone"><span class="dot"></span>SeismicSoCal</span>
-        <span class="lcd-chip halftone"><span class="dot"></span>BearLM</span>
+        <span class="lcd-chip halftone"><span class="dot"></span>UC Campus Rent</span>
+        <span class="lcd-chip halftone"><span class="dot"></span>JobbyMail</span>
       </div>
     </div>
   </div>

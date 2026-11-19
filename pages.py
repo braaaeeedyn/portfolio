@@ -754,13 +754,13 @@ JobbyMail runs entirely on your own computer. Shipping forces the parts I would 
 failure states, and what the thing does when the input is strange.</p>"""
 
     skills = tiles([
-        ("ML &amp; deep learning", "PyTorch, scikit-learn, XGBoost, CNN / Transformer / GNN, PatchTST, neuralforecast"),
-        ("LLMs &amp; retrieval", "RAG, LangChain, Ollama, Llama 3.1, embeddings, BM25 + vector hybrid search, rerankers, RAGAS"),
+        ("ML &amp; deep learning", "PyTorch, scikit-learn, XGBoost, LightGBM, CNN / Transformer / GNN, PatchTST, neuralforecast"),
+        ("LLMs &amp; retrieval", "RAG, LangChain, LangGraph, Ollama, Llama 3.1, embeddings, BM25 + vector hybrid search, rerankers, RAGAS"),
         ("Data", "Pandas, ETL pipelines, EDA, rolling CV, Matplotlib, Seaborn, Plotly, SQL"),
-        ("Data engineering", "Spark (batch + Structured Streaming), Kafka, Iceberg, dbt, BigQuery, Airflow, Trino, Debezium, Terraform"),
+        ("Data engineering", "PySpark, dbt, BigQuery, DuckDB, Airflow, Terraform, live SeedLink streams"),
         ("Backend", "Python, FastAPI, Java / Spring Boot, PostgreSQL, Flyway, SQLite, Chroma"),
         ("Frontend &amp; desktop", "React, TypeScript, Vite, Tailwind, Tauri (Rust shell), Capacitor (Android), hand-built SVG"),
-        ("Ops &amp; MLOps", "MLflow, Dagster, Evidently, GitHub Actions, Docker, systemd, Caddy, Oracle Cloud, FCM push"),
+        ("Ops &amp; MLOps", "MLflow, Dagster, Evidently, GitHub Actions, Docker, Cloud Run, systemd, Caddy, Oracle Cloud, FCM push"),
         ("Statistics &amp; causal inference", "difference-in-differences, event studies, A/B tests, McNemar, bootstrap CIs, conformal prediction"),
         ("Testing &amp; data quality", "pytest, Playwright, Great Expectations, dbt tests, coverage, chronological validation"),
     ])
@@ -2456,6 +2456,12 @@ def lbnl(ctx):
         ["Does the right setup depend on the kind of traffic?",
          "Separate models for a calm era and an erratic era of the same cache",
          "Yes: calm traffic rewards longer history, erratic traffic rewards the last few days"],
+        ["Does updating during the day beat the midnight forecast?",
+         "Re-forecast today's total at 06:00, 12:00 and 18:00 from the hours seen so far, on the same folds",
+         "Yes: about a quarter less error by 06:00, half by noon and four-fifths by 18:00"],
+        ["Can the model see a peak day coming and switch modes?",
+         "A peak-day classifier, a PatchTST trained only on peak days, and an oracle that knows the peaks",
+         "Only late in the day; at midnight the warning is too weak to pay for itself"],
     ])
 
     overview = f"""
@@ -2628,18 +2634,52 @@ one. What is the best honest next-day forecast, and does anything beyond a singl
 <p>The reported one-day model is a fixed three-part blend: an <strong>hourly-input PatchTST</strong> that reads two
 weeks of hourly traffic and predicts the next day's total, the original daily PatchTST, and a shallow decision tree
 on the daily features. The hourly signal is where most of the extra accuracy came from. Across the rolling-origin
-folds it averages about <strong>14.5 TB/day of error against persistence's 17.6</strong>, roughly 17% lower, and it
-wins on most of the held-out folds.</p>
+folds its error is <strong>about 17% below persistence's</strong>, and it wins on most of the held-out folds.</p>
 <h3>What didn't help</h3>
 <p>Plenty, and each is written up as a null rather than dropped quietly. Zero-shot time-series foundation models
 (Amazon's <strong>Chronos-2</strong> and <strong>Chronos-Bolt</strong>) made the same mistakes the blend already
 made and were worse on busy days, so they earned zero weight. Heavier networks (NHITS, TiDE, an LSTM, TimeXer) and
 gradient-boosted trees added nothing over the blend either.</p>
+<p>The error correlations show why another daily model rarely helps. The support-vector and tree models miss the same
+days (their errors correlate 0.93 to 0.98), so the useful variety comes from pairing a sequence model with a
+daily-feature model; switching algorithms inside the daily-feature family changes little. I also re-ran methods from
+earlier work on this cache under the same rules. None improved on the blend, and each got zero weight in it. Much
+lower error showed up only when a forecast was given information from the day it was predicting, which a next-day
+forecast can't have.</p>
 <h3>Rules fixed before the data was read</h3>
 <p>Every candidate is pre-registered before a single model is fit. Models are chosen on rolling-origin folds with
 leave-one-fold-out; a separate block of earlier days can only veto a choice, never make one; and the test window is
 read only after the choice is locked to a hash. The model's one real weakness is stated plainly, that it
 under-forecasts the rare record-high days, and the whole pipeline is guarded by 566 automated checks.</p>"""
+
+    sameday = f"""
+<p>Operators don't only plan the night before. By mid-morning part of the day's traffic has already happened, and a
+busy start usually means a busy day. The latest work, still exploratory, asks how much a same-day update improves on
+the midnight forecast, and whether the model can recognise a peak day in time to change course.</p>
+<h3>Re-forecast the day as it unfolds</h3>
+<p>At 06:00, 12:00 and 18:00 a same-day model reads the hours seen so far and is blended with the midnight forecast.
+Against the midnight forecast on the same days, its error is <strong>25% lower by 06:00, 47% lower by noon and 79%
+lower by 18:00</strong> on the folds, and the test window agrees (20%, 43% and 80%). Peak days improve at least as
+much.</p>
+{fig(C.hbars([("06:00", [("f", 74.8), ("t", 79.9)]), ("12:00", [("f", 53.1), ("t", 56.7)]), ("18:00", [("f", 20.8), ("t", 20.3)])],
+             100, lambda v: f"{v:.0f}%", {"f": ("Rolling folds", C.OURS), "t": ("Test window", C.BASE)},
+             "Same-day error as a % of the midnight forecast's (lower is better)", ticks=[0, 25, 50, 75, 100]),
+     "Error of the chosen same-day update at each hour, divided by the midnight blend's error on the same days (100% = no gain). Pooled over four rolling-origin folds, then the test window, read once after the choice was locked. Relative values only.")}
+<h3>A separate model for peak days</h3>
+<p>Next I trained a PatchTST only on peak days and mixed it in according to a classifier's probability that today is
+a peak. On the test window the peak model alone was 27% more accurate than the blend on peak days and more than twice
+as wrong overall, so the mix is only as good as the warning. At midnight the warning is too weak. The classifier
+ranks peak days well on the folds (AUC 0.83) but less well on the test window (0.72), and the full mix cut peak-day
+error by 10% while raising ordinary-day error by 14%, which is worse overall. The rule chosen on the folds shrinks the
+peak model's share to a tenth of the probability, which ties the blend. Even a perfect peak flag would gain only
+about 7% at midnight.</p>
+<p>By 18:00 a peak has mostly shown itself in the hourly traffic. There, an alarm that fires when the day so far runs
+well above normal, then scales the partial day up by how much of a peak day has usually passed by that hour, cuts the
+update's error by <strong>another 10%</strong> on held-out folds and 15% on the test window. At 06:00 and noon the
+same alarm adds nothing.</p>
+<p><strong>Conclusion:</strong> peaks become predictable once they've started. The midnight forecast stays the plain
+blend, the gains come from updating during the day, and the peak mode is worth switching on only for the evening
+update. Retraining the tree on ordinary days only, so the peak model could own the peaks, didn't help either.</p>"""
 
     main_html = (
         panel("overview", "Overview", overview, num="01")
@@ -2650,13 +2690,14 @@ under-forecasts the rare record-high days, and the whole pipeline is guarded by 
         + panel("peaks", "Testing why peaks are missed", peaks, num="06")
         + panel("regimes", "Calm vs. erratic traffic", regimes, num="07")
         + panel("where-next", "Where it went next", where, num="08")
+        + panel("same-day", "Same-day updates and a peak mode", sameday, num="09")
         + pager(rel, ("projects/uc-campus-rent/", "UC Campus Rent"), ("experience/cbu-research/", "CBU Research")))  # DockWatch hidden
 
     rail = (
         panel("toc-lb", "On this page", toc([("overview", "Overview"), ("patchtst", "How PatchTST works"), ("problem", "Problem &amp; data"),
                                              ("model", "Baseline"), ("tuning", "Lookback &amp; robustness"),
                                              ("peaks", "Peak hypotheses"), ("regimes", "Traffic regimes"),
-                                             ("where-next", "Where it went next")]),
+                                             ("where-next", "Where it went next"), ("same-day", "Same-day &amp; peak mode")]),
               body_cls="panel-body tight")
         + panel("spec-lb", "Spec sheet", spec([("Org", "Berkeley Lab · ESnet"), ("Role", "DS &amp; ML Research Intern"),
                                                 ("Program", "Data Science Discovery"), ("Dates", "Sep 2026 – present"),
