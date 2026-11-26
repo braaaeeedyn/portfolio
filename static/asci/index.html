@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCII loading screens</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; }
+  nav { position: fixed; left: 0; right: 0; bottom: 1.2rem; text-align: center; font: 13px/1.9 Consolas, Menlo, monospace; }
+  nav a { margin: 0 .6rem; color: #6b6b6b; text-decoration: none; white-space: nowrap; }
+  nav a:hover, nav a:focus-visible { color: #f88bb3; }
+</style>
+</head>
+<body>
+<!-- Placeholder: whatever comes after a loading screen goes here. These links play each one. -->
+<nav>
+  <a href="index.html">plum blossom</a>
+  <a href="index.html?view=3d">plum blossom 3D</a>
+  <a href="index.html?film=baijiu-toast">baijiu toast</a>
+  <a href="index.html?film=zither-pavilion">zither in the pavilion</a>
+  <a href="index.html?film=river-eye">eye in the river</a>
+  <a href="index.html?film=bamboo-sword">sword draw</a>
+  <a href="index.html?film=peak-meditation">mountain peak</a>
+  <a href="index.html?film=fog-swordsman">swordsman in the fog</a>
+  <a href="index.html?film=burning-sky">beneath the burning sky</a>
+  <a href="index.html?film=crane-mist">cranes into the mist</a>
+  <a href="index.html?film=ascend-gate">toward the gate of light</a>
+  <a href="index.html?film=storm-slash">slash through the storm</a>
+  <a href="index.html?film=blossom-arch">under the blossom arch</a>
+  <a href="index.html?film=rain-farewell">farewell in the rain</a>
+  <a href="index.html?film=chess-butterfly">the falling king</a>
+  <a href="index.html?film=ice-lotus">the ice lotus</a>
+  <a href="index.html?film=pagoda-dawn">pagoda at dawn</a>
+  <a href="index.html?film=snow-butterfly">butterfly in the snow</a>
+  <a href="index.html?film=glass-chimes">glass chimes</a>
+  <a href="index.html?film=moon-blossom">blossom under the moon</a>
+  <a href="index.html?film=frozen-lake">the frozen lake</a>
+  <a href="index.html?film=scripture-wall">wall of scripture</a>
+  <a href="index.html?film=lotus-bridge">the lotus bridge</a>
+  <a href="index.html?film=cloud-sea">sea of clouds</a>
+  <a href="index.html?film=sky-pillars">pillars in the sky</a>
+  <a href="index.html?film=grave-sword">sword beneath the blossom</a>
+  <a href="index.html?film=parting-waves">the parting waves</a>
+</nav>
+<script src="ascii-stage.js"></script>
+<script>
+  // index.html?film=river-eye plays that loading screen; without `film` it is the plum blossom, and
+  // view=3d is the plum blossom's 3D view. Adding t=2.3 holds the frame at 2.3 seconds instead of
+  // playing, and seed=4 gives a different version of the picture. Esc or C skips the film.
+  const FILMS = {
+    'plum-blossom': () => PlumBlossom,
+    'baijiu-toast': () => BaijiuToast,
+    'zither-pavilion': () => ZitherPavilion,
+    'river-eye': () => RiverEye,
+    'bamboo-sword': () => BambooSword,
+    'peak-meditation': () => PeakMeditation,
+    'fog-swordsman': () => FogSwordsman,
+    'burning-sky': () => BurningSky,
+    'crane-mist': () => CraneMist,
+    'ascend-gate': () => AscendGate,
+    'storm-slash': () => StormSlash,
+    'blossom-arch': () => BlossomArch,
+    'rain-farewell': () => RainFarewell,
+    'chess-butterfly': () => ChessButterfly,
+    'ice-lotus': () => IceLotus,
+    'pagoda-dawn': () => PagodaDawn,
+    'snow-butterfly': () => SnowButterfly,
+    'glass-chimes': () => GlassChimes,
+    'moon-blossom': () => MoonBlossom,
+    'frozen-lake': () => FrozenLake,
+    'scripture-wall': () => ScriptureWall,
+    'lotus-bridge': () => LotusBridge,
+    'cloud-sea': () => CloudSea,
+    'sky-pillars': () => SkyPillars,
+    'grave-sword': () => GraveSword,
+    'parting-waves': () => PartingWaves,
+  };
+  const query = new URLSearchParams(location.search), t = query.get('t'), seed = query.get('seed');
+  const film = query.get('film') in FILMS ? query.get('film') : 'plum-blossom';
+  const skip = new AbortController();
+  addEventListener('keydown', (e) => {
+    if ((e.key === 'Escape' || e.key === 'c' || e.key === 'C') && !e.ctrlKey && !e.metaKey && !e.altKey) skip.abort();
+  });
+  const script = document.createElement('script');
+  script.src = film + '.js';
+  script.onload = () => FILMS[film]().play({ view: query.get('view'), seed: seed === null ? undefined : +seed, freezeAt: t === null ? null : +t, signal: skip.signal });
+  document.body.appendChild(script);
+</script>
+</body>
+</html>
