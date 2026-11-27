@@ -3,88 +3,300 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15120f">
+<meta name="description" content="ASCII loading screens, five seconds each. Pick one from the scroll to play it.">
 <title>ASCII loading screens</title>
 <style>
-  html, body { margin: 0; height: 100%; background: #000; }
-  nav { position: fixed; left: 0; right: 0; bottom: 1.2rem; text-align: center; font: 13px/1.9 Consolas, Menlo, monospace; }
-  nav a { margin: 0 .6rem; color: #6b6b6b; text-decoration: none; white-space: nowrap; }
-  nav a:hover, nav a:focus-visible { color: #f88bb3; }
+  :root {
+    --wall: #15120f; --glow: #2c2219;
+    --cord: #8d6f50; --wood: #865b38; --wood-dark: #5c3b22; --grain: #a9784a; --brass: #dbb36a; --brass-dark: #a98040;
+    --silk: #233838; --thread: #3f5e5a;
+    --paper: #ede4ca; --ink: #2b231b; --soft: #7f6e54; --seal: #b3372b;
+    --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+    --gap: max(10px, 3vh);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--wall); }
+  body {
+    margin: 0; min-height: 100vh; min-height: 100dvh; padding: var(--gap) 0;
+    display: grid; place-items: center;
+    background: radial-gradient(55% 60% at 50% 45%, var(--glow), transparent);
+    font: 16px/1.4 var(--mono); color: var(--ink);
+  }
+
+  /* The hanging scroll: a cord, the top bar, the silk mount with the paper in it, and the roller. */
+  .scroll {
+    --w: min(48ch, 100vw - 8ch); /* the mount's width; the roller's knobs stand 3ch out each side */
+    display: flex; flex-direction: column; align-items: center;
+    max-height: calc(100vh - 2 * var(--gap)); max-height: calc(100dvh - 2 * var(--gap));
+    filter: drop-shadow(0 1.2em 1.4em rgb(0 0 0 / .5));
+  }
+  .art { white-space: pre; overflow: hidden; user-select: none; }
+  .cord { flex: none; margin: 0; font: inherit; line-height: 1; color: var(--cord); }
+  .cord b { color: var(--brass); }
+  /* Wood and brass are drawn the way the films draw: a lighter top half, a darker bottom half, a character on both. */
+  .bar, .rod i { height: 1.15em; line-height: 1.15; font-weight: 700; color: var(--grain); background: linear-gradient(var(--wood) 50%, var(--wood-dark) 50%); }
+  .bar { flex: none; width: calc(var(--w) + 2ch); }
+  .rod { flex: none; display: flex; align-items: center; width: calc(var(--w) + 6ch); margin-top: -.475em; } /* the knobs stand above and below the rod, which meets the silk */
+  .rod i { flex: 1; font-style: normal; }
+  .knob { width: 3ch; height: 2.1em; display: grid; place-items: center; border-radius: 3px; font-weight: 700; color: var(--wood-dark); background: linear-gradient(var(--brass) 50%, var(--brass-dark) 50%); }
+  .mount { width: var(--w); min-height: 0; flex: 0 1 auto; display: flex; flex-direction: column; padding: 0 1ch; background: var(--silk); }
+  .silk { flex: none; height: 3.45em; line-height: 1.15; color: var(--thread); }
+  .silk.low { height: 2.3em; }
+  .heart {
+    min-height: 0; flex: 0 1 auto; display: flex; flex-direction: column;
+    padding: 1.1em 2ch .7em; background: var(--paper);
+    box-shadow: inset 0 0 2.4em rgb(126 92 44 / .25);
+  }
+  header { flex: none; }
+  h1 { margin: 0; font-size: 1.1em; letter-spacing: .12em; text-transform: uppercase; }
+  header p { margin: .3em 0 0; font-size: .85em; color: var(--soft); }
+  .rule { margin: .55em 0 .15em; line-height: 1; color: var(--soft); }
+  nav { min-height: 0; flex: 0 1 auto; display: flex; flex-direction: column; }
+
+  /* The films, as a table of contents. */
+  .films {
+    position: relative; min-height: 5.6em; flex: 0 1 auto; overflow-y: auto; overscroll-behavior: contain;
+    margin: 0 -1ch; padding: .5em 0; list-style: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 .5em, #000 calc(100% - .5em), transparent);
+    mask-image: linear-gradient(transparent, #000 .5em, #000 calc(100% - .5em), transparent);
+    scrollbar-width: thin; scrollbar-color: rgb(43 35 27 / .3) transparent;
+  }
+  .films a {
+    position: relative; display: flex; align-items: center; gap: 1ch;
+    min-height: 1.85em; padding: 0 1ch 0 2ch; border-radius: 3px;
+    color: inherit; text-decoration: none; outline: none;
+    transition: background-color .15s;
+  }
+  .films a::before {
+    content: ">"; position: absolute; left: .5ch; font-weight: 700; color: var(--seal);
+    opacity: 0; transform: translateX(-.4ch); transition: opacity .15s, transform .15s;
+  }
+  .films a:hover, .films a:focus-visible { background: rgb(43 35 27 / .08); }
+  .films a:focus-visible { box-shadow: inset 0 0 0 2px var(--seal); }
+  .films a:hover::before, .films a:focus-visible::before { opacity: 1; transform: none; }
+  .films span { min-width: 0; } /* a name too long for its line takes two */
+  .films i { flex: 1 1 0; min-width: 2ch; overflow: hidden; white-space: nowrap; font-style: normal; color: var(--soft); opacity: .5; transition: opacity .15s; }
+  .films i::before { content: "...................................................................................................."; }
+  .films a:hover i, .films a:focus-visible i { opacity: .9; }
+  .films b { flex: none; min-width: 2ch; text-align: center; font-weight: 400; color: var(--soft); border-radius: 2px; }
+  .films [aria-current] span { font-weight: 700; }
+  .films [aria-current] b { padding: 0 .5ch; font-weight: 700; color: var(--paper); background: var(--seal); }
+
+  /* Rolled up, while the first film plays; the script measures --lift and unrolls it after. */
+  .rolled .mount { clip-path: inset(0 0 100% 0); }
+  .rolled .rod { transform: translateY(calc(-1px * var(--lift, 0))); }
+
+  .keys { display: none; }
+  @media (hover: hover) and (pointer: fine) { .keys { display: inline; } }
+  @media (pointer: coarse) { .films a { min-height: 44px; } }
+  @media (max-width: 480px) {
+    body { font-size: 14px; }
+    .scroll { --w: calc(100vw - 7ch); }
+    .heart { padding-inline: 1.5ch; }
+  }
+  /* A phone on its side: no cord, thin silk, one line of heading, and the films in two columns. */
+  @media (max-height: 540px) {
+    body { font-size: 14px; }
+    .cord, header p { display: none; }
+    .silk, .silk.low { height: 1.15em; }
+    .heart { padding-top: .6em; padding-bottom: .4em; }
+    .rule { margin-top: .35em; }
+  }
+  @media (min-width: 640px) and (max-height: 540px) {
+    .scroll { --w: min(80ch, 100vw - 8ch); }
+    .films { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2ch; align-content: start; }
+  }
+  @media (max-width: 360px) {
+    .mount { padding-inline: .5ch; }
+    .heart { padding-inline: 1ch; }
+  }
+  @media (prefers-reduced-motion: reduce) { .films a, .films a::before, .films i { transition: none; } }
 </style>
 </head>
 <body>
-<!-- Placeholder: whatever comes after a loading screen goes here. These links play each one. -->
-<nav>
-  <a href="index.html">plum blossom</a>
-  <a href="index.html?view=3d">plum blossom 3D</a>
-  <a href="index.html?film=baijiu-toast">baijiu toast</a>
-  <a href="index.html?film=zither-pavilion">zither in the pavilion</a>
-  <a href="index.html?film=river-eye">eye in the river</a>
-  <a href="index.html?film=bamboo-sword">sword draw</a>
-  <a href="index.html?film=peak-meditation">mountain peak</a>
-  <a href="index.html?film=fog-swordsman">swordsman in the fog</a>
-  <a href="index.html?film=burning-sky">beneath the burning sky</a>
-  <a href="index.html?film=crane-mist">cranes into the mist</a>
-  <a href="index.html?film=ascend-gate">toward the gate of light</a>
-  <a href="index.html?film=storm-slash">slash through the storm</a>
-  <a href="index.html?film=blossom-arch">under the blossom arch</a>
-  <a href="index.html?film=rain-farewell">farewell in the rain</a>
-  <a href="index.html?film=chess-butterfly">the falling king</a>
-  <a href="index.html?film=ice-lotus">the ice lotus</a>
-  <a href="index.html?film=pagoda-dawn">pagoda at dawn</a>
-  <a href="index.html?film=snow-butterfly">butterfly in the snow</a>
-  <a href="index.html?film=glass-chimes">glass chimes</a>
-  <a href="index.html?film=moon-blossom">blossom under the moon</a>
-  <a href="index.html?film=frozen-lake">the frozen lake</a>
-  <a href="index.html?film=scripture-wall">wall of scripture</a>
-  <a href="index.html?film=lotus-bridge">the lotus bridge</a>
-  <a href="index.html?film=cloud-sea">sea of clouds</a>
-  <a href="index.html?film=sky-pillars">pillars in the sky</a>
-  <a href="index.html?film=grave-sword">sword beneath the blossom</a>
-  <a href="index.html?film=parting-waves">the parting waves</a>
-</nav>
-<script src="ascii-stage.js"></script>
+<main class="scroll">
+  <pre class="cord art" aria-hidden="true">   <b>o</b>
+  / \
+ /   \
+/     \</pre>
+  <div class="bar art" aria-hidden="true" data-art="="></div>
+  <div class="mount">
+    <div class="silk art" aria-hidden="true" data-art="weave"></div>
+    <div class="heart">
+      <header>
+        <h1>ASCII loading screens</h1>
+        <p><span id="count">27</span> films, five seconds each.<span class="keys"> Esc skips a film.</span></p>
+        <div class="rule art" aria-hidden="true" data-art="-~"></div>
+      </header>
+      <nav aria-label="Films">
+        <ol class="films">
+          <li><a href="?film=plum-blossom">plum blossom</a></li>
+          <li><a href="?film=plum-blossom&amp;view=3d">plum blossom, in 3D</a></li>
+          <li><a href="?film=baijiu-toast">baijiu toast</a></li>
+          <li><a href="?film=zither-pavilion">zither in the pavilion</a></li>
+          <li><a href="?film=river-eye">eye in the river</a></li>
+          <li><a href="?film=bamboo-sword">sword draw</a></li>
+          <li><a href="?film=peak-meditation">mountain peak</a></li>
+          <li><a href="?film=fog-swordsman">swordsman in the fog</a></li>
+          <li><a href="?film=burning-sky">beneath the burning sky</a></li>
+          <li><a href="?film=crane-mist">cranes into the mist</a></li>
+          <li><a href="?film=ascend-gate">toward the gate of light</a></li>
+          <li><a href="?film=storm-slash">slash through the storm</a></li>
+          <li><a href="?film=blossom-arch">under the blossom arch</a></li>
+          <li><a href="?film=rain-farewell">farewell in the rain</a></li>
+          <li><a href="?film=chess-butterfly">the falling king</a></li>
+          <li><a href="?film=ice-lotus">the ice lotus</a></li>
+          <li><a href="?film=pagoda-dawn">pagoda at dawn</a></li>
+          <li><a href="?film=snow-butterfly">butterfly in the snow</a></li>
+          <li><a href="?film=glass-chimes">glass chimes</a></li>
+          <li><a href="?film=moon-blossom">blossom under the moon</a></li>
+          <li><a href="?film=frozen-lake">the frozen lake</a></li>
+          <li><a href="?film=scripture-wall">wall of scripture</a></li>
+          <li><a href="?film=lotus-bridge">the lotus bridge</a></li>
+          <li><a href="?film=cloud-sea">sea of clouds</a></li>
+          <li><a href="?film=sky-pillars">pillars in the sky</a></li>
+          <li><a href="?film=grave-sword">sword beneath the blossom</a></li>
+          <li><a href="?film=parting-waves">the parting waves</a></li>
+        </ol>
+      </nav>
+    </div>
+    <div class="silk low art" aria-hidden="true" data-art="weave"></div>
+  </div>
+  <div class="rod" aria-hidden="true"><b class="knob">|</b><i class="art" data-art="="></i><b class="knob">|</b></div>
+</main>
 <script>
   // index.html?film=river-eye plays that loading screen; without `film` it is the plum blossom, and
   // view=3d is the plum blossom's 3D view. Adding t=2.3 holds the frame at 2.3 seconds instead of
   // playing, and seed=4 gives a different version of the picture. Esc or C skips the film.
-  const FILMS = {
-    'plum-blossom': () => PlumBlossom,
-    'baijiu-toast': () => BaijiuToast,
-    'zither-pavilion': () => ZitherPavilion,
-    'river-eye': () => RiverEye,
-    'bamboo-sword': () => BambooSword,
-    'peak-meditation': () => PeakMeditation,
-    'fog-swordsman': () => FogSwordsman,
-    'burning-sky': () => BurningSky,
-    'crane-mist': () => CraneMist,
-    'ascend-gate': () => AscendGate,
-    'storm-slash': () => StormSlash,
-    'blossom-arch': () => BlossomArch,
-    'rain-farewell': () => RainFarewell,
-    'chess-butterfly': () => ChessButterfly,
-    'ice-lotus': () => IceLotus,
-    'pagoda-dawn': () => PagodaDawn,
-    'snow-butterfly': () => SnowButterfly,
-    'glass-chimes': () => GlassChimes,
-    'moon-blossom': () => MoonBlossom,
-    'frozen-lake': () => FrozenLake,
-    'scripture-wall': () => ScriptureWall,
-    'lotus-bridge': () => LotusBridge,
-    'cloud-sea': () => CloudSea,
-    'sky-pillars': () => SkyPillars,
-    'grave-sword': () => GraveSword,
-    'parting-waves': () => PartingWaves,
-  };
-  const query = new URLSearchParams(location.search), t = query.get('t'), seed = query.get('seed');
-  const film = query.get('film') in FILMS ? query.get('film') : 'plum-blossom';
-  const skip = new AbortController();
-  addEventListener('keydown', (e) => {
-    if ((e.key === 'Escape' || e.key === 'c' || e.key === 'C') && !e.ctrlKey && !e.metaKey && !e.altKey) skip.abort();
-  });
-  const script = document.createElement('script');
-  script.src = film + '.js';
-  script.onload = () => FILMS[film]().play({ view: query.get('view'), seed: seed === null ? undefined : +seed, freezeAt: t === null ? null : +t, signal: skip.signal });
-  document.body.appendChild(script);
+  // The scroll stays rolled up while the first film plays and unrolls once it has gone. Picking a
+  // film from the scroll plays it over the page, without loading the page again.
+  (() => {
+    'use strict';
+    const FILMS = { // each film's script defines one global
+      'plum-blossom': () => PlumBlossom,
+      'baijiu-toast': () => BaijiuToast,
+      'zither-pavilion': () => ZitherPavilion,
+      'river-eye': () => RiverEye,
+      'bamboo-sword': () => BambooSword,
+      'peak-meditation': () => PeakMeditation,
+      'fog-swordsman': () => FogSwordsman,
+      'burning-sky': () => BurningSky,
+      'crane-mist': () => CraneMist,
+      'ascend-gate': () => AscendGate,
+      'storm-slash': () => StormSlash,
+      'blossom-arch': () => BlossomArch,
+      'rain-farewell': () => RainFarewell,
+      'chess-butterfly': () => ChessButterfly,
+      'ice-lotus': () => IceLotus,
+      'pagoda-dawn': () => PagodaDawn,
+      'snow-butterfly': () => SnowButterfly,
+      'glass-chimes': () => GlassChimes,
+      'moon-blossom': () => MoonBlossom,
+      'frozen-lake': () => FrozenLake,
+      'scripture-wall': () => ScriptureWall,
+      'lotus-bridge': () => LotusBridge,
+      'cloud-sea': () => CloudSea,
+      'sky-pillars': () => SkyPillars,
+      'grave-sword': () => GraveSword,
+      'parting-waves': () => PartingWaves,
+    };
+    const scroll = document.querySelector('.scroll'), mount = scroll.querySelector('.mount'), rod = scroll.querySelector('.rod');
+    const list = scroll.querySelector('.films'), links = [...list.querySelectorAll('a')], knobs = [...rod.querySelectorAll('.knob')];
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // The drawing: long runs of each pattern, cut to width by the CSS.
+    const ART = { '=': ['='], '-~': ['-~'], weave: [':.', '.:', ':.'] };
+    for (const el of scroll.querySelectorAll('[data-art]')) el.textContent = ART[el.dataset.art].map((unit) => unit.repeat(240 / unit.length)).join('\n');
+    links.forEach((a, i) => { a.innerHTML = `<span>${a.innerHTML}</span><i aria-hidden="true"></i><b aria-hidden="true">${String(i + 1).padStart(2, '0')}</b>`; });
+    document.getElementById('count').textContent = links.length;
+
+    // Which entry an address plays, and the seal on the one played last.
+    const entry = (href) => {
+      const q = new URL(href, location.href).searchParams, film = q.get('film') in FILMS ? q.get('film') : 'plum-blossom';
+      return film === 'plum-blossom' && q.get('view') === '3d' ? film + ' 3d' : film;
+    };
+    const mark = (key) => { for (const a of links) if (entry(a.href) === key) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); };
+
+    // Films load when first asked for, after the stage.
+    const scripts = new Map();
+    const load = (src) => {
+      if (!scripts.has(src)) scripts.set(src, new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src; script.onload = resolve; script.onerror = () => { scripts.delete(src); reject(new Error('could not load ' + src)); };
+        document.body.appendChild(script);
+      }));
+      return scripts.get(src);
+    };
+    let skip = null; // aborts the film on screen
+    const play = async (film, options) => {
+      skip?.abort();
+      const controller = (skip = new AbortController());
+      try {
+        await load('ascii-stage.js');
+        await load(film + '.js');
+        if (!controller.signal.aborted) await FILMS[film]().play({ ...options, signal: controller.signal });
+      } catch (error) {
+        console.error(error); // a film that will not load leaves the page as it is
+      }
+      if (skip === controller) skip = null;
+    };
+
+    // The roller's knobs turn as the paper moves: as it unrolls, and as the list scrolls.
+    const turn = (px) => { const k = Math.floor(px / 14) & 3; knobs[0].textContent = '|/-\\'[k]; knobs[1].textContent = '|\\-/'[k]; };
+    list.addEventListener('scroll', () => turn(list.scrollTop), { passive: true });
+    const lift = () => rod.style.setProperty('--lift', mount.offsetHeight);
+    const unroll = () => {
+      if (!scroll.classList.contains('rolled')) return;
+      removeEventListener('resize', lift);
+      const height = mount.offsetHeight;
+      scroll.classList.remove('rolled');
+      if (calm) return;
+      const timing = { duration: 1300, easing: 'cubic-bezier(.33, 0, .2, 1)' };
+      mount.animate({ clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0 0)'] }, timing);
+      const drop = rod.animate({ transform: [`translateY(${-height}px)`, 'translateY(0)'] }, timing);
+      const step = () => {
+        const progress = drop.effect.getComputedTiming().progress;
+        if (progress === null) return turn(list.scrollTop);
+        turn(height * progress);
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    // The film the address asks for plays first, over the rolled scroll.
+    const query = new URLSearchParams(location.search), t = query.get('t'), seed = query.get('seed');
+    const first = query.get('film') in FILMS ? query.get('film') : 'plum-blossom';
+    mark(entry(location.href));
+    const current = list.querySelector('[aria-current]');
+    if (current) list.scrollTop = current.offsetTop - (list.clientHeight - current.offsetHeight) / 2;
+    scroll.classList.add('rolled');
+    lift();
+    addEventListener('resize', lift);
+    play(first, { view: query.get('view'), seed: seed === null ? undefined : +seed, freezeAt: t === null ? null : +t }).then(unroll);
+
+    list.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // a new tab plays it there
+      e.preventDefault();
+      try { history.replaceState(null, '', a.href); } catch {} // so that reloading plays it again
+      mark(entry(a.href));
+      const q = new URL(a.href).searchParams;
+      play(q.get('film'), { view: q.get('view') });
+    });
+    addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') return skip?.abort();
+      const i = links.indexOf(document.activeElement);
+      if (i < 0) return;
+      const across = getComputedStyle(list).gridTemplateColumns.split(' ').length; // 'none' is one column
+      const to = { ArrowDown: i + across, ArrowUp: i - across, Home: 0, End: links.length - 1, ...(across > 1 && { ArrowRight: i + 1, ArrowLeft: i - 1 }) }[e.key];
+      if (to === undefined) return;
+      e.preventDefault();
+      links[Math.max(0, Math.min(links.length - 1, to))].focus();
+    });
+  })();
 </script>
 </body>
 </html>
